@@ -1,5 +1,7 @@
 # ChessForge
 
+[![CI](https://github.com/munna7862/ChessGame/actions/workflows/ci.yml/badge.svg)](https://github.com/munna7862/ChessGame/actions/workflows/ci.yml)
+
 > **ChessForge** is a high-performance, 100% local-first Windows desktop chess application engineered with **Tauri v2**, **React 19**, **TypeScript**, and **Stockfish WASM**.
 
 ---
@@ -119,6 +121,16 @@ Build the optimized Windows production executable:
 ```powershell
 npm run tauri build
 ```
+
+### 3.8 Continuous Integration (GitHub Actions)
+
+Every pull request and push to `main` is validated automatically via GitHub Actions CI across three distinct jobs:
+
+- **`frontend-checks`**: Format check, ESLint, TypeScript typecheck, Vitest unit tests, and Vite build.
+- **`e2e-tests`**: Headless Playwright Chromium smoke tests with failure trace artifact capture.
+- **`desktop-windows-build`**: Native Windows compilation, cargo test, and cargo clippy checks.
+
+For full architectural details, see the [GitHub Actions CI Workflow Guide](file:///c:/Workspace/ChessGame/docs/guides/ci_workflow_guide.md).
 
 ---
 
