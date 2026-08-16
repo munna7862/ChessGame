@@ -11,26 +11,26 @@ intuitive desktop chessboard.
 
 ## Scope
 
--   8x8 board
--   Pieces
--   Coordinates
--   Selection
--   Legal-move indicators
--   Last-move highlighting
--   Check highlighting
--   Capture indication
--   Promotion UI
--   Board orientation
--   Click-to-move
--   Drag-and-drop where stable
--   Responsive desktop layout
--   Keyboard/accessibility foundations
+- 8x8 board
+- Pieces
+- Coordinates
+- Selection
+- Legal-move indicators
+- Last-move highlighting
+- Check highlighting
+- Capture indication
+- Promotion UI
+- Board orientation
+- Click-to-move
+- Drag-and-drop where stable
+- Responsive desktop layout
+- Keyboard/accessibility foundations
 
 ## UX principle
 
 The board must answer four questions immediately:
 
-``` text
+```text
 Where am I?
 Whose turn is it?
 What can I move?
@@ -39,7 +39,7 @@ What just happened?
 
 ## Architecture
 
-``` text
+```text
 BoardView
   |
 BoardInteractionController
@@ -53,16 +53,16 @@ Never embed chess legality in visual components.
 
 ## Rendering requirements
 
--   Stable square identity.
--   Predictable coordinate system.
--   Efficient piece updates.
--   No unnecessary full-board recomputation.
--   Animation must not alter domain state.
--   Reduced-motion mode must be supported.
+- Stable square identity.
+- Predictable coordinate system.
+- Efficient piece updates.
+- No unnecessary full-board recomputation.
+- Animation must not alter domain state.
+- Reduced-motion mode must be supported.
 
 ## Visual states
 
-``` text
+```text
 Normal
 Selected
 Legal destination
@@ -78,21 +78,21 @@ Disabled
 
 Component tests:
 
--   render board
--   select piece
--   show legal moves
--   execute move
--   reject illegal destination
--   promotion selection
--   orientation flip
+- render board
+- select piece
+- show legal moves
+- execute move
+- reject illegal destination
+- promotion selection
+- orientation flip
 
 E2E:
 
--   launch
--   create local game
--   move e2-e4
--   verify position
--   verify history integration
+- launch
+- create local game
+- move e2-e4
+- verify position
+- verify history integration
 
 ## Antigravity browser workflow
 
@@ -102,14 +102,14 @@ rather than relying only on unit tests.
 
 ## Acceptance criteria
 
--   Board renders correctly at supported desktop sizes.
--   Legal moves are visually clear.
--   Illegal moves cannot be committed.
--   Promotion works.
--   Board orientation works.
--   Check state is visible.
--   UI remains responsive.
--   No chess rules are implemented in components.
+- Board renders correctly at supported desktop sizes.
+- Legal moves are visually clear.
+- Illegal moves cannot be committed.
+- Promotion works.
+- Board orientation works.
+- Check state is visible.
+- UI remains responsive.
+- No chess rules are implemented in components.
 
 ## Exit criteria
 
@@ -118,15 +118,15 @@ basic game.
 
 ## Sprint decomposition candidates
 
--   Board shell
--   Piece rendering
--   Coordinates
--   Selection
--   Legal move indicators
--   Move execution
--   Last-move state
--   Check state
--   Promotion
--   Orientation
--   Drag-and-drop
--   Visual testing
+- Board shell
+- Piece rendering
+- Coordinates
+- Selection
+- Legal move indicators
+- Move execution
+- Last-move state
+- Check state
+- Promotion
+- Orientation
+- Drag-and-drop
+- Visual testing

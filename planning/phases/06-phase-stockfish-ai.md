@@ -12,21 +12,21 @@ lifecycle handling.
 
 ## Scope
 
--   Stockfish WASM
--   Web Worker
--   Engine service
--   Position synchronization
--   Best-move requests
--   Difficulty
--   Thinking state
--   Cancellation
--   Error recovery
--   Stale response protection
--   Human vs Computer flow
+- Stockfish WASM
+- Web Worker
+- Engine service
+- Position synchronization
+- Best-move requests
+- Difficulty
+- Thinking state
+- Cancellation
+- Error recovery
+- Stale response protection
+- Human vs Computer flow
 
 ## Architecture
 
-``` text
+```text
 Game Controller
       |
 Engine Service
@@ -40,7 +40,7 @@ The worker boundary is mandatory for responsiveness.
 
 ## Critical race condition
 
-``` text
+```text
 Position A
   ↓
 Engine request A
@@ -60,7 +60,7 @@ Use request/session IDs.
 
 ## Engine state
 
-``` text
+```text
 idle
 starting
 ready
@@ -76,16 +76,16 @@ provide exact Elo.
 
 Possible controls:
 
--   Skill level
--   Search depth
--   Thinking time
--   Randomness only if intentionally designed
+- Skill level
+- Search depth
+- Thinking time
+- Randomness only if intentionally designed
 
 ## Error handling
 
 If the engine crashes:
 
-``` text
+```text
 The chess engine stopped unexpectedly.
 
 [Restart Engine]
@@ -96,15 +96,15 @@ Never corrupt the game state.
 
 ## Testing
 
--   engine startup
--   position transmission
--   best-move response
--   cancellation
--   stale response rejection
--   restart
--   worker failure
--   game reset while thinking
--   engine move legality
+- engine startup
+- position transmission
+- best-move response
+- cancellation
+- stale response rejection
+- restart
+- worker failure
+- game reset while thinking
+- engine move legality
 
 ## Antigravity strategy
 
@@ -117,14 +117,14 @@ behavior.
 
 ## Acceptance criteria
 
--   Human can play against computer.
--   Engine never blocks UI.
--   Computer moves are legal.
--   Difficulty settings work.
--   Reset during thinking is safe.
--   Stale results are ignored.
--   Engine failure is recoverable.
--   Engine worker tests pass.
+- Human can play against computer.
+- Engine never blocks UI.
+- Computer moves are legal.
+- Difficulty settings work.
+- Reset during thinking is safe.
+- Stale results are ignored.
+- Engine failure is recoverable.
+- Engine worker tests pass.
 
 ## Exit criteria
 
@@ -133,15 +133,15 @@ stale-engine or UI-freeze defects.
 
 ## Sprint decomposition candidates
 
--   Engine abstraction
--   Worker
--   Stockfish loading
--   UCI communication
--   Position sync
--   Best move
--   Cancellation
--   Stale-response protection
--   Difficulty
--   AI game controller
--   Failure recovery
--   Engine regression suite
+- Engine abstraction
+- Worker
+- Stockfish loading
+- UCI communication
+- Position sync
+- Best move
+- Cancellation
+- Stale-response protection
+- Difficulty
+- AI game controller
+- Failure recovery
+- Engine regression suite

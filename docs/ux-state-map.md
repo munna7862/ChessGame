@@ -3,7 +3,7 @@
 **Sprint:** `Phase 01 · Sprint 02: UX Journeys and Information Architecture`  
 **Author:** Dev Architect & Senior SDE  
 **Status:** `Approved Specification Baseline`  
-**Target Platform:** Windows 10/11 x64 Desktop (Tauri v2 + React UI)  
+**Target Platform:** Windows 10/11 x64 Desktop (Tauri v2 + React UI)
 
 ---
 
@@ -123,7 +123,7 @@ sequenceDiagram
     UI->>Bridge: Send `evaluatePosition(fen, difficulty, maxTime)`
     Bridge->>Worker: PostMessage `position fen <B>`
     Bridge->>Worker: PostMessage `go movetime 1200`
-    
+
     loop Stream Evaluation Info (Non-blocking)
         Worker-->>Bridge: `info depth 12 score cp +45 pv e7e5 ...`
         Bridge-->>UI: Update Eval Bar (+0.45) & Best Move Hint
@@ -148,7 +148,7 @@ stateDiagram-v2
     [*] --> CLOCK_STOPPED: Game Initialized
 
     CLOCK_STOPPED --> WHITE_TICKING: White Starts Move 1
-    
+
     WHITE_TICKING --> BLACK_TICKING: White Makes Move (+ Increment Added)
     BLACK_TICKING --> WHITE_TICKING: Black Makes Move (+ Increment Added)
 
@@ -168,20 +168,20 @@ stateDiagram-v2
 
 ## 5. Complete UI State Transition Matrix
 
-| Current State | Event / Action | Guard Condition | Target State | UI / System Effect |
-| :--- | :--- | :--- | :--- | :--- |
-| `BOOT_INIT` | `SNAPSHOT_LOADED` | Saved game is valid | `GAME_PLAYING` | Rehydrates game state, board positions, SAN table, and clocks. |
-| `BOOT_INIT` | `NO_SNAPSHOT` | No saved session | `GAME_IDLE` | Sets standard starting position with default settings. |
-| `AWAITING_HUMAN_MOVE` | `PIECE_CLICK / DRAG_START` | Piece belongs to active player | `PIECE_SELECTED` | Highlights source square and target legal destination squares. |
-| `PIECE_SELECTED` | `SQUARE_DROP / CLICK` | Destination is legal non-promotion | `AWAITING_HUMAN_MOVE` (Turn switch) | Commits move, updates SAN, plays sound FX, triggers AI worker or opponent clock. |
-| `PIECE_SELECTED` | `SQUARE_DROP / CLICK` | Destination is 8th rank pawn move | `PROMOTION_CHOICE` | Displays Promotion Picker modal directly over target square. |
-| `PROMOTION_CHOICE` | `SELECT_PIECE(Q/R/B/N)` | Valid piece choice | `AWAITING_HUMAN_MOVE` (Turn switch) | Promotes pawn to chosen piece, closes picker, passes turn. |
-| `PROMOTION_CHOICE` | `CANCEL / ESCAPE` | None | `AWAITING_HUMAN_MOVE` | Aborts move, restores pawn to source square, closes picker. |
-| `GAME_PLAYING` | `SELECT_HISTORY_PLY(N)` | `0 <= N < totalPlies` | `HISTORY_REVIEW` | Board renders historical position; clocks pause; live return banner shown. |
-| `HISTORY_REVIEW` | `CLICK_LIVE_PLY / PRESS_END`| None | `GAME_PLAYING` | Board restores current live position; drag-and-drop enabled; clocks resume. |
-| `GAME_PLAYING` | `MOVE_RESULTS_CHECKMATE` | Legal move delivers mate | `GAME_TERMINATED` | Stops clocks, locks board, displays Checkmate modal/banner. |
-| `GAME_PLAYING` | `MOVE_RESULTS_DRAW` | Stalemate / 50-move / 3-fold | `GAME_TERMINATED` | Stops clocks, locks board, displays Draw notification. |
-| `GAME_PLAYING` | `CLICK_RESIGN` | User confirms in prompt | `GAME_TERMINATED` | Concedes match, sets winner to opponent, logs result to history. |
-| `ANY_STATE` | `OPEN_MODAL(TYPE)` | None | `MODAL_LAYER(TYPE)` | Dims background, freezes board interactions, traps keyboard focus. |
-| `MODAL_LAYER` | `CLOSE_MODAL / ESCAPE` | None | `PREVIOUS_STATE` | Unmounts modal, returns focus to previous active UI component. |
-| `GAME_TERMINATED` | `CLICK_REMATCH` | Same players/settings | `GAME_PLAYING` | Inverts player colors (if chosen), resets board and clocks to new game. |
+| Current State         | Event / Action               | Guard Condition                    | Target State                        | UI / System Effect                                                               |
+| :-------------------- | :--------------------------- | :--------------------------------- | :---------------------------------- | :------------------------------------------------------------------------------- |
+| `BOOT_INIT`           | `SNAPSHOT_LOADED`            | Saved game is valid                | `GAME_PLAYING`                      | Rehydrates game state, board positions, SAN table, and clocks.                   |
+| `BOOT_INIT`           | `NO_SNAPSHOT`                | No saved session                   | `GAME_IDLE`                         | Sets standard starting position with default settings.                           |
+| `AWAITING_HUMAN_MOVE` | `PIECE_CLICK / DRAG_START`   | Piece belongs to active player     | `PIECE_SELECTED`                    | Highlights source square and target legal destination squares.                   |
+| `PIECE_SELECTED`      | `SQUARE_DROP / CLICK`        | Destination is legal non-promotion | `AWAITING_HUMAN_MOVE` (Turn switch) | Commits move, updates SAN, plays sound FX, triggers AI worker or opponent clock. |
+| `PIECE_SELECTED`      | `SQUARE_DROP / CLICK`        | Destination is 8th rank pawn move  | `PROMOTION_CHOICE`                  | Displays Promotion Picker modal directly over target square.                     |
+| `PROMOTION_CHOICE`    | `SELECT_PIECE(Q/R/B/N)`      | Valid piece choice                 | `AWAITING_HUMAN_MOVE` (Turn switch) | Promotes pawn to chosen piece, closes picker, passes turn.                       |
+| `PROMOTION_CHOICE`    | `CANCEL / ESCAPE`            | None                               | `AWAITING_HUMAN_MOVE`               | Aborts move, restores pawn to source square, closes picker.                      |
+| `GAME_PLAYING`        | `SELECT_HISTORY_PLY(N)`      | `0 <= N < totalPlies`              | `HISTORY_REVIEW`                    | Board renders historical position; clocks pause; live return banner shown.       |
+| `HISTORY_REVIEW`      | `CLICK_LIVE_PLY / PRESS_END` | None                               | `GAME_PLAYING`                      | Board restores current live position; drag-and-drop enabled; clocks resume.      |
+| `GAME_PLAYING`        | `MOVE_RESULTS_CHECKMATE`     | Legal move delivers mate           | `GAME_TERMINATED`                   | Stops clocks, locks board, displays Checkmate modal/banner.                      |
+| `GAME_PLAYING`        | `MOVE_RESULTS_DRAW`          | Stalemate / 50-move / 3-fold       | `GAME_TERMINATED`                   | Stops clocks, locks board, displays Draw notification.                           |
+| `GAME_PLAYING`        | `CLICK_RESIGN`               | User confirms in prompt            | `GAME_TERMINATED`                   | Concedes match, sets winner to opponent, logs result to history.                 |
+| `ANY_STATE`           | `OPEN_MODAL(TYPE)`           | None                               | `MODAL_LAYER(TYPE)`                 | Dims background, freezes board interactions, traps keyboard focus.               |
+| `MODAL_LAYER`         | `CLOSE_MODAL / ESCAPE`       | None                               | `PREVIOUS_STATE`                    | Unmounts modal, returns focus to previous active UI component.                   |
+| `GAME_TERMINATED`     | `CLICK_REMATCH`              | Same players/settings              | `GAME_PLAYING`                      | Inverts player colors (if chosen), resets board and clocks to new game.          |

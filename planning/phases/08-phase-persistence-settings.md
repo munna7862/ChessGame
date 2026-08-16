@@ -13,30 +13,30 @@ losing state.
 
 ### Persistence
 
--   Current game recovery
--   Settings
--   PGN export
--   PGN import
--   FEN copy
--   FEN load
--   Versioned local storage/data
+- Current game recovery
+- Settings
+- PGN export
+- PGN import
+- FEN copy
+- FEN load
+- Versioned local storage/data
 
 ### Settings
 
--   Board theme
--   Piece set
--   Animation
--   Coordinates
--   Sound
--   Move highlighting
--   Auto queen
--   Engine difficulty
--   Reduced motion
--   Accessibility options
+- Board theme
+- Piece set
+- Animation
+- Coordinates
+- Sound
+- Move highlighting
+- Auto queen
+- Engine difficulty
+- Reduced motion
+- Accessibility options
 
 ## Persistence architecture
 
-``` text
+```text
 Application
    |
 Persistence Service
@@ -52,7 +52,7 @@ Do not scatter persistence calls throughout components.
 
 Persist:
 
-``` ts
+```ts
 interface PersistedState {
   version: number;
   settings: Settings;
@@ -68,17 +68,17 @@ Treat FEN and PGN as untrusted input.
 
 Validate:
 
--   syntax
--   legal position
--   move sequence
--   unexpected size
--   malformed metadata
+- syntax
+- legal position
+- move sequence
+- unexpected size
+- malformed metadata
 
 ## Recovery
 
 If the app closes during a game:
 
-``` text
+```text
 Launch
  ↓
 Detect recoverable game
@@ -88,24 +88,24 @@ Detect recoverable game
 
 ## Testing
 
--   settings save/load
--   version migration
--   corrupted persistence
--   PGN export/import
--   FEN export/import
--   invalid FEN
--   malformed PGN
--   interrupted write/recovery behavior
+- settings save/load
+- version migration
+- corrupted persistence
+- PGN export/import
+- FEN export/import
+- invalid FEN
+- malformed PGN
+- interrupted write/recovery behavior
 
 ## Acceptance criteria
 
--   Preferences survive restart.
--   Active game recovery works.
--   PGN round-trip works.
--   FEN round-trip works.
--   Invalid imports fail safely.
--   Data format is versioned.
--   Persistence is isolated from UI.
+- Preferences survive restart.
+- Active game recovery works.
+- PGN round-trip works.
+- FEN round-trip works.
+- Invalid imports fail safely.
+- Data format is versioned.
+- Persistence is isolated from UI.
 
 ## Exit criteria
 
@@ -114,13 +114,13 @@ expected state reliably.
 
 ## Sprint decomposition candidates
 
--   Persistence abstraction
--   Settings model
--   Settings UI
--   Local game recovery
--   PGN export
--   PGN import
--   FEN workflows
--   Validation
--   Migration
--   Corruption handling
+- Persistence abstraction
+- Settings model
+- Settings UI
+- Local game recovery
+- PGN export
+- PGN import
+- FEN workflows
+- Validation
+- Migration
+- Corruption handling

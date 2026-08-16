@@ -9,6 +9,7 @@
 ## 1. Executive Summary & Architectural Principles
 
 ChessForge is architected as a local-first, zero-cost, high-performance Windows desktop chess application. The architecture prioritizes:
+
 1. **FIDE Correctness & Domain Purity:** The pure chess domain is independent of any UI framework, rendering layer, or desktop runtime.
 2. **Decoupled Layering:** Strict unidirectional dependency flow:
    $$\text{Presentation (UI)} \longrightarrow \text{Application Service} \longrightarrow \text{Domain} \longrightarrow \text{Chess Library Adapter}$$
@@ -79,6 +80,7 @@ graph TD
 ## 2. Layer Definitions & Responsibilities
 
 ### 2.1 Presentation Layer (`src/presentation/` or `src/ui/`)
+
 - **Role:** Pure projection and user interaction layer.
 - **Technologies:** React 19, TypeScript, Vanilla CSS (Design Tokens), Lucide Icons.
 - **Responsibilities:**
@@ -92,6 +94,7 @@ graph TD
   - **No direct Tauri IPC:** The UI invokes application services, which call typed infrastructure adapters.
 
 ### 2.2 Application Service Layer (`src/application/`)
+
 - **Role:** Orchestrates workflows, coordinates asynchronous operations, and translates domain events into UI state updates.
 - **Responsibilities:**
   - `GameCoordinator`: Handles user move intent -> calls domain validation -> updates session -> triggers engine evaluation if AI is active.
@@ -100,6 +103,7 @@ graph TD
   - `ClockCoordinator`: Manages deterministic high-resolution game clocks with active side countdowns and increment application.
 
 ### 2.3 Pure Chess Domain Layer (`src/domain/`)
+
 - **Role:** The immutable, authoritative core of chess logic, invariants, and state management.
 - **Characteristics:** 100% pure TypeScript. Zero dependencies on React, Tauri, DOM, browser globals, or Node APIs. Fully portable and runnable in unit tests or WebWorkers.
 - **Responsibilities:**
@@ -111,6 +115,7 @@ graph TD
   - **Clock Domain:** Time control rules, Fischer increments, delay timing, timeout detection.
 
 ### 2.4 Infrastructure & Engine Layer (`src/infrastructure/`)
+
 - **Role:** Implements external boundary adapters, WebWorker bridges, and Tauri IPC clients.
 - **Components:**
   - `StockfishWorkerBridge`: Instantiates the Stockfish WASM WebWorker, manages typed UCI messaging (`uci`, `isready`, `ucinewgame`, `position fen <FEN>`, `go depth <N> / movetime <MS>`, `stop`), maps engine output (`info depth <D> score cp/mate <V> pv <moves>`, `bestmove <LAN>`) into typed events.
@@ -118,6 +123,7 @@ graph TD
   - `TauriNativeBridge`: Typed wrapper around `@tauri-apps/api/core` for OS dialogs, window controls, and file access.
 
 ### 2.5 Desktop Platform Layer (`src-tauri/`)
+
 - **Role:** Native Windows desktop runtime using Rust and Tauri v2.
 - **Responsibilities:**
   - Native window creation, hardware acceleration, min/max bounds, custom title bar controls.
@@ -162,6 +168,7 @@ sequenceDiagram
 ```
 
 ### 3.1 Stockfish WASM WebWorker Protocol & Concurrency
+
 - **Sandboxing:** Stockfish WASM is loaded inside a dedicated browser `Worker`. It has zero access to DOM, localStorage, or Tauri APIs.
 - **CPU & Memory Guardrails:**
   - **Thread Limit:** Configured via `setoption name Threads value 1` (default) up to `Math.max(1, navigator.hardwareConcurrency - 1)`.
@@ -173,6 +180,7 @@ sequenceDiagram
   3. Any incoming `bestmove` or `info` bearing an older `searchToken` is immediately dropped.
 
 ### 3.2 Tauri v2 IPC Safety & Permission Scopes
+
 - **Least Privilege Principle:** Tauri capabilities (`src-tauri/capabilities/default.json`) grant access only to:
   - `dialog:allow-open` (filter: `*.pgn`, `*.fen`)
   - `dialog:allow-save` (filter: `*.pgn`, `*.fen`)
@@ -186,12 +194,12 @@ sequenceDiagram
 
 To prevent dual-state divergence and synchronization bugs, state is strictly classified:
 
-| State Category | Authoritative Owner | Lifecycle | Description |
-| :--- | :--- | :--- | :--- |
-| **Domain State** | `GameSession` (Domain) | Active Game | Board matrix, active player turn, move history with SAN/LAN, castling rights, halfmove clock, game status (`ongoing`, `checkmate`, `stalemate`, `draw_50_moves`, `draw_repetition`, `draw_insufficient`, `resigned`, `timeout`), clocks. |
-| **Persistence State** | File / Local Storage | Durable Snapshot | Versioned JSON snapshot containing initial FEN, move history SAN list, player profiles, clock settings, and application preferences. |
-| **Engine State** | `EngineCoordinator` | Ephemeral / Active Search | Current search depth, centipawn/mate score, principal variation (PV), search token, worker readiness. |
-| **UI State** | React Component State | Transient | Selected square, drag coordinates, animation progress, active modal visibility, hovered square highlight. |
+| State Category        | Authoritative Owner    | Lifecycle                 | Description                                                                                                                                                                                                                              |
+| :-------------------- | :--------------------- | :------------------------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Domain State**      | `GameSession` (Domain) | Active Game               | Board matrix, active player turn, move history with SAN/LAN, castling rights, halfmove clock, game status (`ongoing`, `checkmate`, `stalemate`, `draw_50_moves`, `draw_repetition`, `draw_insufficient`, `resigned`, `timeout`), clocks. |
+| **Persistence State** | File / Local Storage   | Durable Snapshot          | Versioned JSON snapshot containing initial FEN, move history SAN list, player profiles, clock settings, and application preferences.                                                                                                     |
+| **Engine State**      | `EngineCoordinator`    | Ephemeral / Active Search | Current search depth, centipawn/mate score, principal variation (PV), search token, worker readiness.                                                                                                                                    |
+| **UI State**          | React Component State  | Transient                 | Selected square, drag coordinates, animation progress, active modal visibility, hovered square highlight.                                                                                                                                |
 
 ```mermaid
 classDiagram
@@ -276,18 +284,24 @@ graph LR
 ```
 
 ### 5.1 Type-Safe Error Contract
+
 ```typescript
 export type DomainError =
-  | { type: 'ILLEGAL_MOVE'; from: string; to: string; reason: 'in_check' | 'piece_pinned' | 'invalid_path' | 'not_your_turn' }
-  | { type: 'INVALID_FEN'; rawFen: string; reason: string }
-  | { type: 'INVALID_PGN'; rawPgn: string; line?: number; reason: string }
-  | { type: 'GAME_ALREADY_OVER'; status: string };
+  | {
+      type: "ILLEGAL_MOVE";
+      from: string;
+      to: string;
+      reason: "in_check" | "piece_pinned" | "invalid_path" | "not_your_turn";
+    }
+  | { type: "INVALID_FEN"; rawFen: string; reason: string }
+  | { type: "INVALID_PGN"; rawPgn: string; line?: number; reason: string }
+  | { type: "GAME_ALREADY_OVER"; status: string };
 
 export type InfrastructureError =
-  | { type: 'ENGINE_CRASH'; message: string; recoverable: boolean }
-  | { type: 'ENGINE_TIMEOUT'; depth: number; elapsedMs: number }
-  | { type: 'FILE_IO_ERROR'; path?: string; message: string }
-  | { type: 'CORRUPTED_SNAPSHOT'; schemaErrors: string[] };
+  | { type: "ENGINE_CRASH"; message: string; recoverable: boolean }
+  | { type: "ENGINE_TIMEOUT"; depth: number; elapsedMs: number }
+  | { type: "FILE_IO_ERROR"; path?: string; message: string }
+  | { type: "CORRUPTED_SNAPSHOT"; schemaErrors: string[] };
 
 export type AppError = DomainError | InfrastructureError;
 
@@ -312,6 +326,7 @@ Presentation Layer  ──>  Application Layer  ──>  Domain Layer
 ```
 
 ### Strict Architectural Invariants:
+
 1. **Rule 1:** `Domain` depends on NOTHING. Zero imports from `src/ui`, `src/application`, `src/infrastructure`, `react`, `@tauri-apps`.
 2. **Rule 2:** `Application` depends ONLY on `Domain` and `Infrastructure interfaces (Ports)`.
 3. **Rule 3:** `Presentation` depends ONLY on `Application` and UI-specific utility libraries.
@@ -378,6 +393,7 @@ c:\Workspace\ChessGame\
 ## 8. Extensibility & Future-Proofing (Local-First vs Online)
 
 While ChessForge v1 is strictly a local Windows desktop application, the architecture is designed so that future enhancements (such as online game synchronization or cloud engine analysis) require **zero changes to the Pure Chess Domain**:
+
 - **Pluggable Engine Port:** `ChessEnginePort` can be implemented by `StockfishWasmAdapter` (v1 default) or `RemoteUciEngineAdapter` (future).
 - **Pluggable Session Port:** `GameSessionPort` can be bound to local human players, local AI, or a future `WebSocketPeerSessionAdapter`.
 - **Portable Chess Domain:** Because the domain has zero UI or platform coupling, it can be executed in WebWorkers, Node microservices, or headless testing scripts without refactoring.

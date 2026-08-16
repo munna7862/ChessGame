@@ -24,20 +24,20 @@ Commit
 
 ## Sprint counts
 
-| Phase | Sprint count |
-|---|---:|
-| 01 Product & Architecture | 5 |
-| 02 Project Bootstrap | 5 |
-| 03 Chess Domain | 7 |
-| 04 Board UI | 6 |
-| 05 Game System | 6 |
-| 06 Stockfish AI | 6 |
-| 07 Clocks & Game Modes | 4 |
-| 08 Persistence & Settings | 6 |
-| 09 UX & Accessibility | 6 |
-| 10 Quality Engineering | 7 |
-| 11 Windows Release | 6 |
-| **Total** | **64** |
+| Phase                     | Sprint count |
+| ------------------------- | -----------: |
+| 01 Product & Architecture |            5 |
+| 02 Project Bootstrap      |            5 |
+| 03 Chess Domain           |            7 |
+| 04 Board UI               |            6 |
+| 05 Game System            |            6 |
+| 06 Stockfish AI           |            6 |
+| 07 Clocks & Game Modes    |            4 |
+| 08 Persistence & Settings |            6 |
+| 09 UX & Accessibility     |            6 |
+| 10 Quality Engineering    |            7 |
+| 11 Windows Release        |            6 |
+| **Total**                 |       **64** |
 
 ## How to use
 

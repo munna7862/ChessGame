@@ -12,23 +12,23 @@ legal chess games independently of React.
 
 ## Scope
 
--   Board/game state
--   Legal moves
--   Move execution
--   Undo
--   Turn handling
--   Check
--   Checkmate
--   Stalemate
--   Draw conditions
--   Castling
--   En passant
--   Promotion
--   SAN
--   FEN
--   PGN
--   Game status
--   Domain errors
+- Board/game state
+- Legal moves
+- Move execution
+- Undo
+- Turn handling
+- Check
+- Checkmate
+- Stalemate
+- Draw conditions
+- Castling
+- En passant
+- Promotion
+- SAN
+- FEN
+- PGN
+- Game status
+- Domain errors
 
 ## Core rule
 
@@ -39,7 +39,7 @@ legal.
 
 ## Domain boundaries
 
-``` text
+```text
 React
   |
 Game Application Service
@@ -54,7 +54,7 @@ third-party chess library.
 
 ## Suggested contracts
 
-``` ts
+```ts
 interface ChessGame {
   getPosition(): Position;
   getLegalMoves(square?: Square): Move[];
@@ -74,7 +74,7 @@ Keep the real implementation flexible.
 
 Minimum rule matrix:
 
-``` text
+```text
 Pawn movement
 Pawn capture
 Double pawn move
@@ -101,12 +101,12 @@ PGN
 
 Add invariants and property-based tests where useful:
 
--   Both kings remain represented.
--   Turn changes correctly.
--   Legal move results reconstruct the expected position.
--   FEN round-trip preserves position.
--   PGN replay reconstructs the final position.
--   Illegal moves never mutate state.
+- Both kings remain represented.
+- Turn changes correctly.
+- Legal move results reconstruct the expected position.
+- FEN round-trip preserves position.
+- PGN replay reconstructs the final position.
+- Illegal moves never mutate state.
 
 Use known chess positions for regression testing.
 
@@ -128,14 +128,14 @@ Do not ask the agent to invent a chess engine.
 
 ## Acceptance criteria
 
--   All supported chess rules work.
--   Illegal moves are rejected.
--   Game state transitions are deterministic.
--   FEN import/export works.
--   PGN import/export works.
--   Domain tests pass.
--   Domain package can run without React.
--   Error handling is defined.
+- All supported chess rules work.
+- Illegal moves are rejected.
+- Game state transitions are deterministic.
+- FEN import/export works.
+- PGN import/export works.
+- Domain tests pass.
+- Domain package can run without React.
+- Error handling is defined.
 
 ## Exit criteria
 
@@ -144,14 +144,14 @@ without any UI.
 
 ## Sprint decomposition candidates
 
--   Domain types
--   Chess library adapter
--   Move execution
--   Special moves
--   Game status
--   FEN
--   SAN
--   PGN
--   Error model
--   Rule regression suite
--   Property testing
+- Domain types
+- Chess library adapter
+- Move execution
+- Special moves
+- Game status
+- FEN
+- SAN
+- PGN
+- Error model
+- Rule regression suite
+- Property testing

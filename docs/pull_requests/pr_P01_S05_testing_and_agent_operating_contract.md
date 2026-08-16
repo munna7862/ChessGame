@@ -5,6 +5,7 @@
 This Pull Request establishes the official Testing Strategy and Multi-Agent Operating Contract for **ChessForge**, defining how human developers, AI agents (Antigravity), and CI pipelines collaborate throughout the project lifecycle.
 
 ### Key Deliverables & Specifications
+
 1. **Testing Strategy & Pyramid Architecture (`docs/testing-strategy.md`)**:
    - 6-tier test pyramid: Tier 1 (Vitest pure chess domain unit tests), Tier 2 (fast-check generative property-based invariant testing), Tier 3 (WebWorker Stockfish UCI engine integration), Tier 4 (React Testing Library UI component & gesture tests), Tier 5 (Playwright desktop E2E playout automation), Tier 6 (Tauri capability & security schema audits).
    - Core mathematical chess invariants specification (King parity, legal move safety, board-history parity, FEN/PGN serialization round-trip, move reversibility, terminal state immutability, stale search token isolation).

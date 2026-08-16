@@ -20,7 +20,8 @@ describe("Test Harness Property-Based Invariant Checks (fast-check)", () => {
   });
 
   it("verifies string serialization idempotency for FEN baseline strings", () => {
-    const initialFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    const initialFen =
+      "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     fc.assert(
       fc.property(fc.constant(initialFen), (fen) => {
         const parts = fen.split(" ");

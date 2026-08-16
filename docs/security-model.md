@@ -4,7 +4,7 @@
 **Phase:** Phase 01 · Sprint 04  
 **Author:** Security & Desktop Safety Officer, Dev Architect  
 **Classification:** Security Architecture Specification  
-**Status:** Approved for Implementation  
+**Status:** Approved for Implementation
 
 ---
 
@@ -13,6 +13,7 @@
 ChessForge is a **local-first Windows desktop application** built with Tauri v2, Rust, React, and Stockfish WASM. Because ChessForge executes natively on Windows 10/11 with local filesystem and hardware access, security cannot rely on generic web application assumptions.
 
 This document establishes the **authoritative desktop security model** for ChessForge, enforcing the following core security principles:
+
 1. **Principle of Least Privilege:** Grant only the exact native operating system permissions necessary to perform user-initiated chess operations.
 2. **Untrusted External Data Ingestion:** Treat all imported files (PGN, FEN, JSON configurations), clipboard inputs, and engine outputs as untrusted and potentially malicious.
 3. **Strict Sandboxing & Process Isolation:** Stockfish AI evaluation executes strictly inside isolated WebWorkers without access to DOM, Tauri IPC, or operating system bridges.
@@ -29,19 +30,19 @@ graph TD
             Clip_Guard["Clipboard Manager\n(Scoped Text-Only)"]
             Native_Store["Local JSON Store\n(Atomic Writes)"]
         end
-        
+
         subgraph Webview ["Sandboxed WebView2 Process"]
             subgraph Presentation ["Presentation Layer (React UI)"]
                 UI["UI Components & Board Renderer"]
                 Zod_Val["Boundary Schema Validator (Zod)"]
             end
-            
+
             subgraph Engine_Worker ["Stockfish WASM WebWorker"]
                 SF_Engine["Stockfish Engine (WASM)"]
                 UCI_Bridge["Typed UCI Bridge (MessagePort)"]
             end
         end
-        
+
         Disk_AppDir[("$APPDATA/ChessForge/")]
         Disk_UserExport[("User Selected Export File")]
     end
@@ -50,13 +51,13 @@ graph TD
     IPC_Router --> FS_Guard
     IPC_Router --> Clip_Guard
     IPC_Router --> Native_Store
-    
+
     FS_Guard --> Disk_AppDir
     FS_Guard --> Disk_UserExport
-    
+
     UI -->|postMessage (Typed UCI)| UCI_Bridge
     UCI_Bridge --> SF_Engine
-    
+
     style Host_OS fill:#0f172a,stroke:#334155,stroke-width:2px,color:#f8fafc
     style Tauri_Core fill:#1e293b,stroke:#475569,stroke-width:1px,color:#f8fafc
     style Webview fill:#1e293b,stroke:#475569,stroke-width:1px,color:#f8fafc
@@ -72,14 +73,14 @@ Tauri v2 introduces a granular, capability-based security model configured throu
 
 ### 2.1 Approved Native Capabilities Matrix
 
-| Capability / Plugin | Specific Permission ID | Architectural Justification | Scope / Constraints |
-| :--- | :--- | :--- | :--- |
-| **Core Base** | `core:default` | Fundamental Tauri runtime event routing and lifecycle management. | Standard window lifecycle and minimal runtime bindings. |
-| **Window Controls** | `core:window:allow-minimize`<br>`core:window:allow-maximize`<br>`core:window:allow-close`<br>`core:window:allow-toggle-maximize` | Custom native titlebar and window control interactions. | Scoped strictly to the main application window (`main`). |
-| **File Dialogs** | `dialog:allow-open`<br>`dialog:allow-save` | User-initiated PGN/FEN file import and PGN export workflows. | Modal OS dialogs only. Returns chosen file paths back to frontend. |
-| **Clipboard** | `clipboard-manager:allow-read-text`<br>`clipboard-manager:allow-write-text` | Copy FEN/PGN to clipboard; paste FEN/PGN into board setup/import. | Text-only clipboard operations. Binary/file clipboard access is blocked. |
-| **Scoped Store** | `store:allow-get`<br>`store:allow-set`<br>`store:allow-save` | Persisting user preferences (themes, piece sets, engine threads, sound). | Scoped strictly to `settings.json` within `$APPDATA/ChessForge/`. |
-| **Scoped FS** | `fs:allow-read-text-file`<br>`fs:allow-write-text-file` | Reading/writing game sessions and atomic recovery snapshots. | Scoped strictly to `$APPDATA/ChessForge/*` and dialog-approved paths. |
+| Capability / Plugin | Specific Permission ID                                                                                                           | Architectural Justification                                              | Scope / Constraints                                                      |
+| :------------------ | :------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------- | :----------------------------------------------------------------------- |
+| **Core Base**       | `core:default`                                                                                                                   | Fundamental Tauri runtime event routing and lifecycle management.        | Standard window lifecycle and minimal runtime bindings.                  |
+| **Window Controls** | `core:window:allow-minimize`<br>`core:window:allow-maximize`<br>`core:window:allow-close`<br>`core:window:allow-toggle-maximize` | Custom native titlebar and window control interactions.                  | Scoped strictly to the main application window (`main`).                 |
+| **File Dialogs**    | `dialog:allow-open`<br>`dialog:allow-save`                                                                                       | User-initiated PGN/FEN file import and PGN export workflows.             | Modal OS dialogs only. Returns chosen file paths back to frontend.       |
+| **Clipboard**       | `clipboard-manager:allow-read-text`<br>`clipboard-manager:allow-write-text`                                                      | Copy FEN/PGN to clipboard; paste FEN/PGN into board setup/import.        | Text-only clipboard operations. Binary/file clipboard access is blocked. |
+| **Scoped Store**    | `store:allow-get`<br>`store:allow-set`<br>`store:allow-save`                                                                     | Persisting user preferences (themes, piece sets, engine threads, sound). | Scoped strictly to `settings.json` within `$APPDATA/ChessForge/`.        |
+| **Scoped FS**       | `fs:allow-read-text-file`<br>`fs:allow-write-text-file`                                                                          | Reading/writing game sessions and atomic recovery snapshots.             | Scoped strictly to `$APPDATA/ChessForge/*` and dialog-approved paths.    |
 
 ### 2.2 Tauri v2 Capability Manifest (`src-tauri/capabilities/default.json`)
 
@@ -106,15 +107,11 @@ The capability manifest enforces exact permission identifiers:
     "store:allow-save",
     {
       "identifier": "fs:allow-read-text-file",
-      "allow": [
-        { "path": "$APPDATA/ChessForge/**" }
-      ]
+      "allow": [{ "path": "$APPDATA/ChessForge/**" }]
     },
     {
       "identifier": "fs:allow-write-text-file",
-      "allow": [
-        { "path": "$APPDATA/ChessForge/**" }
-      ]
+      "allow": [{ "path": "$APPDATA/ChessForge/**" }]
     }
   ]
 }
@@ -126,14 +123,14 @@ The capability manifest enforces exact permission identifiers:
 
 To eliminate dangerous desktop attack surfaces, the following capabilities are **explicitly prohibited** in ChessForge v1. Attempting to introduce any of these permissions will trigger a blocking review rejection during the Security Audit gate.
 
-| Prohibited Capability | Reason for Prohibition | Enforced Guardrail |
-| :--- | :--- | :--- |
-| **`shell:execute` / `shell:spawn`** | Arbitrary OS command execution allows Remote Code Execution (RCE) if input is tainted. | The `tauri-plugin-shell` execution capabilities are completely omitted from `Cargo.toml` and capabilities manifests. |
-| **`shell:open` (Arbitrary Protocols)** | Launching arbitrary URLs or executable protocols (e.g. `file://`, `powershell://`) risks host compromise. | Protocol handling is omitted. No arbitrary URL launching is enabled. |
-| **Unscoped Filesystem (`fs:default`)** | Allows unrestricted reading/writing across the entire user drive (`C:\`, `C:\Windows`). | Scoped strictly to `$APPDATA/ChessForge/**`. Path traversal checks enforced in Rust. |
-| **Network Client / Server (`http:*`, Raw Sockets)** | ChessForge is a 100% offline local application. Network listeners or outbound HTTP clients introduce data exfiltration and MITM risks. | No `tauri-plugin-http` or network crate bundled in release binaries. Outbound connections blocked by CSP. |
-| **Dynamic Code Execution (`eval`, `Function`)** | Ingested PGN/FEN files or malicious payloads could execute arbitrary scripts. | Disabled by strict Content Security Policy (`script-src 'self' 'wasm-unsafe-eval'`). |
-| **Background Daemons / Services** | ChessForge runs strictly while the window is open. No background persistent daemons or system tray autostart. | Single desktop window lifecycle managed by Tauri. |
+| Prohibited Capability                               | Reason for Prohibition                                                                                                                 | Enforced Guardrail                                                                                                   |
+| :-------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------- |
+| **`shell:execute` / `shell:spawn`**                 | Arbitrary OS command execution allows Remote Code Execution (RCE) if input is tainted.                                                 | The `tauri-plugin-shell` execution capabilities are completely omitted from `Cargo.toml` and capabilities manifests. |
+| **`shell:open` (Arbitrary Protocols)**              | Launching arbitrary URLs or executable protocols (e.g. `file://`, `powershell://`) risks host compromise.                              | Protocol handling is omitted. No arbitrary URL launching is enabled.                                                 |
+| **Unscoped Filesystem (`fs:default`)**              | Allows unrestricted reading/writing across the entire user drive (`C:\`, `C:\Windows`).                                                | Scoped strictly to `$APPDATA/ChessForge/**`. Path traversal checks enforced in Rust.                                 |
+| **Network Client / Server (`http:*`, Raw Sockets)** | ChessForge is a 100% offline local application. Network listeners or outbound HTTP clients introduce data exfiltration and MITM risks. | No `tauri-plugin-http` or network crate bundled in release binaries. Outbound connections blocked by CSP.            |
+| **Dynamic Code Execution (`eval`, `Function`)**     | Ingested PGN/FEN files or malicious payloads could execute arbitrary scripts.                                                          | Disabled by strict Content Security Policy (`script-src 'self' 'wasm-unsafe-eval'`).                                 |
+| **Background Daemons / Services**                   | ChessForge runs strictly while the window is open. No background persistent daemons or system tray autostart.                          | Single desktop window lifecycle managed by Tauri.                                                                    |
 
 ---
 
@@ -209,14 +206,14 @@ ChessForge ingests three types of external data: PGN files, FEN strings, and JSO
 
 ### 6.1 Attack Vectors & Mitigations Matrix
 
-| Ingestion Source | Potential Attack Vector | Defensive Mitigation |
-| :--- | :--- | :--- |
-| **PGN Files** | **Denial of Service (OOM):** Oversized PGN files (e.g. 500MB) causing browser memory crashes. | Enforce strict file size cap of **10MB** before loading into memory. Reject files exceeding limit with `ParsingError.FileTooLarge`. |
-| **PGN Files** | **Stack Overflow / ReDoS:** Deeply nested variations (`(((...)))`) or catastrophic regex backtracking. | Parser enforces maximum recursion depth limit of **32 levels** for recursive variations. Regex-free streaming lexer. |
-| **PGN Headers** | **Cross-Site Scripting (XSS):** Malicious HTML/JS injected into PGN metadata headers (e.g. `[Event "<script>..."]`). | PGN metadata headers are parsed as plain UTF-8 text, sanitized, and rendered strictly through React DOM text nodes (never `dangerouslySetInnerHTML`). |
-| **FEN Strings** | **Illegal Board States:** Corrupted FEN strings with missing kings, overlapping pieces, or invalid en passant targets. | Pure Chess Domain validates complete FIDE board invariants (exactly 1 king per side, valid active color, valid rank/file counts) before accepting position. |
-| **JSON Settings** | **Schema Poisoning / Injection:** Modified JSON setting files containing unexpected properties or out-of-bounds numbers. | Validated against strict Zod schema on frontend and Serde struct on backend. Invalid files trigger graceful fallback to defaults without crash. |
-| **Stockfish WASM** | **Desync / Corrupted Engine Moves:** Buggy or spoofed engine move output (e.g. illegal moves, non-UCI formatting). | Engine proposed moves are treated as untrusted suggestions and validated by the Pure Chess Domain before committing to state. |
+| Ingestion Source   | Potential Attack Vector                                                                                                  | Defensive Mitigation                                                                                                                                        |
+| :----------------- | :----------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **PGN Files**      | **Denial of Service (OOM):** Oversized PGN files (e.g. 500MB) causing browser memory crashes.                            | Enforce strict file size cap of **10MB** before loading into memory. Reject files exceeding limit with `ParsingError.FileTooLarge`.                         |
+| **PGN Files**      | **Stack Overflow / ReDoS:** Deeply nested variations (`(((...)))`) or catastrophic regex backtracking.                   | Parser enforces maximum recursion depth limit of **32 levels** for recursive variations. Regex-free streaming lexer.                                        |
+| **PGN Headers**    | **Cross-Site Scripting (XSS):** Malicious HTML/JS injected into PGN metadata headers (e.g. `[Event "<script>..."]`).     | PGN metadata headers are parsed as plain UTF-8 text, sanitized, and rendered strictly through React DOM text nodes (never `dangerouslySetInnerHTML`).       |
+| **FEN Strings**    | **Illegal Board States:** Corrupted FEN strings with missing kings, overlapping pieces, or invalid en passant targets.   | Pure Chess Domain validates complete FIDE board invariants (exactly 1 king per side, valid active color, valid rank/file counts) before accepting position. |
+| **JSON Settings**  | **Schema Poisoning / Injection:** Modified JSON setting files containing unexpected properties or out-of-bounds numbers. | Validated against strict Zod schema on frontend and Serde struct on backend. Invalid files trigger graceful fallback to defaults without crash.             |
+| **Stockfish WASM** | **Desync / Corrupted Engine Moves:** Buggy or spoofed engine move output (e.g. illegal moves, non-UCI formatting).       | Engine proposed moves are treated as untrusted suggestions and validated by the Pure Chess Domain before committing to state.                               |
 
 ---
 
@@ -225,6 +222,7 @@ ChessForge ingests three types of external data: PGN files, FEN strings, and JSO
 ### 7.1 WebWorker Sandboxing
 
 Stockfish executes in a dedicated WebWorker via WebAssembly:
+
 1. **Isolated Context:** The WebWorker runs in an isolated thread with no access to the DOM (`window`, `document`) or Tauri native IPC APIs (`__TAURI_INTERNALS__`).
 2. **MessagePort Bridge:** Communication is restricted to typed UCI text messages (`position`, `go`, `bestmove`, `info`) passed over `postMessage`.
 3. **Resource Throttling:** Concurrency is capped to `navigator.hardwareConcurrency - 1` (default: 1 thread) and Hash memory is capped at 32MB to prevent CPU saturation or host freezing on Windows 10/11.
@@ -286,6 +284,7 @@ frame-ancestors 'none';
 ## 10. Dependency Auditing & Supply Chain Security
 
 To safeguard against software supply chain attacks:
+
 1. **Lockfile Enforcement:** `package-lock.json` and `Cargo.lock` are committed to source control. CI builds use strict lockfile validation (`npm ci` and `cargo build --locked`).
 2. **Automated Vulnerability Scanning:**
    - **Rust Dependencies:** Verified via `cargo audit` in CI pipeline. Builds fail on any critical or high severity advisory.

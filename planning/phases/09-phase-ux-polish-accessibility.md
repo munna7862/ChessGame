@@ -12,19 +12,19 @@ different interaction needs.
 
 ## Scope
 
--   Visual design system
--   Board themes
--   Piece themes
--   Animations
--   Sound
--   Reduced motion
--   Keyboard accessibility
--   Focus management
--   High contrast
--   Error UX
--   Loading states
--   Empty states
--   Responsive desktop layouts
+- Visual design system
+- Board themes
+- Piece themes
+- Animations
+- Sound
+- Reduced motion
+- Keyboard accessibility
+- Focus management
+- High contrast
+- Error UX
+- Loading states
+- Empty states
+- Responsive desktop layouts
 
 ## Visual principles
 
@@ -32,30 +32,30 @@ The board should dominate the experience.
 
 Avoid:
 
--   excessive panels
--   unnecessary gradients
--   noisy animations
--   ambiguous buttons
--   tiny controls
+- excessive panels
+- unnecessary gradients
+- noisy animations
+- ambiguous buttons
+- tiny controls
 
 Prioritize:
 
--   board clarity
--   turn visibility
--   clock visibility
--   move history
--   obvious game controls
+- board clarity
+- turn visibility
+- clock visibility
+- move history
+- obvious game controls
 
 ## Accessibility
 
 Support:
 
--   keyboard navigation
--   visible focus
--   meaningful labels
--   high contrast
--   reduced motion
--   non-color-only state indicators
+- keyboard navigation
+- visible focus
+- meaningful labels
+- high contrast
+- reduced motion
+- non-color-only state indicators
 
 Important states such as check should not rely only on color.
 
@@ -63,11 +63,11 @@ Important states such as check should not rely only on color.
 
 Optional:
 
--   move
--   capture
--   check
--   promotion
--   game over
+- move
+- capture
+- check
+- promotion
+- game over
 
 Allow sounds to be disabled.
 
@@ -84,24 +84,24 @@ verification. Store important visual artifacts as review checkpoints.
 
 ## Testing
 
--   keyboard flow
--   focus behavior
--   reduced motion
--   high contrast
--   visual regression for major states
--   sound toggle
--   animation toggle
--   different Windows scaling settings
+- keyboard flow
+- focus behavior
+- reduced motion
+- high contrast
+- visual regression for major states
+- sound toggle
+- animation toggle
+- different Windows scaling settings
 
 ## Acceptance criteria
 
--   UI feels consistent.
--   Major states are visually understandable.
--   Keyboard navigation works for supported controls.
--   Reduced-motion mode works.
--   Sound can be disabled.
--   High-contrast behavior is acceptable.
--   No critical visual defects on supported desktop sizes.
+- UI feels consistent.
+- Major states are visually understandable.
+- Keyboard navigation works for supported controls.
+- Reduced-motion mode works.
+- Sound can be disabled.
+- High-contrast behavior is acceptable.
+- No critical visual defects on supported desktop sizes.
 
 ## Exit criteria
 
@@ -110,13 +110,13 @@ documentation.
 
 ## Sprint decomposition candidates
 
--   Design tokens
--   Board themes
--   Piece themes
--   Animation
--   Audio
--   Accessibility
--   Keyboard support
--   Error states
--   Visual regression
--   UX review
+- Design tokens
+- Board themes
+- Piece themes
+- Animation
+- Audio
+- Accessibility
+- Keyboard support
+- Error states
+- Visual regression
+- UX review
