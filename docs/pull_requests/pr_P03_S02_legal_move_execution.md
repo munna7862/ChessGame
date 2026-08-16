@@ -25,15 +25,15 @@ This pull request implements authoritative move validation, legal move querying,
 
 ## 2. Test Execution & Quality Verification
 
-| Test Category | Command | Result |
-| :--- | :--- | :--- |
-| **Vitest Unit & Property Tests** | `npm test` | **73 / 73 passed (100% green, 0 skips)** |
-| **Playwright E2E Tests** | `npm run test:e2e` | **5 / 5 passed** |
-| **TypeScript Strict Typecheck** | `npm run typecheck` | **0 errors (`strict: true`)** |
-| **ESLint Rules & Standards** | `npm run lint` | **0 errors, 0 warnings** |
-| **Prettier Code Formatting** | `npm run format:check` | **100% clean formatting** |
-| **Vite Production Build** | `npm run build` | **Build successful (`dist/`)** |
-| **Supply Chain & Security Audit**| `npm audit` | **0 vulnerabilities** |
+| Test Category                     | Command                | Result                                   |
+| :-------------------------------- | :--------------------- | :--------------------------------------- |
+| **Vitest Unit & Property Tests**  | `npm test`             | **73 / 73 passed (100% green, 0 skips)** |
+| **Playwright E2E Tests**          | `npm run test:e2e`     | **5 / 5 passed**                         |
+| **TypeScript Strict Typecheck**   | `npm run typecheck`    | **0 errors (`strict: true`)**            |
+| **ESLint Rules & Standards**      | `npm run lint`         | **0 errors, 0 warnings**                 |
+| **Prettier Code Formatting**      | `npm run format:check` | **100% clean formatting**                |
+| **Vite Production Build**         | `npm run build`        | **Build successful (`dist/`)**           |
+| **Supply Chain & Security Audit** | `npm audit`            | **0 vulnerabilities**                    |
 
 ---
 
