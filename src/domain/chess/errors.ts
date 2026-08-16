@@ -12,6 +12,7 @@ export const CHESS_DOMAIN_ERROR_CODES = [
   "PROMOTION_REQUIRED",
   "INVALID_PROMOTION",
   "NO_MOVE_TO_UNDO",
+  "INVALID_COLOR",
 ] as const;
 
 export type ChessDomainErrorCode = (typeof CHESS_DOMAIN_ERROR_CODES)[number];

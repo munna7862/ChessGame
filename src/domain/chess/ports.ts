@@ -1,5 +1,6 @@
 import type { ChessDomainError, Result } from "./errors";
 import type {
+  Color,
   GameStatus,
   Move,
   MoveInput,
@@ -69,6 +70,24 @@ export interface ChessGame {
    * Returns the authoritative game status (active, checkmate, draw reason, etc.).
    */
   getStatus(): GameStatus;
+
+  /**
+   * Records a player's resignation, concluding the game session immediately.
+   * Returns the updated GameStatus or an error if the game is already over.
+   */
+  resign(player: Color): Result<GameStatus, ChessDomainError>;
+
+  /**
+   * Records a player's clock timeout / flag fall, concluding the game session immediately.
+   * Returns the updated GameStatus or an error if the game is already over.
+   */
+  timeout(player: Color): Result<GameStatus, ChessDomainError>;
+
+  /**
+   * Records a mutual draw agreed by both players, concluding the game session.
+   * Returns the updated GameStatus or an error if the game is already over.
+   */
+  agreeDraw(): Result<GameStatus, ChessDomainError>;
 
   /**
    * Returns the sequential list of moves made in this game session.

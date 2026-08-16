@@ -184,36 +184,43 @@ export interface Position {
 /**
  * Possible game outcome states.
  */
-export type GameState =
-  | "active"
-  | "checkmate"
-  | "stalemate"
-  | "draw_fifty_moves"
-  | "draw_threefold_repetition"
-  | "draw_insufficient_material"
-  | "draw_agreement"
-  | "resigned"
-  | "timeout";
+export const GAME_STATES = [
+  "active",
+  "checkmate",
+  "stalemate",
+  "draw_fifty_moves",
+  "draw_threefold_repetition",
+  "draw_insufficient_material",
+  "draw_agreement",
+  "resigned",
+  "timeout",
+] as const;
+export type GameState = (typeof GAME_STATES)[number];
+export const GameStateSchema = z.enum(GAME_STATES);
 
-export type DrawReason =
-  | "fifty_moves"
-  | "threefold_repetition"
-  | "insufficient_material"
-  | "stalemate"
-  | "agreement";
+export const DRAW_REASONS = [
+  "fifty_moves",
+  "threefold_repetition",
+  "insufficient_material",
+  "stalemate",
+  "agreement",
+] as const;
+export type DrawReason = (typeof DRAW_REASONS)[number];
+export const DrawReasonSchema = z.enum(DRAW_REASONS);
 
 /**
- * Authoritative game status.
+ * Authoritative game status schema and interface.
  */
-export interface GameStatus {
-  readonly state: GameState;
-  readonly isOver: boolean;
-  readonly winner: Color | null;
-  readonly isCheck: boolean;
-  readonly inDraw: boolean;
-  readonly drawReason: DrawReason | null;
-  readonly description: string;
-}
+export const GameStatusSchema = z.object({
+  state: GameStateSchema,
+  isOver: z.boolean(),
+  winner: ColorSchema.nullable(),
+  isCheck: z.boolean(),
+  inDraw: z.boolean(),
+  drawReason: DrawReasonSchema.nullable(),
+  description: z.string(),
+});
+export type GameStatus = z.infer<typeof GameStatusSchema>;
 
 /**
  * Coordinate translation helpers.
