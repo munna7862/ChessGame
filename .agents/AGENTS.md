@@ -1,31 +1,31 @@
 # Universal Multi-Agent Agile Development Rules
 
-These rules apply universally to all tasks and projects within this workspace.
+These rules apply universally to all tasks and projects within the **ChessForge** workspace.
 
 ---
 
 ## 1. The Core Engineering & Cost Mandates
-* **Budget & Resource Discipline:** Strictly adhere to the project's defined budget model. Default to zero-cost, open-source, and free-tier infrastructure unless explicitly instructed otherwise.
-* **Hardware & VRAM Guardrails:** When deploying or running on local hardware (e.g., NVIDIA RTX GPUs), enforce strict memory bounds, concurrency limits, and temperature/thermal checks to prevent system degradation or out-of-memory crashes.
+* **Budget & Resource Discipline:** Default to zero-cost, open-source, and free-tier infrastructure (Stockfish WASM, local Rust/Tauri toolchain, GitHub Actions).
+* **Hardware & Desktop Guardrails:** Enforce strict memory bounds, non-blocking UI threads, and CPU throttling controls for AI engine thinking (Stockfish WASM worker concurrency limits) to prevent system degradation or UI freezes on Windows 10/11.
 
 ---
 
 ## 2. Universal Architecture & Code Standards
-* **Decoupled Architecture:** Maintain clean separation between data layers, business logic, model abstractions, and presentation/API layers.
-* **Strict Type Safety:** Absolute zero untyped or loosely typed boundary inputs. Utilize strict type systems (TypeScript `strict: true` or Python `mypy`/`Pydantic`) across all external boundaries, API requests, and model responses.
-* **Centralized Error Handling:** Never leak unformatted raw stack traces or internal infrastructure errors to client interfaces. All API errors must return standardized, human-readable error contracts.
-* **Database & Memory Integrity:** Treat the primary database as the authoritative source of truth. Enforce atomic transactions for multi-step mutations and isolate temporary/vector stores with clear lifecycle statuses.
+* **Decoupled Architecture:** Maintain strict separation between the Chess Domain layer (rules, FEN/PGN, clock state), UI presentation layer (React + Vite), Engine bridge (Stockfish WASM / WebWorker), and Desktop platform layer (Tauri v2 / Rust IPC).
+* **Strict Type Safety:** Absolute zero untyped or loosely typed boundary inputs. Utilize TypeScript in `strict: true` mode (zero `any`) and Rust's strong type system. All boundary inputs (Tauri IPC commands, WebWorker messages, local persistence) must validate against runtime schemas (e.g. Zod in TypeScript, Serde in Rust).
+* **Centralized Error Handling:** Never leak unformatted raw stack traces or internal engine panics to the desktop UI. All IPC and domain operations must return standardized, human-readable error contracts.
+* **State & Persistence Integrity:** Treat the local game state and persistence store as authoritative. Guarantee atomic writes for saved games, settings, and PGN/FEN exports without file corruption during unexpected application close.
 
 ---
 
 ## 3. Virtual Team Personas & Handoff Sequence
 The AI assistant dynamically operates under specialized virtual team personas depending on the active stage of sprint execution:
 - **Scrum Master**: Sprint planning, task breakdown, maintaining `task.md`, workflow handoffs.
-- **SDET Architect**: Test Cases Catalog, unit/integration/E2E test scripting, and Test Automation Quality Gate Review.
-- **Dev Architect & Senior SDE**: Architecture design, production implementation, modular patterns, and Dev Technical Code Acceptance Review.
-- **Security & AI Safety Officer**: OWASP security headers, rate-limiting, tool sandbox permissions, secret scanning, and AI prompt injection shielding.
-- **Product Owner**: Product & UX Acceptance Criteria Review, aesthetic check, functional verification, and release authorization.
-- **DevOps Engineer**: CI/CD workflows, deployment configuration, secret security, Git branching, and GitHub PR creation.
+- **SDET Architect**: Test Cases Catalog, unit/integration/E2E test scripting, property-based chess tests, and Test Automation Quality Gate Review.
+- **Dev Architect & Senior SDE**: Tauri/Rust + React/TypeScript architecture design, production implementation, modular patterns, and Dev Technical Code Acceptance Review.
+- **Security & Desktop Safety Officer**: Tauri IPC capability auditing, CSP enforcement, WebWorker sandboxing, file system isolation, and dependency vulnerability scanning.
+- **Product Owner**: Product & UX Acceptance Criteria Review, aesthetic check, desktop responsiveness, piece animation polish, and release authorization.
+- **DevOps Engineer**: CI/CD workflows, Tauri Windows bundling (NSIS/MSI), GitHub Actions, Git branching, and GitHub PR creation.
 
 ### Multi-Agent Handoff Sequence & Refinement Loop
 ```mermaid
@@ -88,8 +88,8 @@ sequenceDiagram
 ---
 
 ## 5. Strict Sprint Lifecycle Discipline
-* **No Direct Implementation Without a Plan:** Never implement any feature, bug fix, or subsystem without a formal sprint plan (`planning/sprints/sprint_<N>_plan.md`) containing granular user stories and explicit acceptance criteria.
-* **Persona Handoff Sequence:** Execution MUST strictly follow the persona handoff sequence step-by-step: Scrum Master (task breakdown & `task.md`) $\rightarrow$ SDET Architect (Test Cases Catalog) $\rightarrow$ Dev Architect/Senior SDE (implementation & **Dev Technical Code Acceptance Review**) $\rightarrow$ Security Officer (OWASP & Safety Audit) $\rightarrow$ SDET (**Test Automation Quality Gate Review** with 100% green report) $\rightarrow$ Product Owner (**Product & UX Acceptance Criteria Review**) $\rightarrow$ DevOps Engineer (Automated GitHub PR creation via `gh pr create` & link submission).
+* **No Direct Implementation Without a Plan:** Never implement any feature, bug fix, or subsystem without a formal sprint plan (`planning/sprints/P<Phase>-S<Sprint>-<name>.md`) containing granular user stories and explicit acceptance criteria.
+* **Persona Handoff Sequence:** Execution MUST strictly follow the persona handoff sequence step-by-step: Scrum Master (task breakdown & `task.md`) $\rightarrow$ SDET Architect (Test Cases Catalog) $\rightarrow$ Dev Architect/Senior SDE (implementation & **Dev Technical Code Acceptance Review**) $\rightarrow$ Security Officer (Tauri & Safety Audit) $\rightarrow$ SDET (**Test Automation Quality Gate Review** with 100% green report) $\rightarrow$ Product Owner (**Product & UX Acceptance Criteria Review**) $\rightarrow$ DevOps Engineer (Automated GitHub PR creation via `gh pr create` & link submission).
 
 ---
 
