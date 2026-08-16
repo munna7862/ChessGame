@@ -21,7 +21,7 @@ Branch: `feature/p03-s02-legal-move-execution`
 - [x] **SEC-3201**: [Security Officer] Conduct Desktop & Runtime Safety Audit (state immutability, memory leak prevention in move history stacks, untrusted move input sanitization).
 - [x] **SDET-3202**: [SDET Architect] Script comprehensive unit and property-based regression suites (`legalMoves.test.ts`, `moveExecution.test.ts`, `undoHistory.test.ts`), verify typecheck, lint, and conduct Test Automation Quality Gate Review.
 - [x] **PO-3201**: [Product Owner] Conduct Product & Chess Domain Acceptance Criteria Review against Sprint 02 Definition of Done.
-- [x] **DO-3201**: [DevOps Engineer] Author PR documentation (`docs/pull_requests/pr_P03_S02_legal_move_execution.md`), commit atomic changes, push branch to origin, and raise GitHub PR.
+- [x] **DO-3201**: [DevOps Engineer] Author PR documentation (`docs/pull_requests/pr_P03_S02_legal_move_execution.md`), commit atomic changes, push branch to origin, and raise GitHub PR: [PR #14](https://github.com/munna7862/ChessGame/pull/14).
 
 ---
 
