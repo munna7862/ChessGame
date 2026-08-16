@@ -3,7 +3,5 @@
   "identifier": "default",
   "description": "Default capability for ChessForge desktop shell",
   "windows": ["main"],
-  "permissions": [
-    "core:default"
-  ]
+  "permissions": ["core:default"]
 }

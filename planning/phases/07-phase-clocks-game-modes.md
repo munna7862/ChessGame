@@ -11,16 +11,16 @@ inconsistencies.
 
 ## Scope
 
--   Bullet
--   Blitz
--   Rapid
--   Classical
--   Custom
--   Clock service
--   Time controls
--   Timeout
--   AI clock handling
--   Pause/resume policy if supported
+- Bullet
+- Blitz
+- Rapid
+- Classical
+- Custom
+- Clock service
+- Time controls
+- Timeout
+- AI clock handling
+- Pause/resume policy if supported
 
 ## Clock architecture
 
@@ -28,7 +28,7 @@ Do not decrement time based on React render frequency.
 
 Use timestamps:
 
-``` text
+```text
 remaining = configuredTime - elapsedSinceTurnStart
 ```
 
@@ -36,7 +36,7 @@ Persist authoritative clock timestamps.
 
 ## Clock model
 
-``` ts
+```ts
 interface ClockState {
   whiteMs: number;
   blackMs: number;
@@ -50,7 +50,7 @@ interface ClockState {
 
 Example presets:
 
-``` text
+```text
 1 + 0
 2 + 1
 3 + 0
@@ -68,7 +68,7 @@ The exact presets can evolve.
 
 ## Timeout lifecycle
 
-``` text
+```text
 Clock reaches zero
  ↓
 Domain/game controller verifies timeout
@@ -82,15 +82,15 @@ Do not let a visual timer alone decide the winner.
 
 ## Testing
 
--   initial clock
--   turn switch
--   elapsed-time calculation
--   increment
--   timeout
--   AI thinking time
--   reset
--   long-running drift test
--   game-over race
+- initial clock
+- turn switch
+- elapsed-time calculation
+- increment
+- timeout
+- AI thinking time
+- reset
+- long-running drift test
+- game-over race
 
 ## Antigravity strategy
 
@@ -100,14 +100,14 @@ Do not rely on sleeping for several seconds to test time calculations.
 
 ## Acceptance criteria
 
--   Clock remains accurate.
--   Turn switches correctly.
--   Increment is correct.
--   Timeout ends game correctly.
--   AI turns interact correctly with clocks.
--   UI updates smoothly.
--   Reset starts clean clocks.
--   Clock tests are deterministic.
+- Clock remains accurate.
+- Turn switches correctly.
+- Increment is correct.
+- Timeout ends game correctly.
+- AI turns interact correctly with clocks.
+- UI updates smoothly.
+- Reset starts clean clocks.
+- Clock tests are deterministic.
 
 ## Exit criteria
 
@@ -116,12 +116,12 @@ incorrect game-over behavior.
 
 ## Sprint decomposition candidates
 
--   Clock domain
--   Timer service
--   UI clock
--   Presets
--   Custom time control
--   Increment
--   Timeout
--   AI clock integration
--   Deterministic tests
+- Clock domain
+- Timer service
+- UI clock
+- Presets
+- Custom time control
+- Increment
+- Timeout
+- AI clock integration
+- Deterministic tests

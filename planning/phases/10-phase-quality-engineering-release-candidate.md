@@ -12,24 +12,24 @@ robust, performant and secure enough for v1 release.
 
 ## Scope
 
--   Full unit suite
--   Integration suite
--   E2E suite
--   Property-based testing
--   Mutation testing
--   Regression testing
--   Visual testing
--   Performance testing
--   Reliability testing
--   Security review
--   Dependency review
--   Failure recovery
--   Windows environment testing
--   Release-candidate build
+- Full unit suite
+- Integration suite
+- E2E suite
+- Property-based testing
+- Mutation testing
+- Regression testing
+- Visual testing
+- Performance testing
+- Reliability testing
+- Security review
+- Dependency review
+- Failure recovery
+- Windows environment testing
+- Release-candidate build
 
 ## Test pyramid
 
-``` text
+```text
               E2E
              /   \
         Integration
@@ -43,16 +43,16 @@ The chess domain should have the largest and strongest automated suite.
 
 Build a permanent regression corpus for:
 
--   castling
--   en passant
--   promotion
--   pins
--   checks
--   checkmates
--   stalemates
--   repetition
--   fifty-move
--   insufficient material
+- castling
+- en passant
+- promotion
+- pins
+- checks
+- checkmates
+- stalemates
+- repetition
+- fifty-move
+- insufficient material
 
 ## Property testing
 
@@ -64,11 +64,11 @@ Introduce controlled faults and verify the test suite catches them.
 
 Examples:
 
--   disable check validation
--   break castling
--   alter promotion
--   corrupt turn switching
--   ignore en passant
+- disable check validation
+- break castling
+- alter promotion
+- corrupt turn switching
+- ignore en passant
 
 ## E2E critical paths
 
@@ -87,25 +87,25 @@ Examples:
 
 Measure:
 
--   startup
--   board interaction
--   animation
--   engine responsiveness
--   memory over long sessions
--   persistence operations
+- startup
+- board interaction
+- animation
+- engine responsiveness
+- memory over long sessions
+- persistence operations
 
 ## Security review
 
 Review:
 
--   Tauri capabilities
--   file access
--   IPC
--   shell access
--   external process access
--   imported data
--   dependencies
--   update path
+- Tauri capabilities
+- file access
+- IPC
+- shell access
+- external process access
+- imported data
+- dependencies
+- update path
 
 Keep permissions minimal.
 
@@ -113,7 +113,7 @@ Keep permissions minimal.
 
 Create separate review agents:
 
-``` text
+```text
 QA Agent
 Security Agent
 Performance Agent
@@ -126,14 +126,14 @@ Then run a final human release review.
 
 ## Acceptance criteria
 
--   All required automated tests pass.
--   Critical regression suite passes.
--   No unresolved critical/high defects.
--   Performance targets are acceptable.
--   Security review complete.
--   Dependency review complete.
--   Windows release candidate builds.
--   Clean-machine test succeeds.
+- All required automated tests pass.
+- Critical regression suite passes.
+- No unresolved critical/high defects.
+- Performance targets are acceptable.
+- Security review complete.
+- Dependency review complete.
+- Windows release candidate builds.
+- Clean-machine test succeeds.
 
 ## Exit criteria
 
@@ -142,15 +142,15 @@ build the application.
 
 ## Sprint decomposition candidates
 
--   Test inventory
--   Rule regression suite
--   E2E
--   Property testing
--   Mutation testing
--   Visual testing
--   Performance
--   Reliability
--   Security
--   Dependency audit
--   Clean Windows validation
--   Release candidate
+- Test inventory
+- Rule regression suite
+- E2E
+- Property testing
+- Mutation testing
+- Visual testing
+- Performance
+- Reliability
+- Security
+- Dependency audit
+- Clean Windows validation
+- Release candidate

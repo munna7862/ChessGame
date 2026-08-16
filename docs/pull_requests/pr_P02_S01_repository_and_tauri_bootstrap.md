@@ -1,11 +1,13 @@
 # Pull Request: Phase 02 · Sprint 01 - Repository and Tauri Bootstrap
 
 ## Summary & Sprint Goal
+
 Bootstraps the **ChessForge** repository with the minimal Windows desktop shell and frontend application structure conforming to the Phase 01 architecture, testing, and security blueprints.
 
 ---
 
 ## Key Deliverables & Changes
+
 1. **Frontend Application Foundation:**
    - React 19 + TypeScript frontend with Vite bundler.
    - Design tokens and dark-mode styling with radial backdrop in `src/index.css` and `src/App.css`.
@@ -27,6 +29,7 @@ Bootstraps the **ChessForge** repository with the minimal Windows desktop shell 
 ---
 
 ## Verification & Quality Gate Evidence
+
 - **Strict Typecheck:** `npm run typecheck` (`tsc --noEmit`) $\rightarrow$ **0 errors (Pass)**
 - **Test Automation:** `npm run test` (`vitest run`) $\rightarrow$ **6/6 passed (100% Green)**
 - **Production Build:** `npm run build` (`vite build`) $\rightarrow$ **Clean bundle generated in `dist/` in < 1s**
@@ -35,6 +38,7 @@ Bootstraps the **ChessForge** repository with the minimal Windows desktop shell 
 ---
 
 ## Multi-Agent Agile Governance Sign-Offs
+
 - [x] **Scrum Master (SM-2101):** Task breakdown and dependency routing verified.
 - [x] **SDET Architect (SDET-2101 & SDET-2102):** Test cases catalog authored; 100% green test pass verified.
 - [x] **Dev Architect (DEV-2101 - DEV-2106):** Technical implementation and code acceptance verified.

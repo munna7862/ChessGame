@@ -12,35 +12,35 @@ machine, launch it, play chess and uninstall it cleanly.
 
 ## Scope
 
--   Versioning
--   Windows installer
--   Build artifacts
--   Release CI
--   Checksums
--   Release notes
--   Installation testing
--   Upgrade testing
--   Uninstall testing
--   Distribution documentation
--   GitHub Release
+- Versioning
+- Windows installer
+- Build artifacts
+- Release CI
+- Checksums
+- Release notes
+- Installation testing
+- Upgrade testing
+- Uninstall testing
+- Distribution documentation
+- GitHub Release
 
 ## Versioning
 
 Use semantic versioning:
 
-``` text
+```text
 MAJOR.MINOR.PATCH
 ```
 
 Example:
 
-``` text
+```text
 v1.0.0
 ```
 
 ## Release pipeline
 
-``` text
+```text
 Create tag
     ↓
 CI build
@@ -62,7 +62,7 @@ Test:
 
 ### Fresh install
 
-``` text
+```text
 Clean Windows machine
 → installer
 → install
@@ -72,7 +72,7 @@ Clean Windows machine
 
 ### Upgrade
 
-``` text
+```text
 v1.0
 → install v1.1
 → verify settings
@@ -81,7 +81,7 @@ v1.0
 
 ### Uninstall
 
-``` text
+```text
 Uninstall
 → application removed
 → expected user data policy verified
@@ -91,7 +91,7 @@ Uninstall
 
 At minimum:
 
-``` text
+```text
 ChessForge-Setup-x.y.z.exe
 checksums.txt
 release-notes.md
@@ -109,40 +109,40 @@ Use CI secret management.
 
 ### Product
 
--   [ ] Human vs Human
--   [ ] Human vs Computer
--   [ ] All supported chess rules
--   [ ] Clocks
--   [ ] PGN/FEN
--   [ ] Persistence
--   [ ] Settings
--   [ ] Accessibility
+- [ ] Human vs Human
+- [ ] Human vs Computer
+- [ ] All supported chess rules
+- [ ] Clocks
+- [ ] PGN/FEN
+- [ ] Persistence
+- [ ] Settings
+- [ ] Accessibility
 
 ### Engineering
 
--   [ ] Tests pass
--   [ ] Build passes
--   [ ] No critical defects
--   [ ] Security review complete
--   [ ] Dependency review complete
+- [ ] Tests pass
+- [ ] Build passes
+- [ ] No critical defects
+- [ ] Security review complete
+- [ ] Dependency review complete
 
 ### Windows
 
--   [ ] Fresh install
--   [ ] Upgrade
--   [ ] Launch
--   [ ] Save/load
--   [ ] Uninstall
--   [ ] High-DPI test
--   [ ] Windows scaling test
+- [ ] Fresh install
+- [ ] Upgrade
+- [ ] Launch
+- [ ] Save/load
+- [ ] Uninstall
+- [ ] High-DPI test
+- [ ] Windows scaling test
 
 ### Distribution
 
--   [ ] Version tagged
--   [ ] Installer generated
--   [ ] Checksums generated
--   [ ] Release notes written
--   [ ] GitHub release published
+- [ ] Version tagged
+- [ ] Installer generated
+- [ ] Checksums generated
+- [ ] Release notes written
+- [ ] GitHub release published
 
 ## Antigravity strategy
 
@@ -158,13 +158,13 @@ distribution channel.
 
 ## Sprint decomposition candidates
 
--   Versioning
--   Release CI
--   Installer
--   Signing
--   Checksums
--   Clean-machine validation
--   Upgrade validation
--   Uninstall validation
--   Release notes
--   GitHub release
+- Versioning
+- Release CI
+- Installer
+- Signing
+- Checksums
+- Clean-machine validation
+- Upgrade validation
+- Uninstall validation
+- Release notes
+- GitHub release

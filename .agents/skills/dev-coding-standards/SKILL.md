@@ -11,12 +11,12 @@ When writing production code for **ChessForge**, the following standards must be
 
 ### 1. Strict Typing & Boundary Schema Validation
 
-* **Zero Untyped Data (`any` strictly prohibited):**
-  * In TypeScript: Run in `strict: true` mode. The `any` type is strictly forbidden; use `unknown` with explicit type narrowing guards (`typeof`, `instanceof`, or custom type predicates).
-  * Prefer **discriminated unions** for state machines (game states, player turns, move types).
-  * In Rust: Enforce strict type safety, exhaustiveness in `match` expressions, and avoid unchecked `unwrap()` in production code; use structured error handling (`Result<T, AppError>`).
-* **Runtime Schema Validation at Boundaries:**
-  * Validate all data crossing boundaries (Tauri IPC invocations, WebWorker messages, local storage / settings JSON, FEN/PGN string parsing) using **Zod** in TypeScript and **Serde** in Rust:
+- **Zero Untyped Data (`any` strictly prohibited):**
+  - In TypeScript: Run in `strict: true` mode. The `any` type is strictly forbidden; use `unknown` with explicit type narrowing guards (`typeof`, `instanceof`, or custom type predicates).
+  - Prefer **discriminated unions** for state machines (game states, player turns, move types).
+  - In Rust: Enforce strict type safety, exhaustiveness in `match` expressions, and avoid unchecked `unwrap()` in production code; use structured error handling (`Result<T, AppError>`).
+- **Runtime Schema Validation at Boundaries:**
+  - Validate all data crossing boundaries (Tauri IPC invocations, WebWorker messages, local storage / settings JSON, FEN/PGN string parsing) using **Zod** in TypeScript and **Serde** in Rust:
 
 ```typescript
 import { z } from "zod";
@@ -40,8 +40,8 @@ The chess domain is framework-independent. Never put chess legality checks insid
 UI -> Application Service -> Chess Domain -> Chess Library Adapter
 ```
 
-* **Domain Authority:** The domain owns legal move validation, board position, turn state, game status, move history, and FEN/PGN semantics.
-* **Dependency Inversion:** Apply dependency inversion at meaningful boundaries:
+- **Domain Authority:** The domain owns legal move validation, board position, turn state, game status, move history, and FEN/PGN semantics.
+- **Dependency Inversion:** Apply dependency inversion at meaningful boundaries:
   - Chess library adapter
   - Engine service
   - Persistence store
@@ -60,24 +60,24 @@ Proposed Move -> Chess Domain validation
 Domain -> commit or reject
 ```
 
-* **Session & Request Identity:** All engine requests and responses must carry a request/session ID. Stale responses from previous positions or cancelled evaluations must be discarded immediately.
+- **Session & Request Identity:** All engine requests and responses must carry a request/session ID. Stale responses from previous positions or cancelled evaluations must be discarded immediately.
 
 ---
 
 ### 4. Tauri Native Rules
 
-* Native Tauri commands must remain narrow and single-purpose.
-* Never expose broad filesystem or arbitrary shell execution capabilities.
-* Do not hide chess business logic inside Rust Tauri commands.
-* Keep the frontend UI decoupled from Rust backend implementation details.
-* Add a Tauri capability only when a concrete, active sprint requirement mandates it.
+- Native Tauri commands must remain narrow and single-purpose.
+- Never expose broad filesystem or arbitrary shell execution capabilities.
+- Do not hide chess business logic inside Rust Tauri commands.
+- Keep the frontend UI decoupled from Rust backend implementation details.
+- Add a Tauri capability only when a concrete, active sprint requirement mandates it.
 
 ---
 
 ### 5. State Ownership & Single Source of Truth
 
-* **Avoid Duplicate Authoritative State:** If the board position exists in the chess domain, do not maintain a second mutable board position in React.
-* **State Taxonomy:**
+- **Avoid Duplicate Authoritative State:** If the board position exists in the chess domain, do not maintain a second mutable board position in React.
+- **State Taxonomy:**
   - **Domain State:** Authoritative game state (position, history, turn, clocks).
   - **Persistence State:** Serialized snapshot of game state and settings.
   - **Engine State:** Ephemeral evaluation metrics and proposed moves.
@@ -87,13 +87,14 @@ Domain -> commit or reject
 
 ### 6. Error Handling & Async Safety
 
-* Use typed domain and application errors. User-facing errors must be understandable without exposing raw stack traces.
-* **Async Cleanup:** Always handle rejected promises, clean up WebWorker listeners, and cancel stale async operations on component unmount.
-* **No Arbitrary Sleep:** Never use arbitrary timeout delays (`setTimeout`) as a synchronization mechanism.
+- Use typed domain and application errors. User-facing errors must be understandable without exposing raw stack traces.
+- **Async Cleanup:** Always handle rejected promises, clean up WebWorker listeners, and cancel stale async operations on component unmount.
+- **No Arbitrary Sleep:** Never use arbitrary timeout delays (`setTimeout`) as a synchronization mechanism.
 
 ---
 
 ### 7. Dependency Discipline
 
 Before adding any npm package or cargo crate:
-* Verify its license, maintenance status, bundle/runtime impact, and justify why built-in primitives or custom code are insufficient.
+
+- Verify its license, maintenance status, bundle/runtime impact, and justify why built-in primitives or custom code are insufficient.

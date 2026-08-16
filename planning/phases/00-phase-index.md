@@ -8,7 +8,7 @@ into sprint-plan `.md` files.
 
 ## Planning hierarchy
 
-``` text
+```text
 Master Plan
     |
     +-- Phase Plan
@@ -26,53 +26,56 @@ Master Plan
 
 ## Phase map
 
-  ------------------------------------------------------------------------
-  Phase                   Name                    Primary outcome
-  ----------------------- ----------------------- ------------------------
-  01                      Product & Architecture  Approved product,
-                                                  architecture, UX and
-                                                  engineering contracts
+---
 
-  02                      Project Bootstrap       Runnable
-                                                  Tauri/React/TypeScript
-                                                  foundation with CI
+Phase Name Primary outcome
 
-  03                      Chess Domain            Correct, thoroughly
-                                                  tested chess rules and
-                                                  game state
+---
 
-  04                      Board UI                High-quality interactive
-                                                  chessboard
+01 Product & Architecture Approved product,
+architecture, UX and
+engineering contracts
 
-  05                      Game System             Complete local game
-                                                  experience and controls
+02 Project Bootstrap Runnable
+Tauri/React/TypeScript
+foundation with CI
 
-  06                      Stockfish AI            Human vs Computer with
-                                                  reliable engine
-                                                  integration
+03 Chess Domain Correct, thoroughly
+tested chess rules and
+game state
 
-  07                      Clocks & Game Modes     Timed games and
-                                                  configurable game modes
+04 Board UI High-quality interactive
+chessboard
 
-  08                      Persistence & Settings  Durable games, PGN/FEN
-                                                  and preferences
+05 Game System Complete local game
+experience and controls
 
-  09                      UX Polish &             Product-level visual,
-                          Accessibility           audio and accessibility
-                                                  quality
+06 Stockfish AI Human vs Computer with
+reliable engine
+integration
 
-  10                      Quality Engineering &   Deep verification,
-                          Release Candidate       performance, security
-                                                  and release readiness
+07 Clocks & Game Modes Timed games and
+configurable game modes
 
-  11                      Windows Release         Installer, packaging,
-                                                  distribution and v1.0
-                                                  release
-  ------------------------------------------------------------------------
+08 Persistence & Settings Durable games, PGN/FEN
+and preferences
+
+09 UX Polish & Product-level visual,
+Accessibility audio and accessibility
+quality
+
+10 Quality Engineering & Deep verification,
+Release Candidate performance, security
+and release readiness
+
+11 Windows Release Installer, packaging,
+distribution and v1.0
+release
+------------------------------------------------------------------------
 
 ## Dependency flow
 
-``` text
+```text
 01
  ↓
 02
@@ -104,13 +107,13 @@ Human is reliable.
 
 When creating sprint files from a phase:
 
--   Keep each sprint independently verifiable.
--   Prefer vertical slices over layer-by-layer implementation.
--   Every sprint must have explicit acceptance criteria.
--   Every sprint must identify files/modules likely to change.
--   Every sprint must define tests.
--   Every sprint must have an exit condition.
--   Do not allow an AI agent to silently expand sprint scope.
+- Keep each sprint independently verifiable.
+- Prefer vertical slices over layer-by-layer implementation.
+- Every sprint must have explicit acceptance criteria.
+- Every sprint must identify files/modules likely to change.
+- Every sprint must define tests.
+- Every sprint must have an exit condition.
+- Do not allow an AI agent to silently expand sprint scope.
 
 ## Antigravity operating principle
 

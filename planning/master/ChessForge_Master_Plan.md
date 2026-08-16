@@ -10,7 +10,7 @@ Google Antigravity\
 **Future releases:** Online multiplayer, accounts, tournaments, analysis
 cloud
 
-------------------------------------------------------------------------
+---
 
 ## 1. Executive Vision
 
@@ -19,48 +19,48 @@ real product rather than a chessboard demo.
 
 The first release should support:
 
--   Human vs Human on the same computer
--   Human vs Computer
--   Multiple AI difficulty levels
--   Legal chess move enforcement
--   Check, checkmate, stalemate, draw and insufficient-material
-    detection
--   Castling, en passant and promotion
--   Move history
--   Undo/restart
--   FEN import/export
--   PGN save/load
--   Game clocks
--   Resign and draw
--   Board orientation
--   Last-move and legal-move highlighting
--   Captured-piece display
--   Settings
--   Keyboard accessibility
--   Responsive Windows desktop UI
--   Automated unit, integration, UI and end-to-end tests
--   Windows installer/package
--   Crash-safe error handling
--   GitHub CI/CD
--   Reproducible builds
+- Human vs Human on the same computer
+- Human vs Computer
+- Multiple AI difficulty levels
+- Legal chess move enforcement
+- Check, checkmate, stalemate, draw and insufficient-material
+  detection
+- Castling, en passant and promotion
+- Move history
+- Undo/restart
+- FEN import/export
+- PGN save/load
+- Game clocks
+- Resign and draw
+- Board orientation
+- Last-move and legal-move highlighting
+- Captured-piece display
+- Settings
+- Keyboard accessibility
+- Responsive Windows desktop UI
+- Automated unit, integration, UI and end-to-end tests
+- Windows installer/package
+- Crash-safe error handling
+- GitHub CI/CD
+- Reproducible builds
 
 The architecture should deliberately leave room for:
 
--   Online multiplayer
--   LAN play
--   Game database
--   Opening explorer
--   Analysis board
--   Engine evaluation graph
--   Puzzle mode
--   Accounts
--   Cloud synchronization
--   Tournaments
+- Online multiplayer
+- LAN play
+- Game database
+- Opening explorer
+- Analysis board
+- Engine evaluation graph
+- Puzzle mode
+- Accounts
+- Cloud synchronization
+- Tournaments
 
 Do **not** build these future features in v1 unless the core game is
 already stable.
 
-------------------------------------------------------------------------
+---
 
 # 2. How Antigravity Should Be Used
 
@@ -84,23 +84,25 @@ the engineering team.
 
 Recommended agent roles:
 
-  Agent                   Responsibility
-  ----------------------- ------------------------------------------------
-  Product Architect       Requirements, architecture, roadmap
-  Chess Domain Engineer   Rules, game state, notation, validation
-  UI Engineer             Board, pieces, animations, UX
-  Engine Engineer         Stockfish integration and difficulty
-  Desktop Engineer        Tauri, Rust shell, Windows packaging
-  Test Engineer           Unit/integration/E2E testing
-  Security Engineer       File access, IPC boundaries, dependency review
-  Performance Engineer    Rendering, engine workers, memory
-  Release Engineer        CI/CD, signing, packaging
-  Reviewer Agent          Code review and architecture consistency
+Agent Responsibility
+
+---
+
+Product Architect Requirements, architecture, roadmap
+Chess Domain Engineer Rules, game state, notation, validation
+UI Engineer Board, pieces, animations, UX
+Engine Engineer Stockfish integration and difficulty
+Desktop Engineer Tauri, Rust shell, Windows packaging
+Test Engineer Unit/integration/E2E testing
+Security Engineer File access, IPC boundaries, dependency review
+Performance Engineer Rendering, engine workers, memory
+Release Engineer CI/CD, signing, packaging
+Reviewer Agent Code review and architecture consistency
 
 Do not allow multiple agents to modify the same files simultaneously
 unless the work is explicitly isolated.
 
-------------------------------------------------------------------------
+---
 
 # 3. Recommended Technology Stack
 
@@ -110,36 +112,36 @@ unless the work is explicitly isolated.
 
 Use:
 
--   Tauri
--   Rust
--   React
--   TypeScript
--   Vite
+- Tauri
+- Rust
+- React
+- TypeScript
+- Vite
 
 Why:
 
--   Windows desktop application
--   Small distribution footprint compared with Electron
--   Native desktop shell
--   Strong security model
--   TypeScript can remain the main application language
--   Rust is available for native functionality where required
--   Good fit for an engineer already comfortable with TypeScript
+- Windows desktop application
+- Small distribution footprint compared with Electron
+- Native desktop shell
+- Strong security model
+- TypeScript can remain the main application language
+- Rust is available for native functionality where required
+- Good fit for an engineer already comfortable with TypeScript
 
 The application should keep most business logic in TypeScript initially.
 Rust should be used for native desktop integration rather than forcing
 all chess logic into Rust.
 
-------------------------------------------------------------------------
+---
 
 ## 3.2 Frontend
 
 Use:
 
--   React
--   TypeScript
--   Vite
--   CSS Modules or a disciplined CSS architecture
+- React
+- TypeScript
+- Vite
+- CSS Modules or a disciplined CSS architecture
 
 Avoid introducing a large UI framework until the visual design requires
 it.
@@ -148,7 +150,7 @@ The chessboard should be its own isolated component tree.
 
 Suggested structure:
 
-``` text
+```text
 src/
   app/
   components/
@@ -169,7 +171,7 @@ src/
   test/
 ```
 
-------------------------------------------------------------------------
+---
 
 ## 3.3 Chess Rules
 
@@ -178,7 +180,7 @@ from scratch.
 
 Recommended responsibility:
 
-``` text
+```text
 Chess rules library
         |
         v
@@ -197,7 +199,7 @@ application.
 This prevents the rest of the application from becoming tightly coupled
 to one chess library.
 
-------------------------------------------------------------------------
+---
 
 ## 3.4 Chess Engine
 
@@ -205,7 +207,7 @@ Use Stockfish through a WebAssembly-compatible integration.
 
 Architecture:
 
-``` text
+```text
 React Application
       |
       v
@@ -222,7 +224,7 @@ Never run long engine calculations directly on the UI thread.
 
 The UI must remain responsive while Stockfish is calculating.
 
-------------------------------------------------------------------------
+---
 
 ## 3.5 State Management
 
@@ -230,15 +232,15 @@ Start simple.
 
 Recommended:
 
--   React state for local UI state
--   A small centralized game store for game/session state
--   Immutable state transitions
+- React state for local UI state
+- A small centralized game store for game/session state
+- Immutable state transitions
 
 Do not introduce Redux unless complexity actually requires it.
 
 Suggested high-level state:
 
-``` text
+```text
 GameSession
 ├── position
 ├── moveHistory
@@ -253,7 +255,7 @@ GameSession
 └── engineState
 ```
 
-------------------------------------------------------------------------
+---
 
 # 4. Product Scope
 
@@ -261,56 +263,56 @@ GameSession
 
 ### Game modes
 
--   Human vs Human
--   Human vs Computer
--   Computer vs Computer for development/testing only
+- Human vs Human
+- Human vs Computer
+- Computer vs Computer for development/testing only
 
 ### Rules
 
--   Standard chess
--   Castling
--   En passant
--   Promotion
--   Check
--   Checkmate
--   Stalemate
--   Threefold repetition
--   Fifty-move rule
--   Insufficient material
--   Draw by agreement
+- Standard chess
+- Castling
+- En passant
+- Promotion
+- Check
+- Checkmate
+- Stalemate
+- Threefold repetition
+- Fifty-move rule
+- Insufficient material
+- Draw by agreement
 
 ### Board
 
--   8x8 board
--   Coordinates
--   Piece themes
--   Board themes
--   Legal-move indicators
--   Last-move indicator
--   Selected-square indicator
--   Check indicator
--   Captured pieces
--   Promotion dialog
--   Board flip
+- 8x8 board
+- Coordinates
+- Piece themes
+- Board themes
+- Legal-move indicators
+- Last-move indicator
+- Selected-square indicator
+- Check indicator
+- Captured pieces
+- Promotion dialog
+- Board flip
 
 ### Game controls
 
--   New Game
--   Restart
--   Undo
--   Resign
--   Offer Draw
--   Pause clock where applicable
--   Save PGN
--   Load PGN
--   Copy FEN
--   Load FEN
+- New Game
+- Restart
+- Undo
+- Resign
+- Offer Draw
+- Pause clock where applicable
+- Save PGN
+- Load PGN
+- Copy FEN
+- Load FEN
 
 ### AI
 
 Initial levels:
 
-``` text
+```text
 Level 1: Beginner
 Level 2: Easy
 Level 3: Casual
@@ -326,48 +328,50 @@ calibrated.
 
 Difficulty should initially be based on engine configuration such as:
 
--   skill level
--   search depth/time
--   randomization where appropriate
+- skill level
+- search depth/time
+- randomization where appropriate
 
-------------------------------------------------------------------------
+---
 
 # 5. Non-Functional Requirements
 
 The application should:
 
--   Launch quickly
--   Never freeze while the engine thinks
--   Recover gracefully from engine failures
--   Never allow illegal moves
--   Preserve game state during normal operation
--   Avoid writing unnecessary sensitive data
--   Work offline
--   Support Windows high-DPI displays
--   Support keyboard navigation where practical
--   Produce useful logs in development mode
--   Avoid leaking engine worker errors into the UI
--   Have deterministic tests for chess rules
--   Have automated smoke tests for every release build
+- Launch quickly
+- Never freeze while the engine thinks
+- Recover gracefully from engine failures
+- Never allow illegal moves
+- Preserve game state during normal operation
+- Avoid writing unnecessary sensitive data
+- Work offline
+- Support Windows high-DPI displays
+- Support keyboard navigation where practical
+- Produce useful logs in development mode
+- Avoid leaking engine worker errors into the UI
+- Have deterministic tests for chess rules
+- Have automated smoke tests for every release build
 
 Performance targets:
 
-  Area                  Target
-  --------------------- -----------------------------------
-  Application startup   \< 3 seconds on typical modern PC
-  Board interaction     No perceptible input lag
-  UI rendering          Smooth during animations
-  Engine calculation    Runs outside UI thread
-  Memory                Stable during long sessions
-  Save/load             \< 1 second for normal games
+Area Target
+
+---
+
+Application startup \< 3 seconds on typical modern PC
+Board interaction No perceptible input lag
+UI rendering Smooth during animations
+Engine calculation Runs outside UI thread
+Memory Stable during long sessions
+Save/load \< 1 second for normal games
 
 Treat these as engineering targets, not contractual guarantees.
 
-------------------------------------------------------------------------
+---
 
 # 6. Proposed Architecture
 
-``` text
+```text
 +------------------------------------------------------+
 |                  Windows Desktop App                 |
 |                                                      |
@@ -396,7 +400,7 @@ Treat these as engineering targets, not contractual guarantees.
 +------------------------------------------------------+
 ```
 
-------------------------------------------------------------------------
+---
 
 # 7. Domain Model
 
@@ -404,7 +408,7 @@ Define these concepts before building the UI.
 
 ## 7.1 Player
 
-``` ts
+```ts
 type PlayerType = "human" | "computer";
 
 interface Player {
@@ -417,7 +421,7 @@ interface Player {
 
 ## 7.2 Game
 
-``` ts
+```ts
 interface Game {
   id: string;
   initialFen: string;
@@ -432,7 +436,7 @@ interface Game {
 
 ## 7.3 Move
 
-``` ts
+```ts
 interface MoveRecord {
   ply: number;
   san: string;
@@ -444,7 +448,7 @@ interface MoveRecord {
 
 ## 7.4 Game Status
 
-``` ts
+```ts
 type GameStatus =
   | "in_progress"
   | "check"
@@ -458,13 +462,13 @@ type GameStatus =
 
 Keep domain types independent from UI components.
 
-------------------------------------------------------------------------
+---
 
 # 8. Repository Structure
 
 Recommended repository:
 
-``` text
+```text
 chessforge/
 ├── .github/
 │   └── workflows/
@@ -521,7 +525,7 @@ chessforge/
 └── .gitignore
 ```
 
-------------------------------------------------------------------------
+---
 
 # 9. Antigravity Project Rules
 
@@ -552,19 +556,19 @@ The rules should tell Antigravity:
     commands.
 18. Summarize changed files, tests run and known limitations.
 
-------------------------------------------------------------------------
+---
 
 # 10. Development Method: Vertical Slices
 
 Do not develop:
 
-``` text
+```text
 UI -> then backend -> then testing -> then engine
 ```
 
 Instead develop:
 
-``` text
+```text
 Feature
   |
   +--> Domain
@@ -576,7 +580,7 @@ Feature
 
 Example:
 
-``` text
+```text
 Move a pawn
   |
   +--> validate move
@@ -588,7 +592,7 @@ Move a pawn
 
 This keeps the application executable throughout development.
 
-------------------------------------------------------------------------
+---
 
 # 11. Master Implementation Roadmap
 
@@ -596,16 +600,16 @@ This keeps the application executable throughout development.
 
 ### Deliverables
 
--   Product requirements
--   MVP scope
--   Architecture decision
--   UX principles
--   Definition of Done
--   Risk register
+- Product requirements
+- MVP scope
+- Architecture decision
+- UX principles
+- Definition of Done
+- Risk register
 
 ### Antigravity prompt
 
-``` text
+```text
 Act as the Product Architect for ChessForge.
 
 Create a product requirements document for a Windows desktop chess application.
@@ -627,7 +631,7 @@ Do not write application code yet.
 Create docs/product-requirements.md and review it with me before implementation.
 ```
 
-------------------------------------------------------------------------
+---
 
 # 12. Phase 1: Repository Bootstrap
 
@@ -637,31 +641,31 @@ Create the minimal runnable Tauri + React + TypeScript project.
 
 ### Tasks
 
--   Initialize Git
--   Initialize Tauri
--   Initialize React/Vite
--   Configure TypeScript
--   Configure ESLint
--   Configure formatting
--   Configure unit testing
--   Configure Playwright
--   Add basic CI
--   Create `AGENTS.md`
--   Create README
--   Run application
+- Initialize Git
+- Initialize Tauri
+- Initialize React/Vite
+- Configure TypeScript
+- Configure ESLint
+- Configure formatting
+- Configure unit testing
+- Configure Playwright
+- Add basic CI
+- Create `AGENTS.md`
+- Create README
+- Run application
 
 ### Acceptance criteria
 
--   App launches on Windows
--   Test command works
--   Lint works
--   Type checking works
--   Production build works
--   Git repository is clean after initial commit
+- App launches on Windows
+- Test command works
+- Lint works
+- Type checking works
+- Production build works
+- Git repository is clean after initial commit
 
 ### Antigravity prompt
 
-``` text
+```text
 Bootstrap the ChessForge Windows desktop application.
 
 Technology:
@@ -689,7 +693,7 @@ After implementation:
 Report every command executed and its result.
 ```
 
-------------------------------------------------------------------------
+---
 
 # 13. Phase 2: Chess Domain
 
@@ -697,20 +701,20 @@ This is the most important engineering phase.
 
 ### Implement
 
--   Board state
--   Move generation through the selected chess library
--   Move execution
--   Legal move detection
--   Check
--   Checkmate
--   Stalemate
--   Draw detection
--   Promotion
--   Castling
--   En passant
--   FEN
--   SAN
--   PGN
+- Board state
+- Move generation through the selected chess library
+- Move execution
+- Legal move detection
+- Check
+- Checkmate
+- Stalemate
+- Draw detection
+- Promotion
+- Castling
+- En passant
+- FEN
+- SAN
+- PGN
 
 ### Critical rule
 
@@ -722,7 +726,7 @@ The domain layer must be authoritative.
 
 Test at minimum:
 
-``` text
+```text
 Pawn movement
 Pawn capture
 Double pawn move
@@ -750,7 +754,7 @@ PGN generation
 
 ### Antigravity prompt
 
-``` text
+```text
 Implement the ChessForge chess domain.
 
 Important:
@@ -775,7 +779,7 @@ Before completion, run the full domain test suite.
 Do not proceed to UI work until the domain tests pass.
 ```
 
-------------------------------------------------------------------------
+---
 
 # 14. Phase 3: Board UI
 
@@ -783,18 +787,18 @@ Build the board before adding the AI.
 
 ### UI requirements
 
--   8x8 board
--   White/black pieces
--   Coordinates
--   Click-to-move
--   Optional drag-and-drop
--   Legal-move indicators
--   Last-move highlighting
--   Check highlighting
--   Promotion modal
--   Board flip
--   Captured pieces
--   Move animations
+- 8x8 board
+- White/black pieces
+- Coordinates
+- Click-to-move
+- Optional drag-and-drop
+- Legal-move indicators
+- Last-move highlighting
+- Check highlighting
+- Promotion modal
+- Board flip
+- Captured pieces
+- Move animations
 
 ### UX principle
 
@@ -804,7 +808,7 @@ Avoid clutter.
 
 The user should understand:
 
-``` text
+```text
 Where am I?
 Whose turn is it?
 What did I just move?
@@ -816,7 +820,7 @@ without reading documentation.
 
 ### Antigravity prompt
 
-``` text
+```text
 Implement the ChessForge board UI.
 
 Requirements:
@@ -838,27 +842,27 @@ Add component tests for important interactions.
 Run tests after implementation.
 ```
 
-------------------------------------------------------------------------
+---
 
 # 15. Phase 4: Game Shell
 
 Add:
 
--   New Game dialog
--   Player selection
--   Human vs Human
--   Human vs Computer placeholder
--   Restart
--   Undo
--   Resign
--   Draw
--   Game result modal
--   Move history
--   Game status
+- New Game dialog
+- Player selection
+- Human vs Human
+- Human vs Computer placeholder
+- Restart
+- Undo
+- Resign
+- Draw
+- Game result modal
+- Move history
+- Game status
 
 Suggested screen:
 
-``` text
+```text
 +------------------------------------------------------+
 | ChessForge                              New Game ⚙   |
 |                                                      |
@@ -884,7 +888,7 @@ Suggested screen:
 
 The exact visual design can evolve.
 
-------------------------------------------------------------------------
+---
 
 # 16. Phase 5: Chess Engine
 
@@ -892,7 +896,7 @@ Integrate Stockfish only after Human vs Human is stable.
 
 ### Architecture
 
-``` text
+```text
 Game Controller
       |
       v
@@ -907,21 +911,21 @@ Stockfish
 
 ### Requirements
 
--   Start engine
--   Stop engine
--   Send position
--   Request best move
--   Receive best move
--   Handle thinking state
--   Handle timeout/cancellation
--   Configure difficulty
--   Prevent stale engine responses
+- Start engine
+- Stop engine
+- Send position
+- Request best move
+- Receive best move
+- Handle thinking state
+- Handle timeout/cancellation
+- Configure difficulty
+- Prevent stale engine responses
 
 ### Important concurrency problem
 
 Scenario:
 
-``` text
+```text
 Position A -> engine starts
 User resets game
 Position B -> engine starts
@@ -934,7 +938,7 @@ Use a request/session ID.
 
 Example:
 
-``` ts
+```ts
 interface EngineRequest {
   requestId: string;
   fen: string;
@@ -947,7 +951,7 @@ state.
 
 ### Antigravity prompt
 
-``` text
+```text
 Implement the ChessForge Stockfish integration.
 
 Architecture:
@@ -975,23 +979,23 @@ Create tests for:
 Do not modify unrelated UI code.
 ```
 
-------------------------------------------------------------------------
+---
 
 # 17. Phase 6: Chess Clocks
 
 Implement:
 
--   Bullet
--   Blitz
--   Rapid
--   Classical
--   Custom time
+- Bullet
+- Blitz
+- Rapid
+- Classical
+- Custom time
 
 Represent clock state independently of UI.
 
 Example:
 
-``` ts
+```ts
 interface ClockState {
   whiteMs: number;
   blackMs: number;
@@ -1006,7 +1010,7 @@ Use a timer service and calculate elapsed time from timestamps.
 
 This avoids timer drift.
 
-------------------------------------------------------------------------
+---
 
 # 18. Phase 7: Persistence
 
@@ -1016,16 +1020,16 @@ Support:
 
 Automatically save:
 
--   current game
--   settings
--   last selected mode
--   board theme
--   board orientation
+- current game
+- settings
+- last selected mode
+- board theme
+- board orientation
 
 ### Export
 
--   PGN
--   FEN
+- PGN
+- FEN
 
 ### Import
 
@@ -1037,7 +1041,7 @@ Test corrupted input.
 
 Examples:
 
-``` text
+```text
 empty FEN
 invalid FEN
 illegal position
@@ -1046,13 +1050,13 @@ missing move
 invalid promotion
 ```
 
-------------------------------------------------------------------------
+---
 
 # 19. Phase 8: Settings
 
 Create:
 
-``` text
+```text
 Settings
 ├── Appearance
 │   ├── Board theme
@@ -1079,30 +1083,30 @@ Settings
 
 Keep settings versioned so future migrations are possible.
 
-------------------------------------------------------------------------
+---
 
 # 20. Phase 9: Audio and Animation
 
 Add subtle feedback:
 
--   Move sound
--   Capture sound
--   Check sound
--   Game-over sound
--   Promotion sound
+- Move sound
+- Capture sound
+- Check sound
+- Game-over sound
+- Promotion sound
 
 Animations:
 
--   Piece movement
--   Capture
--   Check
--   Promotion
+- Piece movement
+- Capture
+- Check
+- Promotion
 
 Add a reduced-motion option.
 
 Do not let animation block game state updates.
 
-------------------------------------------------------------------------
+---
 
 # 21. Phase 10: Error Handling
 
@@ -1110,7 +1114,7 @@ Define an application error strategy.
 
 Categories:
 
-``` text
+```text
 DomainError
 EngineError
 PersistenceError
@@ -1123,13 +1127,13 @@ User-facing errors should be understandable.
 
 Bad:
 
-``` text
+```text
 Error: undefined is not a function
 ```
 
 Good:
 
-``` text
+```text
 The chess engine stopped unexpectedly.
 Your current game is safe.
 
@@ -1138,7 +1142,7 @@ Your current game is safe.
 
 For development builds, log detailed diagnostics.
 
-------------------------------------------------------------------------
+---
 
 # 22. Phase 11: Testing Strategy
 
@@ -1149,30 +1153,30 @@ enormous state space.
 
 Test:
 
--   Game state
--   Move adapter
--   FEN
--   PGN
--   Game status
--   Clock calculations
--   Settings
--   Engine request management
+- Game state
+- Move adapter
+- FEN
+- PGN
+- Game status
+- Clock calculations
+- Settings
+- Engine request management
 
 ## Integration tests
 
 Test:
 
-``` text
+```text
 UI -> Game Controller -> Domain -> State
 ```
 
 Examples:
 
--   click piece
--   click destination
--   position changes
--   move history updates
--   turn changes
+- click piece
+- click destination
+- position changes
+- move history updates
+- turn changes
 
 ## E2E tests
 
@@ -1182,7 +1186,7 @@ Smoke scenarios:
 
 ### Scenario 1
 
-``` text
+```text
 Launch application
 Create Human vs Human
 Move e2-e4
@@ -1193,7 +1197,7 @@ Verify move history
 
 ### Scenario 2
 
-``` text
+```text
 Start Human vs Computer
 Make first move
 Wait for engine
@@ -1202,7 +1206,7 @@ Verify computer makes legal move
 
 ### Scenario 3
 
-``` text
+```text
 Load known checkmate position
 Make mating move
 Verify game over
@@ -1210,7 +1214,7 @@ Verify game over
 
 ### Scenario 4
 
-``` text
+```text
 Promote pawn
 Select queen
 Verify promoted piece
@@ -1218,13 +1222,13 @@ Verify promoted piece
 
 ### Scenario 5
 
-``` text
+```text
 Save PGN
 Load PGN
 Verify identical position
 ```
 
-------------------------------------------------------------------------
+---
 
 # 23. Property-Based / Invariant Testing
 
@@ -1232,7 +1236,7 @@ This is a powerful opportunity for AI-assisted testing.
 
 Define invariants:
 
-``` text
+```text
 After every legal move:
 - exactly one side has the turn
 - both kings exist
@@ -1246,7 +1250,7 @@ invariants.
 
 Example prompt:
 
-``` text
+```text
 Act as a chess-domain verification engineer.
 
 Identify invariants that must always hold after legal chess moves.
@@ -1256,39 +1260,39 @@ Implement property-based tests around those invariants.
 Do not generate random tests without defining the invariant first.
 ```
 
-------------------------------------------------------------------------
+---
 
 # 24. Mutation Testing
 
 After the domain suite is mature, intentionally introduce defects such
 as:
 
--   allow king into check
--   break castling
--   ignore en passant
--   corrupt promotion
--   change turn handling
+- allow king into check
+- break castling
+- ignore en passant
+- corrupt promotion
+- change turn handling
 
 Verify tests catch them.
 
 This tells you whether the test suite is actually strong rather than
 merely large.
 
-------------------------------------------------------------------------
+---
 
 # 25. Visual Testing
 
 Use screenshots for:
 
--   Main board
--   New game dialog
--   Promotion dialog
--   Settings
--   Check state
--   Checkmate state
--   Game result
--   Empty state
--   Import/export error
+- Main board
+- New game dialog
+- Promotion dialog
+- Settings
+- Check state
+- Checkmate state
+- Game result
+- Empty state
+- Import/export error
 
 If Antigravity browser/visual capabilities are available for the chosen
 workflow, use them to inspect rendered UI artifacts.
@@ -1296,7 +1300,7 @@ workflow, use them to inspect rendered UI artifacts.
 Keep visual assertions focused on important layout and interaction
 behavior rather than brittle pixel-perfect comparisons.
 
-------------------------------------------------------------------------
+---
 
 # 26. Security Plan
 
@@ -1308,7 +1312,7 @@ The application should not need broad file-system access.
 
 Recommended principle:
 
-``` text
+```text
 UI
  |
  | limited IPC
@@ -1322,14 +1326,14 @@ Windows
 
 Review:
 
--   Tauri capabilities
--   filesystem permissions
--   shell permissions
--   external process execution
--   file import/export
--   update mechanism
--   dependencies
--   bundled engine files
+- Tauri capabilities
+- filesystem permissions
+- shell permissions
+- external process execution
+- file import/export
+- update mechanism
+- dependencies
+- bundled engine files
 
 Do not give the agent unrestricted terminal/file access simply for
 convenience.
@@ -1337,13 +1341,13 @@ convenience.
 Use Antigravity's workspace isolation and review-oriented command
 execution settings where appropriate.
 
-------------------------------------------------------------------------
+---
 
 # 27. Git Strategy
 
 Use:
 
-``` text
+```text
 main
 develop
 feature/*
@@ -1355,7 +1359,7 @@ Prefer small feature branches.
 
 Example:
 
-``` text
+```text
 feature/chess-domain
 feature/board-ui
 feature/stockfish
@@ -1366,7 +1370,7 @@ feature/windows-packaging
 
 Commit style:
 
-``` text
+```text
 feat: add chess domain adapter
 feat: add legal move highlighting
 feat: integrate stockfish worker
@@ -1378,13 +1382,13 @@ build: configure windows release
 Never allow an AI agent to make a giant commit containing unrelated
 changes.
 
-------------------------------------------------------------------------
+---
 
 # 28. CI/CD
 
 GitHub Actions pipeline:
 
-``` text
+```text
 Pull Request
     |
     +--> install
@@ -1408,7 +1412,7 @@ Pull Request
 
 Release pipeline:
 
-``` text
+```text
 Tag v1.0.0
     |
     v
@@ -1429,18 +1433,18 @@ Publish GitHub Release
 
 Code signing can be added when distributing beyond personal/testing use.
 
-------------------------------------------------------------------------
+---
 
 # 29. Windows Packaging
 
 Choose one installer format initially:
 
--   NSIS installer, or
--   MSI if your distribution requirements favor it
+- NSIS installer, or
+- MSI if your distribution requirements favor it
 
 The release artifact should include:
 
-``` text
+```text
 ChessForge-Setup-x.y.z.exe
 ```
 
@@ -1448,15 +1452,15 @@ Test installation on a clean Windows environment.
 
 Test:
 
--   fresh installation
--   upgrade
--   uninstall
--   reinstall
--   application launch
--   file associations if implemented
--   saved settings migration
+- fresh installation
+- upgrade
+- uninstall
+- reinstall
+- application launch
+- file associations if implemented
+- saved settings migration
 
-------------------------------------------------------------------------
+---
 
 # 30. Observability
 
@@ -1464,7 +1468,7 @@ For a desktop app, observability should remain lightweight.
 
 Track locally useful diagnostics:
 
-``` text
+```text
 application version
 OS version
 startup duration
@@ -1478,12 +1482,12 @@ Avoid collecting personal information unnecessarily.
 
 If telemetry is ever added:
 
--   make it explicit
--   document it
--   provide an opt-out
--   collect the minimum required data
+- make it explicit
+- document it
+- provide an opt-out
+- collect the minimum required data
 
-------------------------------------------------------------------------
+---
 
 # 31. Antigravity Multi-Agent Workflow
 
@@ -1491,7 +1495,7 @@ Once the repository is stable, use specialized subagents.
 
 Example:
 
-``` text
+```text
                  Product Architect
                         |
                 Implementation Plan
@@ -1523,13 +1527,13 @@ Recommended sequence:
 
 Do not allow all agents to independently redesign architecture.
 
-------------------------------------------------------------------------
+---
 
 # 32. Agent Prompt Template
 
 Use this template for almost every task:
 
-``` text
+```text
 You are working on ChessForge.
 
 ROLE:
@@ -1569,61 +1573,61 @@ Before changing files, inspect the existing implementation and explain your plan
 After changing files, run verification commands.
 ```
 
-------------------------------------------------------------------------
+---
 
 # 33. Antigravity Task Decomposition
 
 Do not send:
 
-``` text
+```text
 Build the entire chess application.
 ```
 
 Instead send tasks such as:
 
-``` text
+```text
 Create the chess domain adapter.
 ```
 
 Then:
 
-``` text
+```text
 Add legal move tests.
 ```
 
 Then:
 
-``` text
+```text
 Add board rendering.
 ```
 
 Then:
 
-``` text
+```text
 Connect board clicks to domain move execution.
 ```
 
 Then:
 
-``` text
+```text
 Add Stockfish worker.
 ```
 
 Then:
 
-``` text
+```text
 Add Human vs Computer game flow.
 ```
 
 Then:
 
-``` text
+```text
 Add clocks.
 ```
 
 This reduces hallucinated architecture and makes failures recoverable.
 
-------------------------------------------------------------------------
+---
 
 # 34. Definition of Done
 
@@ -1631,7 +1635,7 @@ A feature is not done when the code exists.
 
 A feature is done when:
 
-``` text
+```text
 [ ] Requirements are clear
 [ ] Implementation exists
 [ ] Unit tests exist
@@ -1647,7 +1651,7 @@ A feature is done when:
 [ ] Git diff is understood
 ```
 
-------------------------------------------------------------------------
+---
 
 # 35. Milestone Plan
 
@@ -1655,123 +1659,123 @@ A feature is done when:
 
 Deliver:
 
--   Tauri app
--   React app
--   CI
--   Testing
--   AGENTS.md
+- Tauri app
+- React app
+- CI
+- Testing
+- AGENTS.md
 
 Result:
 
-``` text
+```text
 Empty Windows desktop application
 ```
 
-------------------------------------------------------------------------
+---
 
 ## Milestone 2: Playable Local Chess
 
 Deliver:
 
--   Chess domain
--   Board
--   Legal moves
--   Move history
--   Check/checkmate
--   Promotion
--   Castling
--   En passant
+- Chess domain
+- Board
+- Legal moves
+- Move history
+- Check/checkmate
+- Promotion
+- Castling
+- En passant
 
 Result:
 
-``` text
+```text
 Two humans can play a complete legal chess game.
 ```
 
 This is the first major victory.
 
-------------------------------------------------------------------------
+---
 
 ## Milestone 3: Computer Opponent
 
 Deliver:
 
--   Stockfish
--   Worker
--   Difficulty
--   Human vs Computer
+- Stockfish
+- Worker
+- Difficulty
+- Human vs Computer
 
 Result:
 
-``` text
+```text
 User can play against AI.
 ```
 
-------------------------------------------------------------------------
+---
 
 ## Milestone 4: Product Experience
 
 Deliver:
 
--   Clocks
--   Settings
--   Themes
--   Audio
--   Animations
--   PGN/FEN
--   Persistence
+- Clocks
+- Settings
+- Themes
+- Audio
+- Animations
+- PGN/FEN
+- Persistence
 
 Result:
 
-``` text
+```text
 Feels like a real desktop chess application.
 ```
 
-------------------------------------------------------------------------
+---
 
 ## Milestone 5: Quality Gate
 
 Deliver:
 
--   Full automated suite
--   Regression suite
--   Property tests
--   Visual tests
--   Performance checks
--   Security review
+- Full automated suite
+- Regression suite
+- Property tests
+- Visual tests
+- Performance checks
+- Security review
 
 Result:
 
-``` text
+```text
 Release candidate.
 ```
 
-------------------------------------------------------------------------
+---
 
 ## Milestone 6: Windows Release
 
 Deliver:
 
--   Installer
--   Versioning
--   GitHub release
--   Checksums
--   Release documentation
--   Clean-machine validation
+- Installer
+- Versioning
+- GitHub release
+- Checksums
+- Release documentation
+- Clean-machine validation
 
 Result:
 
-``` text
+```text
 ChessForge v1.0
 ```
 
-------------------------------------------------------------------------
+---
 
 # 36. Suggested Execution Order
 
 Follow this exact order unless a technical discovery proves otherwise:
 
-``` text
+```text
 01. Product requirements
 02. Architecture
 03. Repository bootstrap
@@ -1806,7 +1810,7 @@ Follow this exact order unless a technical discovery proves otherwise:
 32. v1.0 release
 ```
 
-------------------------------------------------------------------------
+---
 
 # 37. What NOT to Build Initially
 
@@ -1814,20 +1818,20 @@ Avoid feature creep.
 
 Do not start with:
 
--   Online multiplayer
--   User accounts
--   Chat
--   Friends
--   Leaderboards
--   Tournaments
--   Cloud database
--   Payments
--   Social features
--   Opening database
--   Puzzle marketplace
--   AI explanations
--   Cloud engine
--   Mobile app
+- Online multiplayer
+- User accounts
+- Chat
+- Friends
+- Leaderboards
+- Tournaments
+- Cloud database
+- Payments
+- Social features
+- Opening database
+- Puzzle marketplace
+- AI explanations
+- Cloud engine
+- Mobile app
 
 These are excellent v2/v3 features.
 
@@ -1835,7 +1839,7 @@ The first objective is:
 
 > Make offline chess extremely reliable and pleasant.
 
-------------------------------------------------------------------------
+---
 
 # 38. V2 Roadmap
 
@@ -1843,28 +1847,28 @@ After v1 is stable:
 
 ### Analysis
 
--   Engine evaluation bar
--   Best move
--   Blunder detection
--   Mistake detection
--   Move annotations
+- Engine evaluation bar
+- Best move
+- Blunder detection
+- Mistake detection
+- Move annotations
 
 ### Opening
 
--   Opening name detection
--   Opening explorer
--   Opening statistics
+- Opening name detection
+- Opening explorer
+- Opening statistics
 
 ### Training
 
--   Puzzle mode
--   Daily puzzle
--   Tactical themes
--   Endgame trainer
+- Puzzle mode
+- Daily puzzle
+- Tactical themes
+- Endgame trainer
 
 ### Multiplayer
 
-``` text
+```text
 Client
   |
   v
@@ -1882,13 +1886,13 @@ Game Server
 Do not retrofit online multiplayer into the offline domain model
 blindly. Keep the game domain deterministic and transport-independent.
 
-------------------------------------------------------------------------
+---
 
 # 39. V3 Vision
 
 Potential long-term architecture:
 
-``` text
+```text
                    ChessForge Platform
                            |
         +------------------+------------------+
@@ -1908,39 +1912,39 @@ Potential long-term architecture:
 
 The core chess domain should remain reusable.
 
-------------------------------------------------------------------------
+---
 
 # 40. AI-Assisted Development Rules
 
 Use AI aggressively for:
 
--   Boilerplate
--   Test generation
--   Refactoring
--   Documentation
--   CI configuration
--   UI iterations
--   Test-case enumeration
--   Regression analysis
--   Code review
--   Dependency research
--   Performance investigation
+- Boilerplate
+- Test generation
+- Refactoring
+- Documentation
+- CI configuration
+- UI iterations
+- Test-case enumeration
+- Regression analysis
+- Code review
+- Dependency research
+- Performance investigation
 
 Use human judgment heavily for:
 
--   Architecture
--   Security
--   Chess-rule correctness
--   Product scope
--   Dependency selection
--   Release decisions
--   Data/privacy decisions
+- Architecture
+- Security
+- Chess-rule correctness
+- Product scope
+- Dependency selection
+- Release decisions
+- Data/privacy decisions
 
 The AI should generate code.
 
 The human should own the system.
 
-------------------------------------------------------------------------
+---
 
 # 41. Recommended Antigravity Session Pattern
 
@@ -1950,7 +1954,7 @@ For every major session:
 
 Ask:
 
-``` text
+```text
 Inspect the repository and summarize:
 - architecture
 - current milestone
@@ -1965,7 +1969,7 @@ Do not modify files.
 
 Ask:
 
-``` text
+```text
 Create an implementation plan for <task>.
 Do not modify code yet.
 Identify files that will change and tests required.
@@ -1975,7 +1979,7 @@ Identify files that will change and tests required.
 
 Ask:
 
-``` text
+```text
 Implement the approved plan.
 Keep the change focused.
 ```
@@ -1984,7 +1988,7 @@ Keep the change focused.
 
 Ask:
 
-``` text
+```text
 Run the relevant tests, lint, typecheck and build.
 Investigate failures rather than suppressing them.
 ```
@@ -1993,7 +1997,7 @@ Investigate failures rather than suppressing them.
 
 Ask:
 
-``` text
+```text
 Review the git diff as a senior engineer.
 Look for:
 - bugs
@@ -2008,17 +2012,17 @@ Look for:
 
 Only after human review:
 
-``` text
+```text
 Create a focused git commit for the completed task.
 ```
 
-------------------------------------------------------------------------
+---
 
 # 42. First 10 Antigravity Prompts
 
 ## Prompt 1: Architecture
 
-``` text
+```text
 Act as Product Architect.
 
 Inspect this repository.
@@ -2040,7 +2044,7 @@ Wait for approval.
 
 ## Prompt 2: Bootstrap
 
-``` text
+```text
 Bootstrap the approved Tauri + React + TypeScript project.
 
 Add testing, linting, type checking, CI and AGENTS.md.
@@ -2050,7 +2054,7 @@ Verify everything works.
 
 ## Prompt 3: Chess Domain
 
-``` text
+```text
 Implement the chess domain adapter using the selected chess rules library.
 
 Keep it independent from React.
@@ -2060,7 +2064,7 @@ Add comprehensive rule tests.
 
 ## Prompt 4: Board
 
-``` text
+```text
 Implement the chessboard UI.
 
 Connect all move execution through the domain layer.
@@ -2070,7 +2074,7 @@ Do not implement chess rules inside components.
 
 ## Prompt 5: Game Controller
 
-``` text
+```text
 Implement the game controller connecting:
 board -> domain -> state -> move history.
 
@@ -2079,7 +2083,7 @@ Add integration tests.
 
 ## Prompt 6: PGN/FEN
 
-``` text
+```text
 Implement robust PGN and FEN import/export.
 
 Add malformed-input tests.
@@ -2087,7 +2091,7 @@ Add malformed-input tests.
 
 ## Prompt 7: Engine
 
-``` text
+```text
 Implement Stockfish through a Web Worker.
 
 Guarantee that engine calculations never block the UI.
@@ -2097,7 +2101,7 @@ Add lifecycle and stale-response tests.
 
 ## Prompt 8: Clocks
 
-``` text
+```text
 Implement chess clocks using elapsed timestamps rather than render-loop decrementing.
 
 Add deterministic clock tests.
@@ -2105,7 +2109,7 @@ Add deterministic clock tests.
 
 ## Prompt 9: QA
 
-``` text
+```text
 Act as a senior SDET.
 
 Inspect the current application.
@@ -2125,7 +2129,7 @@ Implement the highest-value missing tests.
 
 ## Prompt 10: Release
 
-``` text
+```text
 Act as Release Engineer.
 
 Prepare ChessForge for Windows v1.0.
@@ -2143,62 +2147,62 @@ Verify:
 Do not declare release readiness until every required gate passes.
 ```
 
-------------------------------------------------------------------------
+---
 
 # 43. Final Release Checklist
 
 ## Product
 
--   [ ] MVP requirements satisfied
--   [ ] Human vs Human works
--   [ ] Human vs Computer works
--   [ ] All major chess rules verified
--   [ ] Clocks work
--   [ ] PGN works
--   [ ] FEN works
--   [ ] Settings work
--   [ ] Error states are understandable
+- [ ] MVP requirements satisfied
+- [ ] Human vs Human works
+- [ ] Human vs Computer works
+- [ ] All major chess rules verified
+- [ ] Clocks work
+- [ ] PGN works
+- [ ] FEN works
+- [ ] Settings work
+- [ ] Error states are understandable
 
 ## Engineering
 
--   [ ] TypeScript strict mode enabled
--   [ ] No known type errors
--   [ ] No known lint errors
--   [ ] Unit suite passes
--   [ ] Integration suite passes
--   [ ] E2E smoke suite passes
--   [ ] Engine worker verified
--   [ ] No stale engine responses
--   [ ] No obvious memory leaks
--   [ ] Performance acceptable
+- [ ] TypeScript strict mode enabled
+- [ ] No known type errors
+- [ ] No known lint errors
+- [ ] Unit suite passes
+- [ ] Integration suite passes
+- [ ] E2E smoke suite passes
+- [ ] Engine worker verified
+- [ ] No stale engine responses
+- [ ] No obvious memory leaks
+- [ ] Performance acceptable
 
 ## Security
 
--   [ ] Tauri permissions reviewed
--   [ ] File access minimized
--   [ ] No secrets committed
--   [ ] Dependencies reviewed
--   [ ] Native commands minimized
--   [ ] Import paths validated
+- [ ] Tauri permissions reviewed
+- [ ] File access minimized
+- [ ] No secrets committed
+- [ ] Dependencies reviewed
+- [ ] Native commands minimized
+- [ ] Import paths validated
 
 ## Release
 
--   [ ] Version updated
--   [ ] Changelog updated
--   [ ] Windows installer generated
--   [ ] Installer tested
--   [ ] Upgrade tested
--   [ ] Uninstall tested
--   [ ] Checksums generated
--   [ ] GitHub release prepared
+- [ ] Version updated
+- [ ] Changelog updated
+- [ ] Windows installer generated
+- [ ] Installer tested
+- [ ] Upgrade tested
+- [ ] Uninstall tested
+- [ ] Checksums generated
+- [ ] GitHub release prepared
 
-------------------------------------------------------------------------
+---
 
 # 44. The Golden Rule
 
 The project should evolve like this:
 
-``` text
+```text
 Specification
       |
       v
@@ -2228,7 +2232,7 @@ Next Task
 
 Not:
 
-``` text
+```text
 "Build me a chess game"
         |
         v
@@ -2246,7 +2250,7 @@ team.
 
 The second turns it into a very fast keyboard with opinions.
 
-------------------------------------------------------------------------
+---
 
 # 45. Definition of Success
 

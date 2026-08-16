@@ -31,29 +31,55 @@ Before developing or building ChessForge on Windows 10/11, ensure the following 
 ## 3. Quickstart & Clean Checkout Instructions
 
 ### 3.1 Install Dependencies
+
 ```powershell
 npm install
 ```
 
 ### 3.2 Frontend Development Server
+
 Start the local Vite development server with Hot Module Replacement (HMR):
+
 ```powershell
 npm run dev
 ```
+
 The frontend will be accessible at `http://localhost:1420`.
 
 ### 3.3 Execute Automated Test Suite
+
 Run the Vitest test runner across domain, component, and property-based test suites:
+
 ```powershell
 npm run test
 ```
 
 To run tests with watch mode:
+
 ```powershell
 npm run test:watch
 ```
 
-### 3.4 Typecheck & Production Frontend Build
+### 3.4 Code Quality, Linting & Formatting
+
+```powershell
+# Run ESLint across all TypeScript and React source files
+npm run lint
+
+# Auto-fix fixable ESLint violations
+npm run lint:fix
+
+# Check formatting conformity with Prettier
+npm run format:check
+
+# Auto-format all project files with Prettier
+npm run format
+```
+
+For detailed conventions and rules, see the [Developer Tooling and Code Quality Guide](file:///c:/Workspace/ChessGame/docs/guides/developer_tooling.md).
+
+### 3.5 Typecheck & Production Frontend Build
+
 ```powershell
 # Strict TypeScript compilation check (0 errors)
 npm run typecheck
@@ -62,13 +88,16 @@ npm run typecheck
 npm run build
 ```
 
-### 3.5 Launch Desktop Shell (Tauri v2)
+### 3.6 Launch Desktop Shell (Tauri v2)
+
 Run the native Windows desktop application shell:
+
 ```powershell
 npm run tauri dev
 ```
 
 Build the optimized Windows production executable:
+
 ```powershell
 npm run tauri build
 ```
@@ -107,6 +136,7 @@ ChessGame/
 ## 5. Agile Quality Gates & Anti-Bypass Standards
 
 All contributions must strictly satisfy the sprint **Definition of Done (DoD)**:
+
 - 100% Green test automation (Vitest unit, component, property tests).
 - Zero TypeScript compiler errors (`tsc --noEmit`).
 - Zero linter/compiler suppression flags (`it.skip`, `@ts-ignore`, `eslint-disable`).

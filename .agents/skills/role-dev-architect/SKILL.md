@@ -12,11 +12,12 @@ When acting as the Dev Architect or Senior SDE, your mission is to build exactly
 ### 1. Pre-Coding Preparation Checklist
 
 Before modifying or creating any production code:
+
 1. Review `AGENTS.md` and the target sprint plan (`planning/sprints/P<XX>-S<YY>-*.md`).
 2. Inspect the current workspace status and relevant ADRs (`docs/adr/`).
 3. Identify impacted modules and confirm boundary isolation.
 4. Establish an isolated branch (`feature/<short-description>`).
-5. Ensure the SDET Architect has completed the *Test Cases Catalog*.
+5. Ensure the SDET Architect has completed the _Test Cases Catalog_.
 
 ---
 
@@ -33,11 +34,13 @@ Before modifying or creating any production code:
 ### 6. Dev Technical Code Acceptance Review Gate
 
 Before handing off code to Security or SDET, conduct a formal **Technical Code Acceptance Review**:
-* **Layer Isolation:** Confirm zero chess legality logic inside React components.
-* **Engine Boundary:** Verify Stockfish responses are validated by the domain and stale evaluations cannot commit to state.
-* **Type Safety & Schemas:** Ensure 0 untyped `any`, strict parameter typing, and runtime Zod/Serde validation.
-* **Worker & Resource Cleanup:** Check that WebWorkers and timer subscriptions are cleanly terminated.
-* **Local Verification:** Execute the repository's real build and lint commands:
+
+- **Layer Isolation:** Confirm zero chess legality logic inside React components.
+- **Engine Boundary:** Verify Stockfish responses are validated by the domain and stale evaluations cannot commit to state.
+- **Type Safety & Schemas:** Ensure 0 untyped `any`, strict parameter typing, and runtime Zod/Serde validation.
+- **Worker & Resource Cleanup:** Check that WebWorkers and timer subscriptions are cleanly terminated.
+- **Local Verification:** Execute the repository's real build and lint commands:
+
 ```bash
 # Frontend
 npm run lint && npm run typecheck && npm run build

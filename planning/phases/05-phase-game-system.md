@@ -11,23 +11,23 @@ Human game.
 
 ## Scope
 
--   New Game
--   Player configuration
--   Human vs Human
--   Game controller
--   Move history
--   Captured pieces
--   Restart
--   Undo
--   Resign
--   Draw offer
--   Game result
--   Game-over state
--   Game session state
+- New Game
+- Player configuration
+- Human vs Human
+- Game controller
+- Move history
+- Captured pieces
+- Restart
+- Undo
+- Resign
+- Draw offer
+- Game result
+- Game-over state
+- Game session state
 
 ## Suggested state model
 
-``` text
+```text
 GameSession
 ├── game
 ├── players
@@ -43,7 +43,7 @@ Keep transient UI state separate from domain state.
 
 ## Game lifecycle
 
-``` text
+```text
 New
  ↓
 In Progress
@@ -59,7 +59,7 @@ Review / New Game
 
 ### Normal game
 
-``` text
+```text
 New Game
 → White moves
 → Black moves
@@ -69,7 +69,7 @@ New Game
 
 ### Checkmate
 
-``` text
+```text
 Move
 → domain reports checkmate
 → disable further moves
@@ -78,7 +78,7 @@ Move
 
 ### Resignation
 
-``` text
+```text
 Resign
 → confirm
 → mark game resigned
@@ -89,7 +89,7 @@ Resign
 
 Display:
 
-``` text
+```text
 1. e4 e5
 2. Nf3 Nc6
 3. Bb5 a6
@@ -105,16 +105,16 @@ Require integration tests before adding AI.
 
 ## Acceptance criteria
 
--   New games start correctly.
--   Two humans can play complete games.
--   Move history is accurate.
--   Captured pieces are accurate.
--   Undo works within defined rules.
--   Resignation works.
--   Draw flow works.
--   Game-over state blocks additional moves.
--   Restart works.
--   No stale UI state survives a new game.
+- New games start correctly.
+- Two humans can play complete games.
+- Move history is accurate.
+- Captured pieces are accurate.
+- Undo works within defined rules.
+- Resignation works.
+- Draw flow works.
+- Game-over state blocks additional moves.
+- Restart works.
+- No stale UI state survives a new game.
 
 ## Exit criteria
 
@@ -124,14 +124,14 @@ This is the gate before Stockfish integration.
 
 ## Sprint decomposition candidates
 
--   Game session state
--   New game flow
--   Player configuration
--   Move history
--   Captured pieces
--   Undo
--   Resign
--   Draw
--   Game result
--   Restart
--   Integration tests
+- Game session state
+- New game flow
+- Player configuration
+- Move history
+- Captured pieces
+- Undo
+- Resign
+- Draw
+- Game result
+- Restart
+- Integration tests

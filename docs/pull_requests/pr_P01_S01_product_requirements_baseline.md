@@ -5,6 +5,7 @@
 This PR establishes the foundational **Product Requirements Specification** for ChessForge v1.
 
 ### Key Artifacts Delivered
+
 1. **`docs/product-requirements.md`**:
    - Target personas (Solo Learner, Local Duo, Club Player).
    - End-to-end user journeys for Human vs. Human and Human vs. Computer with sequence diagrams.

@@ -12,28 +12,30 @@ When acting as the Product Owner, your mission is to champion the product vision
 ### 1. Acceptance Review & Verification
 
 Before authorizing release or PR merge, audit the delivered feature against the sprint's exact acceptance criteria:
-* **Functionality & Workflow:** Does the feature work seamlessly and solve the intended user problem?
-* **Visual Clarity & Aesthetics:** Inspect piece clarity, board rendering, legal move highlights, last-move state, checkmate/draw dialogs, and smooth 60fps animations.
-* **Desktop Responsiveness:** Verify keyboard navigation, accessibility standards, high-contrast themes, and window scaling.
-* **Error Recovery:** Verify that errors (invalid PGN imports, file I/O issues) show friendly toasts rather than freezing or crashing.
+
+- **Functionality & Workflow:** Does the feature work seamlessly and solve the intended user problem?
+- **Visual Clarity & Aesthetics:** Inspect piece clarity, board rendering, legal move highlights, last-move state, checkmate/draw dialogs, and smooth 60fps animations.
+- **Desktop Responsiveness:** Verify keyboard navigation, accessibility standards, high-contrast themes, and window scaling.
+- **Error Recovery:** Verify that errors (invalid PGN imports, file I/O issues) show friendly toasts rather than freezing or crashing.
 
 ---
 
 ### 2. Chess Correctness Boundary
 
-* The Product Owner does not override chess-domain rules.
-* For chess semantics (legal move validation, draw rules, FEN/PGN correctness), rely on the **Chess Domain Architect** and **SDET Architect** test evidence.
+- The Product Owner does not override chess-domain rules.
+- For chess semantics (legal move validation, draw rules, FEN/PGN correctness), rely on the **Chess Domain Architect** and **SDET Architect** test evidence.
 
 ---
 
 ### 3. Reject Conditions
 
 Reject and return the feature for refinement if:
-* Sprint acceptance criteria are unmet.
-* UX is confusing or critical states (check, active turn, clock timeout) are ambiguous.
-* User game state or settings can be accidentally lost.
-* Feature scope has drifted beyond the active sprint plan.
-* Known critical defects or test failures remain.
+
+- Sprint acceptance criteria are unmet.
+- UX is confusing or critical states (check, active turn, clock timeout) are ambiguous.
+- User game state or settings can be accidentally lost.
+- Feature scope has drifted beyond the active sprint plan.
+- Known critical defects or test failures remain.
 
 ---
 

@@ -9,59 +9,59 @@ architecture contract before writing production code.
 
 At the end of this phase, the team should know exactly:
 
--   What ChessForge v1 does.
--   What it deliberately does not do.
--   Who the target user is.
--   What the application architecture is.
--   What the major domain boundaries are.
--   What technology choices are approved.
--   How Antigravity agents are expected to work.
--   What "done" means.
+- What ChessForge v1 does.
+- What it deliberately does not do.
+- Who the target user is.
+- What the application architecture is.
+- What the major domain boundaries are.
+- What technology choices are approved.
+- How Antigravity agents are expected to work.
+- What "done" means.
 
 ## Scope
 
 ### Product
 
--   MVP definition
--   User journeys
--   Game modes
--   Chess rules
--   Import/export expectations
--   Settings
--   Accessibility goals
--   Windows distribution expectations
+- MVP definition
+- User journeys
+- Game modes
+- Chess rules
+- Import/export expectations
+- Settings
+- Accessibility goals
+- Windows distribution expectations
 
 ### Architecture
 
--   Tauri + React + TypeScript architecture
--   Rust/native boundary
--   Chess domain boundary
--   Engine boundary
--   Persistence boundary
--   State management
--   Testing architecture
--   Security model
+- Tauri + React + TypeScript architecture
+- Rust/native boundary
+- Chess domain boundary
+- Engine boundary
+- Persistence boundary
+- State management
+- Testing architecture
+- Security model
 
 ### Agent engineering
 
--   AGENTS.md rules
--   Agent roles
--   Review policy
--   Worktree strategy
--   Definition of Done
+- AGENTS.md rules
+- Agent roles
+- Review policy
+- Worktree strategy
+- Definition of Done
 
 ## Out of scope
 
--   Production implementation
--   Stockfish integration
--   Online multiplayer
--   User accounts
--   Cloud backend
--   Tournament infrastructure
+- Production implementation
+- Stockfish integration
+- Online multiplayer
+- User accounts
+- Cloud backend
+- Tournament infrastructure
 
 ## Recommended stack
 
-``` text
+```text
 Windows
   |
 Tauri
@@ -96,7 +96,7 @@ Stockfish WASM
 
 ## Required artifacts
 
-``` text
+```text
 docs/
 ├── product-requirements.md
 ├── architecture.md
@@ -119,24 +119,26 @@ worktrees for concurrent work.
 
 ## Acceptance criteria
 
--   Product requirements approved.
--   MVP and non-MVP scope documented.
--   Architecture diagram documented.
--   Domain boundaries documented.
--   Security boundaries documented.
--   Testing strategy approved.
--   Agent operating rules documented.
--   Technology decisions recorded with rationale.
+- Product requirements approved.
+- MVP and non-MVP scope documented.
+- Architecture diagram documented.
+- Domain boundaries documented.
+- Security boundaries documented.
+- Testing strategy approved.
+- Agent operating rules documented.
+- Technology decisions recorded with rationale.
 
 ## Risks
 
-  Risk                          Mitigation
-  ----------------------------- ----------------------------------
-  Scope explosion               Explicit MVP/non-MVP boundary
-  AI over-engineering           Architecture approval gate
-  Chess rules leaking into UI   Domain adapter contract
-  Excessive dependencies        Dependency approval rule
-  Parallel agent conflicts      New worktrees for isolated tasks
+Risk Mitigation
+
+---
+
+Scope explosion Explicit MVP/non-MVP boundary
+AI over-engineering Architecture approval gate
+Chess rules leaking into UI Domain adapter contract
+Excessive dependencies Dependency approval rule
+Parallel agent conflicts New worktrees for isolated tasks
 
 ## Exit criteria
 
@@ -145,11 +147,11 @@ product contracts are approved.
 
 ## Sprint decomposition candidates
 
--   Product requirements
--   UX journeys
--   Architecture
--   Domain contract
--   Security model
--   Testing strategy
--   Antigravity operating rules
--   Architecture review
+- Product requirements
+- UX journeys
+- Architecture
+- Domain contract
+- Security model
+- Testing strategy
+- Antigravity operating rules
+- Architecture review

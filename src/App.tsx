@@ -12,7 +12,8 @@ export const App: React.FC = () => {
             ChessForge
           </h1>
           <p className="hero-subtitle">
-            A high-performance, local-first chess desktop application engineered with Tauri v2, React 19, and Stockfish WASM.
+            A high-performance, local-first chess desktop application engineered
+            with Tauri v2, React 19, and Stockfish WASM.
           </p>
 
           <div className="metrics-grid">

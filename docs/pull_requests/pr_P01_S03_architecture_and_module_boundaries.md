@@ -3,9 +3,11 @@
 ## Pull Request Description
 
 ### Summary of Changes
+
 This pull request establishes the core technical architecture, modular boundaries, state ownership taxonomy, and error contracts for **ChessForge** as defined in `planning/sprints/P01-S03-architecture-and-module-boundaries.md`.
 
 ### Key Deliverables
+
 1. **Authoritative Architecture Specification (`docs/architecture.md`):**
    - Decoupled unidirectional layered architecture: $\text{Presentation} \rightarrow \text{Application Service} \rightarrow \text{Pure Chess Domain} \rightarrow \text{Chess Adapter Port}$.
    - Stockfish WASM WebWorker isolation with tokenized asynchronous UCI protocol and thread/memory guardrails.
@@ -28,6 +30,7 @@ This pull request establishes the core technical architecture, modular boundarie
 ---
 
 ### Verification & Quality Gates Summary
+
 - **Scrum Master Gate:** Sprint planned and tracked in `task.md`.
 - **SDET Gate:** Test Cases Catalog committed (`docs/testing/test_cases_catalog_P01_S03.md`).
 - **Dev Technical Gate:** Full architecture and 5 ADRs authored and reviewed against coding standards.
@@ -38,6 +41,7 @@ This pull request establishes the core technical architecture, modular boundarie
 ---
 
 ### Acceptance Criteria Checklist
+
 - [x] No circular dependency is required.
 - [x] Chess domain is UI-independent.
 - [x] Engine is isolated in dedicated WebWorker.

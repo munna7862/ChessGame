@@ -3,13 +3,14 @@
 **Status:** Accepted  
 **Date:** 2026-08-16  
 **Author:** Dev Architect & Senior SDE  
-**Deciders:** Dev Architect, Security Officer, SDET Architect  
+**Deciders:** Dev Architect, Security Officer, SDET Architect
 
 ---
 
 ## 1. Context & Problem Statement
 
 ChessForge requires seamless recovery of active game sessions if the application closes or crashes, alongside user preferences storage (theme, sound, piece set, engine difficulty). The persistence strategy must:
+
 1. Guarantee data integrity and atomic writes without corrupted partial files.
 2. Allow instant crash recovery on launch with zero user data loss.
 3. Validate recovered state against domain schemas to prevent application lockup from corrupted data.
@@ -18,6 +19,7 @@ ChessForge requires seamless recovery of active game sessions if the application
 ## 2. Decision
 
 We mandate **Local-First JSON Snapshot Persistence** utilizing atomic write semantics:
+
 1. **Runtime Schema Validation:** All saved session state and user preferences are validated at load time using **Zod** schemas in TypeScript.
 2. **Snapshot Model:** State is persisted as an immutable snapshot (`SessionSnapshot`) containing the initial FEN, move history SAN array, player configurations, and clock balances.
 3. **Atomic File Storage:** File writes use temporary-file replacement semantics (`write to .tmp -> flush -> atomic rename`) to prevent file corruption during sudden system shutdowns.
@@ -39,14 +41,17 @@ Atomic File / Local Persistence Write
 ## 3. Considered Alternatives & Rejected Rationale
 
 ### Alternative A: Embedded SQLite Database (`tauri-plugin-sql` / `rusqlite`)
+
 - **Description:** Storing games, moves, and preferences in an embedded relational SQLite database.
 - **Why Rejected:** Excessive architectural complexity and binary overhead for a local desktop chess app. Single-session recovery and preferences are cleanly handled by lightweight, human-readable JSON files with zero database schema migrations or SQL query overhead.
 
 ### Alternative B: Direct Unvalidated `localStorage` Storage
+
 - **Description:** Directly calling `localStorage.setItem('gameState', JSON.stringify(session))` inside React components.
 - **Why Rejected:** Vulnerable to silent corruption, size limits, lacks atomic file guarantees, and bypasses domain validation upon deserialization.
 
 ### Alternative C: Remote Cloud Sync Backend
+
 - **Description:** Syncing game state to a PostgreSQL or Firebase backend.
 - **Why Rejected:** Explicitly forbidden by the Local-First Infrastructure Rule (ChessForge v1 is a 100% offline desktop app).
 

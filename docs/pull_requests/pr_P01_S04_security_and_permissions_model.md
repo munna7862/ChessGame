@@ -3,9 +3,11 @@
 ## Pull Request Description
 
 ### Summary of Changes
+
 This pull request establishes the authoritative desktop security model, Tauri v2 least-privilege capability manifests, filesystem access scopes, IPC payload boundary validations, untrusted data ingestion sanitization, privacy mandates, and prohibited capabilities for **ChessForge** as defined in `planning/sprints/P01-S04-security-and-permissions-model.md`.
 
 ### Key Deliverables
+
 1. **Authoritative Desktop Security Model (`docs/security-model.md`):**
    - **Principle of Least Privilege:** Granular mapping of approved Tauri v2 capabilities (`core:default`, `dialog:allow-*`, `clipboard-manager:allow-*`, `store:allow-*`, and scoped `fs:allow-*`).
    - **Capability Manifest Specification:** Concrete JSON schema for `src-tauri/capabilities/default.json` prohibiting wildcard (`*`) access.
@@ -24,6 +26,7 @@ This pull request establishes the authoritative desktop security model, Tauri v2
 ---
 
 ### Verification & Quality Gates Summary
+
 - **Scrum Master Gate:** Sprint 04 planned, tracked, and verified in `task.md`.
 - **SDET Gate:** Security Test Cases Catalog committed (`docs/testing/test_cases_catalog_P01_S04.md`).
 - **Security Officer Gate:** Comprehensive desktop security and least-privilege audit performed and approved.
@@ -33,6 +36,7 @@ This pull request establishes the authoritative desktop security model, Tauri v2
 ---
 
 ### Acceptance Criteria Checklist
+
 - [x] Every native permission has a documented reason.
 - [x] No unnecessary shell access (`shell:execute` strictly prohibited).
 - [x] File access is scoped (`$APPDATA/ChessForge/**` and dialog paths only).

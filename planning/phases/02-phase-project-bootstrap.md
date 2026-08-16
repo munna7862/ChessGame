@@ -11,24 +11,24 @@ repository has reliable engineering automation.
 
 ## Scope
 
--   Git repository
--   Tauri 2
--   React
--   TypeScript
--   Vite
--   ESLint
--   Formatting
--   Unit test framework
--   Playwright
--   CI
--   AGENTS.md
--   Environment/configuration conventions
--   Basic logging
--   Project documentation
+- Git repository
+- Tauri 2
+- React
+- TypeScript
+- Vite
+- ESLint
+- Formatting
+- Unit test framework
+- Playwright
+- CI
+- AGENTS.md
+- Environment/configuration conventions
+- Basic logging
+- Project documentation
 
 ## Target repository structure
 
-``` text
+```text
 chessforge/
 ├── .github/workflows/
 ├── docs/
@@ -50,7 +50,7 @@ Enable strict TypeScript.
 
 Required baseline checks:
 
-``` text
+```text
 npm run lint
 npm run typecheck
 npm run test
@@ -61,7 +61,7 @@ Add equivalent Windows CI verification.
 
 ## CI pipeline
 
-``` text
+```text
 Checkout
   ↓
 Install dependencies
@@ -81,7 +81,7 @@ Windows package smoke build
 
 First task:
 
-``` text
+```text
 Inspect the repository.
 Do not modify anything.
 Report the current state and bootstrap plan.
@@ -89,13 +89,13 @@ Report the current state and bootstrap plan.
 
 Second task:
 
-``` text
+```text
 Implement only the approved bootstrap plan.
 ```
 
 Third task:
 
-``` text
+```text
 Run all verification commands and inspect the final diff.
 ```
 
@@ -104,31 +104,31 @@ localized fixes.
 
 ## Acceptance criteria
 
--   App launches on Windows.
--   Development server works.
--   Production build succeeds.
--   TypeScript strict checks pass.
--   Lint passes.
--   Unit test runner works.
--   Playwright configuration works.
--   GitHub Actions runs successfully.
--   AGENTS.md exists and is enforced operationally.
--   README contains setup and verification instructions.
+- App launches on Windows.
+- Development server works.
+- Production build succeeds.
+- TypeScript strict checks pass.
+- Lint passes.
+- Unit test runner works.
+- Playwright configuration works.
+- GitHub Actions runs successfully.
+- AGENTS.md exists and is enforced operationally.
+- README contains setup and verification instructions.
 
 ## Non-goals
 
--   Chess rules
--   Board implementation
--   Stockfish
--   Game persistence
--   Online features
+- Chess rules
+- Board implementation
+- Stockfish
+- Game persistence
+- Online features
 
 ## Risks
 
--   Tauri environment mismatch
--   Windows build toolchain issues
--   Dependency drift
--   CI environment mismatch
+- Tauri environment mismatch
+- Windows build toolchain issues
+- Dependency drift
+- CI environment mismatch
 
 ## Exit criteria
 
@@ -138,12 +138,12 @@ successfully.
 
 ## Sprint decomposition candidates
 
--   Tauri bootstrap
--   Frontend bootstrap
--   Developer tooling
--   Testing setup
--   Playwright setup
--   CI setup
--   AGENTS.md
--   Documentation
--   Windows build validation
+- Tauri bootstrap
+- Frontend bootstrap
+- Developer tooling
+- Testing setup
+- Playwright setup
+- CI setup
+- AGENTS.md
+- Documentation
+- Windows build validation
