@@ -17,15 +17,15 @@ Branch: `feature/p03-s03-special-moves`
 - [x] **SEC-3301**: [Security Officer] Conduct Desktop & Runtime Safety Audit (untrusted promotion piece input validation, memory safety on castling/en-passant transitions, zero injection).
 - [x] **SDET-3302**: [SDET Architect] Script comprehensive unit and property-based regression suites (`castling.test.ts`, `enPassant.test.ts`, `promotion.test.ts`, `specialMovesSan.test.ts`), verify typecheck, lint, and conduct Test Automation Quality Gate Review.
 - [x] **PO-3301**: [Product Owner] Conduct Product & Chess Domain Acceptance Criteria Review against Sprint 03 Definition of Done.
-- [ ] **DO-3301**: [DevOps Engineer] Author PR documentation (`docs/pull_requests/pr_P03_S03_special_moves.md`), commit atomic changes, push branch to origin, and raise GitHub PR.
+- [x] **DO-3301**: [DevOps Engineer] Author PR documentation (`docs/pull_requests/pr_P03_S03_special_moves.md`), commit atomic changes, push branch to origin, and raise GitHub PR: [PR #15](https://github.com/munna7862/ChessGame/pull/15).
 
 ---
 
 ## Persona Handoff Status
 
-- **Current Persona:** Product Owner
-- **Handoff Target:** DevOps Engineer
-- **Sprint Status:** **IN PROGRESS**
+- **Current Persona:** DevOps Engineer / Release Handoff
+- **Handoff Target:** Human Stakeholder / Product Owner
+- **Sprint Status:** **COMPLETED & VERIFIED**
 
 ---
 
