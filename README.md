@@ -172,3 +172,5 @@ All contributions must strictly satisfy the sprint **Definition of Done (DoD)**:
 - Zero linter/compiler suppression flags (`it.skip`, `@ts-ignore`, `eslint-disable`).
 - Least-privilege capability verification for native desktop APIs.
 - Clean pull request created on an isolated `feature/*` branch.
+
+For complete multi-agent operating rules, command allowlists, and handoff protocols, see the [Agent Guardrails & Multi-Agent Development Guide](file:///c:/Workspace/ChessGame/docs/guides/agent_guardrails_guide.md) and [Universal Operating Contract](file:///c:/Workspace/ChessGame/AGENTS.md).

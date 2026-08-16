@@ -181,3 +181,66 @@ A sprint feature is complete and ready for release only when:
 - [x] **PO Acceptance Approved:** Product requirements and UX journeys satisfied.
 - [x] **Git Diff Reviewed & Clean:** Conventional commits on feature branch with no artifacts or temporary files.
 - [x] **GitHub PR Raised:** Remote Pull Request created and linked in `task.md`.
+
+---
+
+## 9. Protected Workspace Boundaries & File Areas
+
+To ensure codebase integrity and prevent accidental regressions or unauthorized system modifications during autonomous execution, files are categorized into protected zones:
+
+| Protection Tier                               | Workspace Paths & Files                                                                                                            | Modification Rules                                                                                                                 |
+| :-------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------- |
+| **Tier 1: Core Tooling & Lockfiles**          | `package.json`, `package-lock.json`, `tsconfig*.json`, `vite.config.ts`, `playwright.config.ts`, `eslint.config.js`, `.prettierrc` | Modified ONLY when dependency additions or tooling changes are explicitly authorized in the active sprint plan.                    |
+| **Tier 2: Core Architecture & Security**      | `docs/adr/`, `docs/architecture.md`, `docs/security-model.md`, `src-tauri/capabilities/`, `src-tauri/tauri.conf.json`              | Requires explicit sign-off from **Dev Architect** and **Security Officer**. Native capability changes must remain least-privilege. |
+| **Tier 3: CI/CD Workflows**                   | `.github/workflows/ci.yml`, `.github/pull_request_template.md`                                                                     | Modified ONLY by **DevOps Engineer** or **Dev Architect** with full YAML validation and action pinning.                            |
+| **Tier 4: Agent Governance & Rules**          | `AGENTS.md`, `.agents/AGENTS.md`, `.agents/skills/`                                                                                | Synced and maintained across canonical locations. Changes must be verified against the workspace operating contract.               |
+| **Tier 5: Version Control & System Metadata** | `.git/`, `.gitignore`                                                                                                              | Agents must never directly edit files inside `.git/` directory.                                                                    |
+
+---
+
+## 10. Terminal Command Execution Boundaries
+
+### 10.1 Allowed Terminal Commands
+
+Agents may autonomously execute standard non-destructive development, testing, and lifecycle commands:
+
+- **Testing & Quality:** `npm test`, `npm run test:unit`, `npm run test:e2e`, `npm run lint`, `npm run typecheck`, `npm run format:check`, `npm run format`, `npm run build`, `cargo test`, `cargo check`, `cargo clippy`.
+- **Application Execution:** `npm run dev`, `npm run tauri:dev`, `npm run tauri:build`, `npx playwright test`.
+- **Git & Version Control:** `git status`, `git diff`, `git log`, `git branch`, `git checkout -b <branch>`, `git checkout <branch>`, `git add <files>`, `git commit -m "<message>"`, `git push -u origin <branch>`.
+- **GitHub CLI:** `gh pr create`, `gh pr view`, `gh pr status`, `gh pr list`, `gh run list`.
+
+### 10.2 Strictly Blocked & Prohibited Commands
+
+Agents are **strictly prohibited** from running destructive, uncontrolled, or hazardous commands:
+
+- **Destructive Git Operations:** `git push --force`, `git push -f`, `git reset --hard`, `git clean -fxd`, `git rebase` on public branches.
+- **Destructive OS / Filesystem Operations:** `rm -rf /`, `rmdir /s /q C:\`, deleting files outside the project workspace, executing unreviewed binary executables (`.exe`, `.bat`, `.ps1`) from untrusted origins.
+- **Network / Cloud Infrastructure:** Starting unsolicited background servers, establishing external network sockets, downloading third-party binaries without package manager validation, or communicating with external telemetry endpoints.
+
+---
+
+## 11. Standardized Agent Handoff Specification
+
+Every handoff between personas (e.g. from Scrum Master to SDET Architect, or SDET to Dev Architect) must follow this 5-point template in both chat communication and `task.md` logging:
+
+```markdown
+### Persona Handoff Report: [CURRENT_ROLE] -> [TARGET_ROLE]
+
+1. **Completed Work:** Granular list of tasks, files, and artifacts produced in this stage.
+2. **Remaining Work:** Pending tasks required for sprint completion.
+3. **Executed Tests & Results:** Exact commands run, pass/fail counts, and lint/typecheck status.
+4. **Known Issues or Deferred Items:** Any non-blocking observations or items deferred to future sprints.
+5. **Next Assigned Persona & Verification Required:** Explicit instruction for the incoming persona's gate.
+```
+
+---
+
+## 12. Review Artifact Expectations & Schemas
+
+Agents must produce standard, structured markdown artifacts in designated workspace directories:
+
+- **`task.md`**: Root tracking document showing active sprint, granular task statuses (`[ ]`, `[/]`, `[x]`), persona handoff status, and review refinement loop comments.
+- **`docs/testing/test_cases_catalog_P<XX>_S<YY>.md`**: SDET Architect pre-implementation test catalog with positive, negative, boundary test cases, invariants, and pass/fail criteria.
+- **`docs/pull_requests/pr_P<XX>_S<YY>_<name>.md`**: DevOps Engineer pull request submission artifact containing summary, AI checklist, test results, security sign-off, and DoD verification.
+- **`docs/guides/`**: Operator and developer guides providing architectural context and setup workflows.
+- **File Links:** All file references in documentation and reviews MUST use clickable markdown links with absolute file URIs (`file:///c:/Workspace/ChessGame/...`).
