@@ -46,21 +46,39 @@ npm run dev
 
 The frontend will be accessible at `http://localhost:1420`.
 
-### 3.3 Execute Automated Test Suite
+### 3.3 Execute Automated Unit & Property Tests (Vitest)
 
-Run the Vitest test runner across domain, component, and property-based test suites:
+Run the Vitest test runner across domain, component, and property-based test suites (Tiers 1-4):
 
 ```powershell
 npm run test
 ```
 
-To run tests with watch mode:
+To run tests with watch mode or coverage:
 
 ```powershell
 npm run test:watch
+npm run test:coverage
 ```
 
-### 3.4 Code Quality, Linting & Formatting
+### 3.4 Execute End-to-End Tests (Playwright)
+
+Run the Tier 5 E2E browser/webview automation suite:
+
+```powershell
+# Run all E2E tests headlessly
+npm run test:e2e
+
+# Run E2E tests in interactive UI mode
+npm run test:e2e:ui
+
+# View the generated HTML test execution report
+npm run test:e2e:report
+```
+
+For locator policies and diagnostics, see the [Playwright & E2E Testing Guide](file:///c:/Workspace/ChessGame/docs/guides/e2e_testing_guide.md) and [E2E Stable Test Identifiers Policy](file:///c:/Workspace/ChessGame/docs/testing/e2e_identifiers_policy.md).
+
+### 3.5 Code Quality, Linting & Formatting
 
 ```powershell
 # Run ESLint across all TypeScript and React source files
@@ -78,7 +96,7 @@ npm run format
 
 For detailed conventions and rules, see the [Developer Tooling and Code Quality Guide](file:///c:/Workspace/ChessGame/docs/guides/developer_tooling.md).
 
-### 3.5 Typecheck & Production Frontend Build
+### 3.6 Typecheck & Production Frontend Build
 
 ```powershell
 # Strict TypeScript compilation check (0 errors)
@@ -88,7 +106,7 @@ npm run typecheck
 npm run build
 ```
 
-### 3.6 Launch Desktop Shell (Tauri v2)
+### 3.7 Launch Desktop Shell (Tauri v2)
 
 Run the native Windows desktop application shell:
 

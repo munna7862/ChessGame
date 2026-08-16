@@ -17,17 +17,24 @@ describe("ChessForge Bootstrap Layout (TC-BOOT-05)", () => {
     expect(screen.getByText("v0.1.0-alpha")).toBeInTheDocument();
   });
 
-  it("renders the StatusBadge with correct status indicator", () => {
-    render(<StatusBadge label="Engine Connected" status="ready" />);
-    const badge = screen.getByTestId("status-badge");
+  it("renders the StatusBadge with correct status indicator and custom testid", () => {
+    render(
+      <StatusBadge
+        label="Engine Connected"
+        status="ready"
+        data-testid="custom-badge"
+      />
+    );
+    const badge = screen.getByTestId("custom-badge");
     expect(badge).toBeInTheDocument();
     expect(badge).toHaveTextContent("Engine Connected");
   });
 
-  it("displays local-first and performance metrics on dashboard", () => {
+  it("displays local-first and performance metrics with standard testids", () => {
     render(<App />);
-    expect(screen.getByText("< 150 MB")).toBeInTheDocument();
-    expect(screen.getByText("60 FPS")).toBeInTheDocument();
-    expect(screen.getByText("100% Local")).toBeInTheDocument();
+    expect(screen.getByTestId("metric-memory")).toHaveTextContent("< 150 MB");
+    expect(screen.getByTestId("metric-fps")).toHaveTextContent("60 FPS");
+    expect(screen.getByTestId("metric-local")).toHaveTextContent("100% Local");
+    expect(screen.getByTestId("feature-list")).toBeInTheDocument();
   });
 });

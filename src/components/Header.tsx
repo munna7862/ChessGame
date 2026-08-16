@@ -18,6 +18,7 @@ export const Header: React.FC = () => {
     >
       <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
         <span
+          data-testid="app-brand"
           style={{
             fontSize: "1.25rem",
             fontWeight: 800,
@@ -28,6 +29,7 @@ export const Header: React.FC = () => {
           Chess<span style={{ color: "#38bdf8" }}>Forge</span>
         </span>
         <span
+          data-testid="app-version"
           style={{
             fontSize: "0.7rem",
             fontWeight: 600,
@@ -44,7 +46,11 @@ export const Header: React.FC = () => {
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-        <StatusBadge label="Local Engine Ready" status="ready" />
+        <StatusBadge
+          data-testid="engine-status-badge"
+          label="Local Engine Ready"
+          status="ready"
+        />
       </div>
     </header>
   );

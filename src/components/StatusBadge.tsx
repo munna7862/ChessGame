@@ -3,11 +3,13 @@ import React from "react";
 export interface StatusBadgeProps {
   label: string;
   status?: "online" | "idle" | "evaluating" | "ready";
+  "data-testid"?: string;
 }
 
 export const StatusBadge: React.FC<StatusBadgeProps> = ({
   label,
   status = "ready",
+  "data-testid": testId = "status-badge",
 }) => {
   const getStatusColor = () => {
     switch (status) {
@@ -24,7 +26,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
 
   return (
     <div
-      data-testid="status-badge"
+      data-testid={testId}
       style={{
         display: "inline-flex",
         alignItems: "center",
