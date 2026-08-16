@@ -60,6 +60,7 @@ describe("Special Moves SAN / UCI Consistency & Generative Fuzzing (TC-SPEC-27)"
             if (legalMoves.length === 0) break;
 
             const selectedMove = legalMoves[choice % legalMoves.length];
+            if (!selectedMove) break;
             const fenBefore = adapter.exportFen();
 
             const moveInput: MoveInput = {

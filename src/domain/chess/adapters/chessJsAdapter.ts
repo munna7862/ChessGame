@@ -10,6 +10,7 @@ import type { ChessAdapterPort } from "../ports";
 import {
   type BoardMatrix,
   type Color,
+  ColorSchema,
   type GameStatus,
   type Move,
   type MoveInput,
@@ -29,6 +30,7 @@ import {
  */
 export class ChessJsAdapter implements ChessAdapterPort {
   private instance: Chess;
+  private manualStatus: GameStatus | null = null;
 
   constructor(initialFen?: string) {
     if (initialFen) {
@@ -97,6 +99,9 @@ export class ChessJsAdapter implements ChessAdapterPort {
   }
 
   public getLegalMoves(square?: Square): Move[] {
+    if (this.getStatus().isOver) {
+      return [];
+    }
     try {
       const options: { verbose: true; square?: Square } = { verbose: true };
       if (square) {
@@ -115,6 +120,9 @@ export class ChessJsAdapter implements ChessAdapterPort {
   }
 
   public isLegalMove(move: MoveInput): boolean {
+    if (this.getStatus().isOver) {
+      return false;
+    }
     if (!isValidSquare(move.from) || !isValidSquare(move.to)) {
       return false;
     }
@@ -149,7 +157,7 @@ export class ChessJsAdapter implements ChessAdapterPort {
       );
     }
 
-    if (this.instance.isGameOver()) {
+    if (this.getStatus().isOver) {
       return err(
         createDomainError(
           "GAME_ALREADY_OVER",
@@ -262,6 +270,9 @@ export class ChessJsAdapter implements ChessAdapterPort {
   }
 
   public undo(): Result<Move, ChessDomainError> {
+    if (this.manualStatus) {
+      this.manualStatus = null;
+    }
     const rawUndone = this.instance.undo();
     if (!rawUndone) {
       return err(
@@ -278,6 +289,7 @@ export class ChessJsAdapter implements ChessAdapterPort {
     try {
       // In chess.js, load resets and parses the FEN
       this.instance.load(fen);
+      this.manualStatus = null;
       return ok(undefined);
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : "Invalid FEN structure.";
@@ -297,6 +309,7 @@ export class ChessJsAdapter implements ChessAdapterPort {
   public importPgn(pgn: string): Result<void, ChessDomainError> {
     try {
       this.instance.loadPgn(pgn);
+      this.manualStatus = null;
       return ok(undefined);
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : "Invalid PGN structure.";
@@ -314,10 +327,14 @@ export class ChessJsAdapter implements ChessAdapterPort {
   }
 
   public getStatus(): GameStatus {
+    if (this.manualStatus) {
+      return this.manualStatus;
+    }
+
     const isCheck = this.instance.inCheck();
-    const isOver = this.instance.isGameOver();
     const turn = this.instance.turn() as Color;
 
+    // 1. Checkmate takes precedence over all other board states
     if (this.instance.isCheckmate()) {
       const winner = oppositeColor(turn);
       return {
@@ -331,6 +348,7 @@ export class ChessJsAdapter implements ChessAdapterPort {
       };
     }
 
+    // 2. Stalemate
     if (this.instance.isStalemate()) {
       return {
         state: "stalemate",
@@ -343,6 +361,7 @@ export class ChessJsAdapter implements ChessAdapterPort {
       };
     }
 
+    // 3. Threefold repetition
     if (this.instance.isThreefoldRepetition()) {
       return {
         state: "draw_threefold_repetition",
@@ -355,6 +374,7 @@ export class ChessJsAdapter implements ChessAdapterPort {
       };
     }
 
+    // 4. Insufficient material
     if (this.instance.isInsufficientMaterial()) {
       return {
         state: "draw_insufficient_material",
@@ -367,7 +387,7 @@ export class ChessJsAdapter implements ChessAdapterPort {
       };
     }
 
-    // Check 50-move rule: halfmove clock >= 100
+    // 5. 50-move rule: halfmove clock >= 100
     const fenTokens = this.instance.fen().split(" ");
     const halfmoveClock = parseInt(fenTokens[4] ?? "0", 10);
     if (halfmoveClock >= 100) {
@@ -382,7 +402,8 @@ export class ChessJsAdapter implements ChessAdapterPort {
       };
     }
 
-    if (isOver && this.instance.isDraw()) {
+    // 6. Generic draw agreement / other draw condition
+    if (this.instance.isGameOver() && this.instance.isDraw()) {
       return {
         state: "draw_agreement",
         isOver: true,
@@ -394,6 +415,7 @@ export class ChessJsAdapter implements ChessAdapterPort {
       };
     }
 
+    // 7. Active play
     return {
       state: "active",
       isOver: false,
@@ -407,6 +429,106 @@ export class ChessJsAdapter implements ChessAdapterPort {
     };
   }
 
+  public resign(player: Color): Result<GameStatus, ChessDomainError> {
+    const parsedColor = ColorSchema.safeParse(player);
+    if (!parsedColor.success) {
+      return err(
+        createDomainError(
+          "INVALID_COLOR",
+          `Invalid player color '${String(player)}'.`,
+          {
+            color: player,
+          }
+        )
+      );
+    }
+
+    const currentStatus = this.getStatus();
+    if (currentStatus.isOver) {
+      return err(
+        createDomainError(
+          "GAME_ALREADY_OVER",
+          "Cannot resign a completed game session."
+        )
+      );
+    }
+
+    const winner = oppositeColor(parsedColor.data);
+    const status: GameStatus = {
+      state: "resigned",
+      isOver: true,
+      winner,
+      isCheck: this.instance.inCheck(),
+      inDraw: false,
+      drawReason: null,
+      description: `${parsedColor.data === "w" ? "White" : "Black"} resigned. ${winner === "w" ? "White" : "Black"} wins.`,
+    };
+    this.manualStatus = status;
+    return ok(status);
+  }
+
+  public timeout(player: Color): Result<GameStatus, ChessDomainError> {
+    const parsedColor = ColorSchema.safeParse(player);
+    if (!parsedColor.success) {
+      return err(
+        createDomainError(
+          "INVALID_COLOR",
+          `Invalid player color '${String(player)}'.`,
+          {
+            color: player,
+          }
+        )
+      );
+    }
+
+    const currentStatus = this.getStatus();
+    if (currentStatus.isOver) {
+      return err(
+        createDomainError(
+          "GAME_ALREADY_OVER",
+          "Cannot record timeout on a completed game session."
+        )
+      );
+    }
+
+    const winner = oppositeColor(parsedColor.data);
+    const status: GameStatus = {
+      state: "timeout",
+      isOver: true,
+      winner,
+      isCheck: this.instance.inCheck(),
+      inDraw: false,
+      drawReason: null,
+      description: `${parsedColor.data === "w" ? "White" : "Black"} ran out of time. ${winner === "w" ? "White" : "Black"} wins.`,
+    };
+    this.manualStatus = status;
+    return ok(status);
+  }
+
+  public agreeDraw(): Result<GameStatus, ChessDomainError> {
+    const currentStatus = this.getStatus();
+    if (currentStatus.isOver) {
+      return err(
+        createDomainError(
+          "GAME_ALREADY_OVER",
+          "Cannot agree to draw on a completed game session."
+        )
+      );
+    }
+
+    const status: GameStatus = {
+      state: "draw_agreement",
+      isOver: true,
+      winner: null,
+      isCheck: this.instance.inCheck(),
+      inDraw: true,
+      drawReason: "agreement",
+      description: "Draw agreed by mutual consent.",
+    };
+    this.manualStatus = status;
+    return ok(status);
+  }
+
   public getHistory(): Move[] {
     const rawHistory = this.instance.history({
       verbose: true,
@@ -416,6 +538,7 @@ export class ChessJsAdapter implements ChessAdapterPort {
 
   public reset(): void {
     this.instance.reset();
+    this.manualStatus = null;
   }
 
   private mapChessJsMoveToDomain(raw: ChessJsMove): Move {
