@@ -9,7 +9,7 @@ Branch: `feature/p02-s01-repository-and-tauri-bootstrap`
 ## Sprint Tasks Breakdown
 
 - [x] **SM-2101**: [Scrum Master] Initialize Sprint 01 plan, task breakdown, and dependency verification in `task.md`.
-- [ ] **SDET-2101**: [SDET Architect] Author Sprint 01 Verification Catalog (`docs/testing/test_cases_catalog_P02_S01.md`) covering repository layout, TypeScript compilation, Vite build pipeline, Vitest test execution, and Tauri configuration schemas.
+- [x] **SDET-2101**: [SDET Architect] Author Sprint 01 Verification Catalog (`docs/testing/test_cases_catalog_P02_S01.md`) covering repository layout, TypeScript compilation, Vite build pipeline, Vitest test execution, and Tauri configuration schemas.
 - [ ] **DEV-2101**: [Dev Architect / Senior SDE] Initialize repository root baseline: `.gitignore`, `.npmrc`, baseline license/metadata.
 - [ ] **DEV-2102**: [Dev Architect / Senior SDE] Scaffold React 19 + TypeScript frontend with Vite, Tailwind/Vanilla styling tokens, base layout, and type configurations (`tsconfig.json`, `tsconfig.app.json`, `tsconfig.node.json`, `vite.config.ts`).
 - [ ] **DEV-2103**: [Dev Architect / Senior SDE] Scaffold Tauri v2 desktop shell structure (`src-tauri/Cargo.toml`, `src-tauri/tauri.conf.json`, `src-tauri/src/main.rs`, `src-tauri/src/lib.rs`, `src-tauri/capabilities/default.json`).
@@ -24,11 +24,12 @@ Branch: `feature/p02-s01-repository-and-tauri-bootstrap`
 ---
 
 ## Persona Handoff Status
-- **Current Persona:** Scrum Master
-- **Handoff Target:** SDET Architect
-- **Sprint Status:** **IN PROGRESS (Sprint Planning Completed)**
+- **Current Persona:** Dev Architect / Senior SDE
+- **Handoff Target:** Dev Architect / Senior SDE
+- **Sprint Status:** **IN PROGRESS (Pre-Implementation Test Catalog Ready)**
 
 ---
 
 ## Sprint Review Comments & Refinement Loop
 - `[SCRUM_MASTER] -> [SDET_ARCHITECT]`: Phase 02 · Sprint 01 kicked off. Phase 01 architecture, testing, and security blueprints verified as dependencies. Handing off to SDET Architect for Sprint 01 Test Cases Catalog (`docs/testing/test_cases_catalog_P02_S01.md`).
+- `[SDET_ARCHITECT] -> [DEV_ARCHITECT]`: Authored Test Cases Catalog (`docs/testing/test_cases_catalog_P02_S01.md`) covering TC-BOOT-01 to TC-BOOT-09. Handing off to Dev Architect for implementation. Status: **APPROVED**.
