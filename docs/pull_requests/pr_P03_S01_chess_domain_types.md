@@ -35,15 +35,15 @@ This pull request delivers the pure, authoritative chess domain foundation for *
 
 ## 2. Test Execution & Quality Verification
 
-| Test Category | Command | Result |
-| :--- | :--- | :--- |
-| **Unit & Contract Tests** | `npm test` | **29 / 29 passed (100% green)** |
-| **Playwright E2E Tests** | `npm run test:e2e` | **5 / 5 passed** |
-| **TypeScript Strict Typecheck** | `npm run typecheck` | **0 errors (`strict: true`)** |
-| **ESLint Rules & Standards** | `npm run lint` | **0 errors, 0 warnings** |
-| **Prettier Formatting** | `npm run format:check` | **100% clean formatting** |
-| **Vite Production Build** | `npm run build` | **Build successful (`dist/`)** |
-| **Dependency Security Audit** | `npm audit` | **0 vulnerabilities** |
+| Test Category                   | Command                | Result                          |
+| :------------------------------ | :--------------------- | :------------------------------ |
+| **Unit & Contract Tests**       | `npm test`             | **29 / 29 passed (100% green)** |
+| **Playwright E2E Tests**        | `npm run test:e2e`     | **5 / 5 passed**                |
+| **TypeScript Strict Typecheck** | `npm run typecheck`    | **0 errors (`strict: true`)**   |
+| **ESLint Rules & Standards**    | `npm run lint`         | **0 errors, 0 warnings**        |
+| **Prettier Formatting**         | `npm run format:check` | **100% clean formatting**       |
+| **Vite Production Build**       | `npm run build`        | **Build successful (`dist/`)**  |
+| **Dependency Security Audit**   | `npm audit`            | **0 vulnerabilities**           |
 
 ---
 

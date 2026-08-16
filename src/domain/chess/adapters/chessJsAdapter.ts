@@ -385,7 +385,7 @@ export class ChessJsAdapter implements ChessAdapterPort {
         ? "queenside"
         : undefined;
     const isEnPassant = raw.flags.includes("e");
-    const isCheck = raw.san.includes("+");
+    const isCheck = raw.san.includes("+") || raw.san.includes("#");
     const isCheckmate = raw.san.includes("#");
 
     return {

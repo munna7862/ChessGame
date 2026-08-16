@@ -2,25 +2,26 @@
 
 ## Active Sprint
 
-**Phase 03 · Sprint 01: Chess Domain Types and Adapter Contract**
-Branch: `feature/p03-s01-chess-domain-types-and-adapter-contract`
+**Phase 03 · Sprint 02: Legal Move Execution**
+Branch: `feature/p03-s02-legal-move-execution`
 
 ---
 
 ## Sprint Tasks Breakdown
 
-- [x] **SM-3101**: [Scrum Master] Initialize Sprint 01 plan, task breakdown, dependency verification, and feature branch `feature/p03-s01-chess-domain-types-and-adapter-contract` in `task.md`.
-- [x] **CDA-3101**: [Chess Domain Architect] Review chess domain semantics, invariants, type boundaries, and author domain contract specifications.
-- [x] **SDET-3101**: [SDET Architect] Author Sprint 01 Test Cases Catalog (`docs/testing/test_cases_catalog_P03_S01.md`) covering core types, schema validation, adapter contract, error handling, and dependency inversion.
-- [x] **DEV-3101**: [Dev Architect / Senior SDE] Implement pure chess domain types, schemas, and error models in `src/domain/chess/types.ts` and `src/domain/chess/errors.ts`.
-- [x] **DEV-3102**: [Dev Architect / Senior SDE] Define `ChessGame` domain port and `ChessAdapterPort` interface in `src/domain/chess/ports.ts`.
-- [x] **DEV-3103**: [Dev Architect / Senior SDE] Implement `ChessJsAdapter` skeleton in `src/domain/chess/adapters/chessJsAdapter.ts` isolating `chess.js` behind domain contracts.
-- [x] **DEV-3104**: [Dev Architect / Senior SDE] Document adapter ownership rules, domain architecture, and boundary contracts in `docs/chess/chess_domain_adapter_contract.md`.
-- [x] **DEV-3105**: [Dev Architect / Senior SDE] Conduct Dev Technical Code Acceptance Review.
-- [x] **SEC-3101**: [Security Officer] Conduct Desktop & Dependency Security Audit (zero telemetry, zero backend sockets, safe runtime parsing with Zod).
-- [x] **SDET-3102**: [SDET Architect] Script automated domain contract tests, dependency boundary tests, typecheck, lint, and conduct Test Automation Quality Gate Review.
-- [x] **PO-3101**: [Product Owner] Conduct Product & Chess Domain Acceptance Criteria Review against Sprint 01 Definition of Done.
-- [x] **DO-3101**: [DevOps Engineer] Author PR documentation (`docs/pull_requests/pr_P03_S01_chess_domain_types.md`), commit atomic changes, push branch to origin, and raise GitHub PR: [PR #13](https://github.com/munna7862/ChessGame/pull/13).
+- [x] **SM-3201**: [Scrum Master] Initialize Sprint 02 plan, task breakdown, dependency verification, and feature branch `feature/p03-s02-legal-move-execution` in `task.md`.
+- [x] **CDA-3201**: [Chess Domain Architect] Formalize legal move execution invariants, state transition rules, illegal move immutability guarantees, and move metadata contracts in `docs/chess/move_execution_invariants.md`.
+- [x] **SDET-3201**: [SDET Architect] Author Sprint 02 Test Cases Catalog (`docs/testing/test_cases_catalog_P03_S02.md`) covering legal move queries, execution, illegal move rejection immutability, turn transitions, move history undo/redo, and position reconstruction.
+- [x] **DEV-3201**: [Dev Architect / Senior SDE] Implement authoritative move querying (`getLegalMoves`, `getLegalMovesFromSquare`) in `ChessJsAdapter` & `ports.ts`.
+- [x] **DEV-3202**: [Dev Architect / Senior SDE] Implement move validation and execution (`makeMove`) with comprehensive move metadata (SAN, UCI, captures, promotions, check/checkmate flags).
+- [x] **DEV-3203**: [Dev Architect / Senior SDE] Implement move rejection with zero state mutation and standardized `AppError` on illegal moves.
+- [x] **DEV-3204**: [Dev Architect / Senior SDE] Implement state undo mechanism (`undoMove`) restoring exact prior board state, turn, castling rights, and clocks.
+- [x] **DEV-3205**: [Dev Architect / Senior SDE] Implement position reconstruction and history synchronization methods.
+- [x] **DEV-3206**: [Dev Architect / Senior SDE] Conduct Dev Technical Code Acceptance Review.
+- [x] **SEC-3201**: [Security Officer] Conduct Desktop & Runtime Safety Audit (state immutability, memory leak prevention in move history stacks, untrusted move input sanitization).
+- [x] **SDET-3202**: [SDET Architect] Script comprehensive unit and property-based regression suites (`legalMoves.test.ts`, `moveExecution.test.ts`, `undoHistory.test.ts`), verify typecheck, lint, and conduct Test Automation Quality Gate Review.
+- [x] **PO-3201**: [Product Owner] Conduct Product & Chess Domain Acceptance Criteria Review against Sprint 02 Definition of Done.
+- [x] **DO-3201**: [DevOps Engineer] Author PR documentation (`docs/pull_requests/pr_P03_S02_legal_move_execution.md`), commit atomic changes, push branch to origin, and raise GitHub PR: [PR #14](https://github.com/munna7862/ChessGame/pull/14).
 
 ---
 
@@ -34,10 +35,10 @@ Branch: `feature/p03-s01-chess-domain-types-and-adapter-contract`
 
 ## Sprint Review Comments & Refinement Loop
 
-- `[SCRUM_MASTER] -> [CHESS_DOMAIN_ARCHITECT]`: Phase 03 · Sprint 01 initialized on branch `feature/p03-s01-chess-domain-types-and-adapter-contract`. Prerequisites (Phase 01 ADR-001/ADR-005 and Phase 02 Foundation) verified. Handing off to Chess Domain Architect to formalize domain contracts and invariants.
-- `[CHESS_DOMAIN_ARCHITECT] -> [SDET_ARCHITECT]`: Domain requirements and invariants established: pure framework-independent domain, strict coordinate mapping, lossless FEN/PGN round-trips, and immutable game-over states. Handing off to SDET Architect for Sprint 01 Test Cases Catalog (`docs/testing/test_cases_catalog_P03_S01.md`). Status: **APPROVED**.
-- `[SDET_ARCHITECT] -> [DEV_ARCHITECT]`: Authored Sprint 01 Test Cases Catalog (`docs/testing/test_cases_catalog_P03_S01.md`) covering TC-DOM-01 through TC-DOM-15 with golden FEN scenarios. Handing off to Dev Architect / Senior SDE for domain implementation. Status: **APPROVED**.
-- `[DEV_ARCHITECT] -> [SECURITY_OFFICER]`: Implemented domain types (`src/domain/chess/types.ts`), unified error models (`src/domain/chess/errors.ts`), ports (`src/domain/chess/ports.ts`), adapter (`src/domain/chess/adapters/chessJsAdapter.ts`), and documentation (`docs/chess/chess_domain_adapter_contract.md`). Handing off to Security Officer for dependency and safety audit. Status: **APPROVED**.
-- `[SECURITY_OFFICER] -> [SDET_ARCHITECT]`: Verified `chess.js` (v1.4.0) with BSD-2-Clause license; `npm audit` returned 0 vulnerabilities; zero telemetry, network sockets, or backend processes introduced; Zod schema runtime validation strictly applied. Handing off to SDET Architect for Test Automation Quality Gate Review. Status: **APPROVED**.
-- `[SDET_ARCHITECT] -> [PRODUCT_OWNER]`: Authored domain test suites (`domainTypes.test.ts`, `chessJsAdapter.test.ts`, `dependencyInversion.test.ts`). Executed local checks: 29/29 Vitest tests pass; 5/5 Playwright E2E smoke tests pass; `tsc -b` and `eslint .` pass with 0 errors/warnings; Prettier 100% clean; production build successful. Handing off to Product Owner for acceptance review. Status: **APPROVED**.
-- `[PRODUCT_OWNER] -> [DEVOPS_ENGINEER]`: Acceptance Criteria for Sprint 01 fully satisfied. Domain compiles independently of React; third-party library is strictly hidden behind adapter; core types and error behaviors are explicit. DevOps Engineer is authorized to commit, push branch, and submit Pull Request. Status: **APPROVED**.
+- `[SCRUM_MASTER] -> [CHESS_DOMAIN_ARCHITECT]`: Phase 03 · Sprint 02 initialized on branch `feature/p03-s02-legal-move-execution`. Dependencies (Phase 03 · Sprint 01 types & adapter contracts) verified clean. Handing off to Chess Domain Architect to formalize legal move execution invariants, state transition rules, illegal move rejection immutability, and move history contracts. Status: **APPROVED**.
+- `[CHESS_DOMAIN_ARCHITECT] -> [SDET_ARCHITECT]`: Authored `docs/chess/move_execution_invariants.md` defining FIDE state transitions, turn progression, halfmove/fullmove clock counters, castling rights revocation, en passant expiration, failure immutability contracts, and golden FEN fixtures. Handing off to SDET Architect for Sprint 02 Test Cases Catalog. Status: **APPROVED**.
+- `[SDET_ARCHITECT] -> [DEV_ARCHITECT]`: Authored Sprint 02 Test Cases Catalog (`docs/testing/test_cases_catalog_P03_S02.md`) covering TC-MOVE-01 through TC-MOVE-23. Handing off to Dev Architect / Senior SDE for domain implementation and review. Status: **APPROVED**.
+- `[DEV_ARCHITECT] -> [SECURITY_OFFICER]`: Implemented move querying, validation, execution, failure immutability, undo, and position reconstruction in `ChessJsAdapter`. Verified `isCheck` metadata logic for checkmate moves. Handing off to Security Officer for desktop and memory safety audit. Status: **APPROVED**.
+- `[SECURITY_OFFICER] -> [SDET_ARCHITECT]`: Verified memory bounds and zero leak risk on move history stack; zero network/socket operations; input validation strictly enforced via domain type guards; `npm audit` returned 0 vulnerabilities. Handing off to SDET Architect for Test Automation Quality Gate Review. Status: **APPROVED**.
+- `[SDET_ARCHITECT] -> [PRODUCT_OWNER]`: Authored automated test suites (`legalMoves.test.ts`, `moveExecution.test.ts`, `undoHistory.test.ts`). Executed local checks: 73/73 Vitest tests pass (including 100-run `fast-check` property fuzzing); 5/5 Playwright E2E smoke tests pass; `tsc --noEmit` and `eslint .` pass with 0 errors/warnings; Prettier 100% clean; production build successful. Handing off to Product Owner for acceptance review. Status: **APPROVED**.
+- `[PRODUCT_OWNER] -> [DEVOPS_ENGINEER]`: Acceptance Criteria for Sprint 02 fully satisfied. Legal moves execute smoothly across piece types, special moves (castling, en passant, promotion) execute accurately, illegal moves fail with 0 mutation, and undo restores exact previous states. DevOps Engineer is authorized to commit, push branch, and submit Pull Request. Status: **APPROVED**.

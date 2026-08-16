@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e1b4b" />
+      <stop offset="50%" stop-color="#312e81" />
+      <stop offset="100%" stop-color="#4338ca" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+    <linearGradient id="silverGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#cbd5e1" />
+    </linearGradient>
+  </defs>
+  <!-- Background Rounded Shield / Tile -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
+  <!-- Inner Glow Border -->
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="none" stroke="url(#goldGrad)" stroke-width="8" opacity="0.6" />
+  <!-- Chess Knight Icon Silhouette -->
+  <g transform="translate(106, 80) scale(0.6)">
+    <!-- Chess Knight Path -->
+    <path fill="url(#silverGrad)" d="M350 400 H150 C140 400 130 390 130 380 C130 360 140 340 160 320 C180 300 210 280 230 250 C240 235 245 210 240 180 C235 150 210 130 180 140 C160 146 145 160 135 175 C130 183 120 185 112 180 C105 175 103 165 108 155 C122 130 148 110 180 100 C225 86 270 105 285 145 C295 172 290 205 275 230 C260 255 235 275 220 295 C205 315 195 330 190 345 C195 345 200 345 210 345 H340 C355 345 365 355 365 370 C365 385 355 400 340 400 Z" />
+    <!-- Knight Eye -->
+    <circle cx="210" cy="150" r="14" fill="#1e1b4b" />
+    <!-- Knight Mane / Spikes -->
+    <path fill="url(#goldGrad)" d="M285 145 Q320 170 305 210 Q340 230 320 275 Q350 300 330 345 H280 Q300 300 270 270 Q290 230 260 190 Z" />
+  </g>
+</svg>
