@@ -17,7 +17,7 @@ Branch: `feature/p01-s05-testing-and-agent-operating-contract`
 - [x] **SEC-501**: [Security Officer] Conduct Security & Governance Safety Audit on Agent Operating Contract (worktree safety, prohibited permissions, no unvetted dependencies, secret isolation, no telemetry/network leakage).
 - [x] **SDET-503**: [SDET Architect] Execute Dry-Run Sprint Simulation & Test Automation Quality Gate Review.
 - [x] **PO-501**: [Product Owner] Conduct Product & Governance Acceptance Criteria Review against Sprint 05 Definition of Done.
-- [x] **DO-501**: [DevOps Engineer] Author PR description (`docs/pull_requests/pr_P01_S05_testing_and_agent_operating_contract.md`), commit atomic changes, push branch to origin, and raise GitHub PR.
+- [x] **DO-501**: [DevOps Engineer] Author PR description (`docs/pull_requests/pr_P01_S05_testing_and_agent_operating_contract.md`), commit atomic changes, push branch to origin, and raise GitHub PR: [PR #7](https://github.com/munna7862/ChessGame/pull/7).
 
 ---
 
