@@ -11,6 +11,8 @@ export default tseslint.config(
       "node_modules/**",
       "src-tauri/**",
       "coverage/**",
+      "playwright-report/**",
+      "test-results/**",
       "**/*.tsbuildinfo",
       ".gemini/**",
     ],

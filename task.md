@@ -2,26 +2,25 @@
 
 ## Active Sprint
 
-**Phase 02 · Sprint 02: Developer Tooling and Code Quality**
-Branch: `feature/p02-s02-developer-tooling-and-code-quality`
+**Phase 02 · Sprint 03: Playwright and E2E Foundation**
+Branch: `feature/p02-s03-playwright-and-e2e-foundation`
 
 ---
 
 ## Sprint Tasks Breakdown
 
-- [x] **SM-2201**: [Scrum Master] Initialize Sprint 02 plan, task breakdown, dependency verification, and feature branch in `task.md`.
-- [x] **SDET-2201**: [SDET Architect] Author Sprint 02 Verification & Tooling Test Cases Catalog (`docs/testing/test_cases_catalog_P02_S02.md`).
-- [x] **DEV-2201**: [Dev Architect / Senior SDE] Harden TypeScript configuration (`tsconfig.json`, `tsconfig.app.json`, `tsconfig.node.json`) with strict compiler options (`noImplicitAny`, `strictNullChecks`, `noUncheckedIndexedAccess`, etc.).
-- [x] **DEV-2202**: [Dev Architect / Senior SDE] Configure ESLint (flat config `eslint.config.js` with TypeScript-ESLint, React hooks, React refresh, and import sorting/hygiene).
-- [x] **DEV-2203**: [Dev Architect / Senior SDE] Configure deterministic code formatter (Prettier `.prettierrc`, `.prettierignore`) and formatting npm scripts.
-- [x] **DEV-2204**: [Dev Architect / Senior SDE] Configure unified npm scripts for `lint`, `lint:fix`, `format`, `format:check`, `typecheck`, `test`, `test:coverage`, `build`.
-- [x] **DEV-2205**: [Dev Architect / Senior SDE] Implement code quality smoke tests covering type checking boundaries, component smoke, and pure logic invariant tests.
-- [x] **DEV-2206**: [Dev Architect / Senior SDE] Author developer tooling and code quality documentation (`docs/guides/developer_tooling.md` and update `README.md`).
-- [x] **DEV-2207**: [Dev Architect / Senior SDE] Conduct Dev Technical Code Acceptance Review.
-- [x] **SEC-2201**: [Security Officer] Conduct Desktop Tooling & Supply Chain Security Audit (auditing devDependencies, script injection prevention, least privilege).
-- [x] **SDET-2202**: [SDET Architect] Execute full automated test suite, lint, format check, and typecheck; conduct Test Automation Quality Gate Review.
-- [x] **PO-2201**: [Product Owner] Conduct Product & UX Acceptance Criteria Review against Sprint 02 Definition of Done.
-- [x] **DO-2201**: [DevOps Engineer] Author PR documentation (`docs/pull_requests/pr_P02_S02_developer_tooling_and_code_quality.md`), commit atomic changes, push branch to origin, and raise GitHub PR: [PR #9](https://github.com/munna7862/ChessGame/pull/9).
+- [x] **SM-2301**: [Scrum Master] Initialize Sprint 03 plan, task breakdown, dependency verification, and feature branch in `task.md`.
+- [x] **SDET-2301**: [SDET Architect] Author Sprint 03 Test Cases Catalog (`docs/testing/test_cases_catalog_P02_S03.md`) covering Playwright configuration, application launch smoke testing, artifact retention on failure, and stable test identifiers.
+- [x] **DEV-2301**: [Dev Architect / Senior SDE] Install `@playwright/test` and configure `playwright.config.ts` (webServer setup, reporter, failure diagnostics retention).
+- [x] **DEV-2302**: [Dev Architect / Senior SDE] Define E2E test directory (`tests/e2e/`) and implement application launch smoke test (`tests/e2e/app-launch.spec.ts`).
+- [x] **DEV-2303**: [Dev Architect / Senior SDE] Define stable test identifiers policy (`docs/testing/e2e_identifiers_policy.md`) and instrument UI components with `data-testid` attributes.
+- [x] **DEV-2304**: [Dev Architect / Senior SDE] Add E2E npm scripts (`test:e2e`, `test:e2e:ui`, `test:e2e:report`) to `package.json`, update `.gitignore` and `.prettierignore` for test artifacts.
+- [x] **DEV-2305**: [Dev Architect / Senior SDE] Author E2E execution and testing guide (`docs/guides/e2e_testing_guide.md`) and update `README.md`.
+- [x] **DEV-2306**: [Dev Architect / Senior SDE] Conduct Dev Technical Code Acceptance Review.
+- [x] **SEC-2301**: [Security Officer] Conduct Desktop Tooling, Browser Automation & Supply Chain Security Audit (devDependencies, safe webServer bounds, no network exfiltration).
+- [x] **SDET-2302**: [SDET Architect] Execute full automated test suite (Vitest unit/integration + Playwright E2E smoke tests + failure diagnostic checks) and conduct Test Automation Quality Gate Review.
+- [x] **PO-2301**: [Product Owner] Conduct Product & UX Acceptance Criteria Review against Sprint 03 Definition of Done.
+- [x] **DO-2301**: [DevOps Engineer] Author PR documentation (`docs/pull_requests/pr_P02_S03_playwright_and_e2e_foundation.md`), commit atomic changes, push branch to origin, and raise GitHub PR: [PR #10](https://github.com/munna7862/ChessGame/pull/10).
 
 ---
 
@@ -29,15 +28,15 @@ Branch: `feature/p02-s02-developer-tooling-and-code-quality`
 
 - **Current Persona:** DevOps Engineer / Release Handoff
 - **Handoff Target:** Human Stakeholder / Product Owner
-- **Sprint Status:** **COMPLETED & VERIFIED (PR #9 Raised)**
+- **Sprint Status:** **COMPLETED & VERIFIED (PR #10 Raised)**
 
 ---
 
 ## Sprint Review Comments & Refinement Loop
 
-- `[SCRUM_MASTER] -> [SDET_ARCHITECT]`: Phase 02 · Sprint 02 kicked off on branch `feature/p02-s02-developer-tooling-and-code-quality`. Sprint 01 repository bootstrap verified as dependency. Handing off to SDET Architect for Sprint 02 Test Cases Catalog (`docs/testing/test_cases_catalog_P02_S02.md`).
-- `[SDET_ARCHITECT] -> [DEV_ARCHITECT]`: Authored Sprint 02 Test Cases Catalog (`docs/testing/test_cases_catalog_P02_S02.md`) covering TC-TOOL-01 through TC-TOOL-10. Handing off to Dev Architect / Senior SDE for implementation. Status: **APPROVED**.
-- `[DEV_ARCHITECT] -> [SECURITY_OFFICER]`: Implemented strict TypeScript compiler configurations, ESLint 9+ flat config, Prettier formatting rules, unified developer scripts, boundary smoke test suite, and developer tooling guide. Dev Code Acceptance passed (9/9 tests passing, 0 type errors, 0 lint warnings/errors, Prettier format verified, clean Vite build). Handing off to Security Officer for security & supply chain audit. Status: **APPROVED**.
-- `[SECURITY_OFFICER] -> [SDET_ARCHITECT]`: Conducted desktop tooling and supply chain security audit. `npm audit` returned 0 vulnerabilities across 258 packages. Verified Tauri v2 permissions remain strictly scoped (`core:default`), CSP unchanged, zero shell injection vectors in npm scripts. Status: **APPROVED**.
-- `[SDET_ARCHITECT] -> [PRODUCT_OWNER]`: Executed full automation suite (9/9 tests passing across Vitest, fast-check, and RTL smoke tests; 0 TypeScript errors under `strict: true`; 0 ESLint warnings/errors; Prettier format 100% clean; Vite build clean). Verified against TC-TOOL-01 through TC-TOOL-10. Handing off to Product Owner for acceptance review. Status: **APPROVED**.
+- `[SCRUM_MASTER] -> [SDET_ARCHITECT]`: Phase 02 · Sprint 03 initialized on branch `feature/p02-s03-playwright-and-e2e-foundation`. Prerequisites (Sprint 01 Tauri bootstrap & Sprint 02 Developer tooling) confirmed. Handing off to SDET Architect for Sprint 03 Test Cases Catalog (`docs/testing/test_cases_catalog_P02_S03.md`).
+- `[SDET_ARCHITECT] -> [DEV_ARCHITECT]`: Authored Sprint 03 Test Cases Catalog (`docs/testing/test_cases_catalog_P02_S03.md`) covering TC-E2E-01 through TC-E2E-10. Handing off to Dev Architect / Senior SDE for implementation. Status: **APPROVED**.
+- `[DEV_ARCHITECT] -> [SECURITY_OFFICER]`: Installed `@playwright/test`, configured `playwright.config.ts` (webServer port 1420, HTML/list reporting, failure artifact collection), created `tests/e2e/app-launch.spec.ts` launch smoke tests, authored E2E identifiers policy (`docs/testing/e2e_identifiers_policy.md`) and testing guide (`docs/guides/e2e_testing_guide.md`), added npm scripts, and verified clean build/lint/typecheck. Dev Code Acceptance passed (9/9 Vitest tests, 5/5 Playwright tests, 0 type errors, 0 lint warnings). Handing off to Security Officer for security & supply chain audit. Status: **APPROVED**.
+- `[SECURITY_OFFICER] -> [SDET_ARCHITECT]`: Conducted browser automation, desktop tooling, and supply chain security audit. `npm audit` returned 0 vulnerabilities across 261 packages. Confirmed Playwright webServer is bound strictly to `localhost:1420`, zero remote network telemetry/exfiltration, and Tauri capability scoping remains restricted to `core:default`. Status: **APPROVED**.
+- `[SDET_ARCHITECT] -> [PRODUCT_OWNER]`: Executed full automation suite: 9/9 Vitest unit/component/invariant tests pass; 5/5 Playwright E2E smoke tests pass; 0 TypeScript errors under `strict: true`; 0 ESLint warnings/errors; Prettier format 100% clean; Vite build clean; diagnostic failure collection verified. Handing off to Product Owner for acceptance review. Status: **APPROVED**.
 - `[PRODUCT_OWNER] -> [DEVOPS_ENGINEER]`: Acceptance Criteria for Sprint Stories fully satisfied. Functional, visual, and test execution reports validated. DevOps Engineer, you are cleared to push feature branch and submit Pull Request. Status: **APPROVED**.
