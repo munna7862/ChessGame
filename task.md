@@ -2,31 +2,23 @@
 
 ## Active Sprint
 
-**Phase 02 · Sprint 04: GitHub Actions Baseline**
-Branch: `feature/p02-s04-github-actions-baseline`
-
-# Task Tracking: ChessForge Sprint Lifecycle
-
-## Active Sprint
-
-**Phase 02 · Sprint 04: GitHub Actions Baseline**
-Branch: `feature/p02-s04-github-actions-baseline`
+**Phase 02 · Sprint 05: Antigravity Workspace and Agent Guardrails**
+Branch: `feature/p02-s05-antigravity-workspace-and-agent-guardrails`
 
 ---
 
 ## Sprint Tasks Breakdown
 
-- [x] **SM-2401**: [Scrum Master] Initialize Sprint 04 plan, task breakdown, dependency verification, and feature branch in `task.md`.
-- [x] **SDET-2401**: [SDET Architect] Author Sprint 04 Test Cases Catalog (`docs/testing/test_cases_catalog_P02_S04.md`) covering CI triggers, matrix jobs, deterministic installation, quality gates, Windows Tauri Rust build, and failure artifact retention.
-- [x] **DEV-2401**: [Dev Architect / DevOps] Create GitHub Actions CI workflow (`.github/workflows/ci.yml`) with deterministic install, format check, lint, typecheck, unit tests, and production build.
-- [x] **DEV-2402**: [Dev Architect / DevOps] Add Playwright E2E testing job with Chromium setup and automatic test report / trace artifact upload on failure (`if: failure()`).
-- [x] **DEV-2403**: [Dev Architect / DevOps] Add Windows matrix/job for desktop Tauri build (`windows-latest`, Rust toolchain caching, `cargo test`, `cargo check`, `cargo clippy`, Tauri build).
-- [x] **DEV-2404**: [Dev Architect / Senior SDE] Author CI Workflow Guide (`docs/guides/ci_workflow_guide.md`) and update `README.md` with CI badge and documentation references.
-- [x] **DEV-2405**: [Dev Architect / Senior SDE] Conduct Dev Technical Code Acceptance Review.
-- [x] **SEC-2401**: [Security Officer] Conduct CI Workflow & Supply Chain Security Audit (action SHA/major version pinning, `contents: read` least privilege, no hardcoded secrets, runner isolation).
-- [x] **SDET-2402**: [SDET Architect] Execute full automated test suite locally and conduct Test Automation Quality Gate Review.
-- [x] **PO-2401**: [Product Owner] Conduct Product & CI Acceptance Criteria Review against Sprint 04 Definition of Done.
-- [x] **DO-2401**: [DevOps Engineer] Author PR documentation (`docs/pull_requests/pr_P02_S04_github_actions_baseline.md`), commit atomic changes, push branch to origin, and raise GitHub PR: [PR #11](https://github.com/munna7862/ChessGame/pull/11).
+- [x] **SM-2501**: [Scrum Master] Initialize Sprint 05 plan, task breakdown, dependency verification, and feature branch `feature/p02-s05-antigravity-workspace-and-agent-guardrails` in `task.md`.
+- [x] **SDET-2501**: [SDET Architect] Author Sprint 05 Test Cases Catalog (`docs/testing/test_cases_catalog_P02_S05.md`) covering agent rule discoverability, protected areas validation, handoff formatting, review artifact schema, command allowlist/blocklist, and PR template verification.
+- [x] **DEV-2501**: [Dev Architect / Senior SDE] Finalize and harmonize `AGENTS.md` and `.agents/AGENTS.md` with comprehensive protected files/areas, command execution boundaries, branch naming standards, and strict review artifact requirements.
+- [x] **DEV-2502**: [Dev Architect / Senior SDE] Create GitHub PR template (`.github/pull_request_template.md`) featuring AI-assisted change checklists, test verification evidence, security sign-off, and DoD compliance.
+- [x] **DEV-2503**: [Dev Architect / Senior SDE] Author Agent Guardrails & Multi-Agent Development Guide (`docs/guides/agent_guardrails_guide.md`) detailing agent operating contracts, command safety boundaries, review artifacts, and handoff workflows.
+- [x] **DEV-2504**: [Dev Architect / Senior SDE] Conduct Dev Technical Code Acceptance Review.
+- [x] **SEC-2501**: [Security Officer] Conduct Agent Safety & Workspace Security Audit (protected paths, command allowlist, permission containment, non-destructive git boundaries).
+- [x] **SDET-2502**: [SDET Architect] Execute full automated test suite and conduct Test Automation Quality Gate Review (simulated agent task verification, markdown links, lint, typecheck, unit/E2E test suite).
+- [x] **PO-2501**: [Product Owner] Conduct Product & Agent Governance Acceptance Criteria Review against Sprint 05 Definition of Done.
+- [x] **DO-2501**: [DevOps Engineer] Author PR documentation (`docs/pull_requests/pr_P02_S05_agent_guardrails.md`), commit atomic changes, push branch to origin, and raise GitHub PR: [PR #12](https://github.com/munna7862/ChessGame/pull/12).
 
 ---
 
@@ -34,15 +26,16 @@ Branch: `feature/p02-s04-github-actions-baseline`
 
 - **Current Persona:** DevOps Engineer / Release Handoff
 - **Handoff Target:** Human Stakeholder / Product Owner
-- **Sprint Status:** **COMPLETED & VERIFIED (PR #11 Raised)**
+- **Sprint Status:** **COMPLETED & VERIFIED (PR #12 Raised)**
 
 ---
 
 ## Sprint Review Comments & Refinement Loop
 
-- `[SCRUM_MASTER] -> [SDET_ARCHITECT]`: Phase 02 · Sprint 04 initialized on branch `feature/p02-s04-github-actions-baseline`. Prerequisites (Developer tooling & E2E foundation) verified. Handing off to SDET Architect for Sprint 04 Test Cases Catalog (`docs/testing/test_cases_catalog_P02_S04.md`).
-- `[SDET_ARCHITECT] -> [DEV_ARCHITECT]`: Authored Sprint 04 Test Cases Catalog (`docs/testing/test_cases_catalog_P02_S04.md`) covering TC-CI-01 through TC-CI-15. Handing off to Dev Architect / Senior SDE for CI workflow implementation. Status: **APPROVED**.
-- `[DEV_ARCHITECT] -> [SECURITY_OFFICER]`: Implemented `.github/workflows/ci.yml` covering three isolated jobs (`frontend-checks`, `e2e-tests` with failure artifact retention, and `desktop-windows-build` with Rust toolchain & Tauri checks), authored `docs/guides/ci_workflow_guide.md`, and updated `README.md` with CI status badge. Local verification passed (9/9 Vitest tests, 5/5 Playwright tests, 0 lint warnings, 0 typecheck errors, Prettier formatting 100% clean). Handing off to Security Officer for security & supply chain audit. Status: **APPROVED**.
-- `[SECURITY_OFFICER] -> [SDET_ARCHITECT]`: Conducted CI workflow, desktop safety, and supply chain security audit. `npm audit` returned 0 vulnerabilities across 261 packages. Confirmed workflow permissions are strictly limited to `contents: read`, third-party actions are pinned to trusted major versions (`actions/*`, `actions-rust-lang/*`), 0 repository secrets required, and no remote telemetry is present. Handing off to SDET Architect for Quality Gate Review. Status: **APPROVED**.
-- `[SDET_ARCHITECT] -> [PRODUCT_OWNER]`: Executed full automation suite: 9/9 Vitest unit/component/invariant tests pass; 5/5 Playwright E2E smoke tests pass; 0 TypeScript errors under `strict: true`; 0 ESLint warnings/errors; Prettier format 100% clean; Vite production build clean; YAML syntax verified. Handing off to Product Owner for acceptance review. Status: **APPROVED**.
-- `[PRODUCT_OWNER] -> [DEVOPS_ENGINEER]`: Acceptance Criteria for Sprint Stories fully satisfied. Functional, visual, and test execution reports validated. DevOps Engineer, you are cleared to push feature branch and submit Pull Request. Status: **APPROVED**.
+- `[SCRUM_MASTER] -> [SDET_ARCHITECT]`: Phase 02 · Sprint 05 initialized on branch `feature/p02-s05-antigravity-workspace-and-agent-guardrails`. Prerequisites (AGENTS.md baseline and Sprint 04 CI baseline) verified. Handing off to SDET Architect for Sprint 05 Test Cases Catalog (`docs/testing/test_cases_catalog_P02_S05.md`).
+- `[SDET_ARCHITECT] -> [DEV_ARCHITECT]`: Authored Sprint 05 Test Cases Catalog (`docs/testing/test_cases_catalog_P02_S05.md`) covering TC-GR-01 through TC-GR-15. Handing off to Dev Architect / Senior SDE for agent guardrails implementation. Status: **APPROVED**.
+- `[DEV_ARCHITECT] -> [SECURITY_OFFICER]`: Finalized `AGENTS.md` and `.agents/AGENTS.md` (protected areas, command boundaries, handoffs, review schemas), created `.github/pull_request_template.md`, authored `docs/guides/agent_guardrails_guide.md`, and updated `README.md`. Local checks passed (9/9 Vitest tests, 5/5 Playwright tests, 0 lint warnings, 0 typecheck errors, Prettier formatting 100% clean, Vite build successful). Handing off to Security Officer for workspace & agent safety audit. Status: **APPROVED**.
+- `[SECURITY_OFFICER] -> [SDET_ARCHITECT]`: Conducted Agent Safety & Workspace Security Audit. Verified that protected file tiers (Tiers 1-5) and terminal command execution boundaries are explicitly enforced. Confirmed `npm audit` returned 0 vulnerabilities. Zero external cloud services, remote telemetry, or unvetted sockets are present. Handing off to SDET Architect for Test Automation Quality Gate Review. Status: **APPROVED**.
+- `[SDET_ARCHITECT] -> [PRODUCT_OWNER]`: Executed full automated verification suite locally: 9/9 Vitest unit/invariant tests pass; 5/5 Playwright E2E smoke tests pass; 0 TypeScript errors under `strict: true`; 0 ESLint warnings/errors; Prettier format 100% clean; Vite production build clean; simulated task diff focused. Handing off to Product Owner for acceptance review. Status: **APPROVED**.
+- `[PRODUCT_OWNER] -> [DEVOPS_ENGINEER]`: Acceptance Criteria for Sprint 05 fully satisfied. Rule discoverability, protected areas, command boundaries, handoff protocols, and PR templates verified against DoD. DevOps Engineer is authorized to commit, push branch, and submit Pull Request. Status: **APPROVED**.
+
