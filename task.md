@@ -20,7 +20,7 @@ Branch: `feature/p03-s01-chess-domain-types-and-adapter-contract`
 - [x] **SEC-3101**: [Security Officer] Conduct Desktop & Dependency Security Audit (zero telemetry, zero backend sockets, safe runtime parsing with Zod).
 - [x] **SDET-3102**: [SDET Architect] Script automated domain contract tests, dependency boundary tests, typecheck, lint, and conduct Test Automation Quality Gate Review.
 - [x] **PO-3101**: [Product Owner] Conduct Product & Chess Domain Acceptance Criteria Review against Sprint 01 Definition of Done.
-- [x] **DO-3101**: [DevOps Engineer] Author PR documentation (`docs/pull_requests/pr_P03_S01_chess_domain_types.md`), commit atomic changes, push branch to origin, and raise GitHub PR.
+- [x] **DO-3101**: [DevOps Engineer] Author PR documentation (`docs/pull_requests/pr_P03_S01_chess_domain_types.md`), commit atomic changes, push branch to origin, and raise GitHub PR: [PR #13](https://github.com/munna7862/ChessGame/pull/13).
 
 ---
 
