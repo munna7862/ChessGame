@@ -1,39 +1,51 @@
 ---
 name: doc-implementation-standards
-description: Enforces documentation standards for all completed features across API contracts, environment configs, schemas, and walkthroughs.
+description: Documentation standards for ChessForge architecture, chess-domain behavior, testing, UX, security and release evidence.
 ---
 
-# Universal Documentation Implementation Standards
+# Universal Documentation Implementation Standards for ChessForge
 
 Every completed feature must be thoroughly documented in the repository **`docs/`** directory before a pull request can be merged or a sprint story closed.
 
 ---
 
-### 1. Mandatory Repository Artifacts
+### 1. Required Documentation by Change Type
 
-When a feature is marked as complete, the following artifacts MUST be updated or generated within the repository:
+Update the corresponding `docs/` subdirectories when making system modifications:
 
-#### A. API Contracts (`docs/api/sprint_X_api_contracts.md`)
-Every new or modified route or interface MUST be committed to `docs/api/`. The API contract must explicitly outline:
-* **Endpoint Details:** HTTP Method/protocol, absolute path, and authentication/authorization requirements.
-* **Request Specifications:** Complete validation schemas for headers, query parameters, and body payloads.
-* **Response Mapping:** Exact JSON response structures for both success (2xx) and failure (4xx/5xx) states with explicit HTTP status codes.
-* **Example Payloads:** Copy-pasteable examples for requests and responses.
-
-#### B. Environment Configuration (`.env.example`)
-* **Zero Missing Variables:** Any newly introduced environment variables must be immediately appended to `.env.example` with fallback defaults or clear instructions.
-* **Inline Explanations:** Include a descriptive comment above the variable explaining its purpose, data type, and usage.
-
-#### C. Database & Schema Updates (`docs/db/`)
-All schema migrations and model changes must be recorded:
-* **Structural Delta:** List new tables, modified columns, foreign key constraints, and cascading rules.
-* **Vector & Memory Indices:** If adding specific vector search capabilities, explicitly state the embedding dimensions and distance metric used.
-
-#### D. Walkthrough & Release Proof (`walkthrough.md`)
-A user-facing document created in the root/artifacts of the feature branch summarizing the changes, testing proof, and verification instructions.
+* **Architecture (`docs/architecture/` & `docs/adr/`):** Document high-level designs and create Architectural Decision Records (ADRs) for structural choices.
+* **Chess Domain (`docs/chess/`):** Document supported FIDE rules, invariants, FEN/PGN codecs, and engine integration protocols.
+* **Testing (`docs/testing/`):** Commit Test Cases Catalogs (`test_cases_catalog_P<XX>_S<YY>.md`) and regression test suites.
+* **User Experience (`docs/ux/`):** Document user flows, board interaction specifications, keyboard shortcuts, and theme tokens.
+* **Security & Desktop (`docs/security/`):** Document Tauri v2 capabilities, filesystem scopes, CSP policies, and dependency audit reports.
+* **Release & Packaging (`docs/release/`):** Document installer builds, Windows packaging steps, checksums, and version changelogs.
+* **Pull Requests (`docs/pull_requests/`):** Commit formal PR descriptions (`pr_P<XX>_S<YY>_<feature>.md`).
 
 ---
 
-### 2. Technical Best Practices
-* **Language Tags:** Keep markdown clean and readable with exact language tags for code blocks (`python`, `typescript`, `json`, `bash`, `yaml`).
-* **Architectural Visualization:** Embed native **Mermaid.js** diagrams to visually map state mutations or asynchronous event flows.
+### 2. Mandatory Discipline: No Fake Artifacts
+
+Do NOT generate irrelevant, placeholder, or fabricated documentation:
+* Do not create HTTP API contracts for local desktop apps.
+* Do not document database schemas when local JSON/file storage is used.
+* Do not create `.env` documentation when no environment variables exist.
+* Do not publish performance benchmarks or test reports without real, measured execution numbers.
+
+---
+
+### 3. Sprint Walkthrough (`walkthrough.md`)
+
+Meaningful user-facing sprints must produce a concise `walkthrough.md` containing:
+* **Feature Purpose:** What problem was solved.
+* **Changed Behavior:** Clear breakdown of user-facing or architectural changes.
+* **Verification Steps:** How to manually and automatically verify the changes.
+* **Executed Tests:** Actual pass/fail results from local test runs.
+* **Known Limitations:** Any edge cases deferred to subsequent sprints.
+
+*(Do not claim screenshots or manual verification unless actually performed).*
+
+---
+
+### 4. Technical Best Practices
+* **Language Tags:** Ensure all code blocks use precise language tags (`typescript`, `rust`, `json`, `bash`).
+* **Visual Diagrams:** Embed native **Mermaid.js** diagrams for state machines, asynchronous worker flows, and architecture boundaries.
