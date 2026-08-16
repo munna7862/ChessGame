@@ -17,6 +17,7 @@ import {
   type PieceType,
   type PlayerCastlingRights,
   type Position,
+  PROMOTION_PIECE_TYPES,
   type PromotionPieceType,
   type Square,
   isValidSquare,
@@ -179,6 +180,45 @@ export class ChessJsAdapter implements ChessAdapterPort {
             expectedColor: this.instance.turn(),
             actualColor: pieceAtOrigin.color,
           }
+        )
+      );
+    }
+
+    const isPawn = pieceAtOrigin.type === "p";
+    const destRank = moveInput.to[1];
+    const isPromotingMove =
+      isPawn &&
+      ((pieceAtOrigin.color === "w" && destRank === "8") ||
+        (pieceAtOrigin.color === "b" && destRank === "1"));
+
+    if (isPromotingMove) {
+      if (!moveInput.promotion) {
+        return err(
+          createDomainError(
+            "PROMOTION_REQUIRED",
+            `Pawn promotion from ${moveInput.from} to ${moveInput.to} requires specifying a promotion piece ('q', 'r', 'b', 'n').`,
+            { move: moveInput }
+          )
+        );
+      }
+      if (!PROMOTION_PIECE_TYPES.includes(moveInput.promotion)) {
+        return err(
+          createDomainError(
+            "ILLEGAL_MOVE",
+            `Invalid promotion piece '${moveInput.promotion}'. Eligible types are 'q', 'r', 'b', 'n'.`,
+            {
+              move: moveInput,
+              promotion: moveInput.promotion,
+            }
+          )
+        );
+      }
+    } else if (moveInput.promotion) {
+      return err(
+        createDomainError(
+          "ILLEGAL_MOVE",
+          `Promotion piece '${moveInput.promotion}' specified for non-promotion move from ${moveInput.from} to ${moveInput.to}.`,
+          { move: moveInput }
         )
       );
     }
