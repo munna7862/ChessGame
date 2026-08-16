@@ -19,10 +19,10 @@ These rules apply universally to all tasks and projects within the **ChessForge*
   - **UI Presentation Layer:** React + Vite, board rendering, drag-and-drop, animations, and transient UI state.
   - **Engine Bridge:** Non-blocking WebWorker interface communicating with Stockfish via UCI protocol. Engine is an advisor, not the authority.
   - **Desktop Platform Layer:** Tauri v2 / Rust IPC for OS file dialogs, native window frame, settings storage, and clipboard.
-* **Single Authoritative State:** Avoid duplicate mutable state. If the position exists in the domain, do not maintain a second mutable position in React. Persistence is a snapshot; engine state is ephemeral; UI state is transient.
-* **Strict Type Safety:** Absolute zero untyped `any` or loosely typed boundary inputs. Utilize TypeScript in `strict: true` mode and Rust's strong type system. All boundary inputs (Tauri IPC commands, WebWorker messages, local persistence) must validate against runtime schemas (Zod in TypeScript, Serde in Rust).
+* **Single Authoritative State:** Avoid duplicate mutable state. If the position exists in the domain, do not maintain a second mutable position in React. The Chess Domain / Game Session is authoritative at runtime. Persistence is a snapshot; engine state is ephemeral; UI state is transient.
+* **Strict Type Safety:** `any` is prohibited by default. Any exception requires a documented justification and must be isolated behind a typed boundary. Utilize TypeScript in `strict: true` mode and Rust's strong type system. All untrusted external/persisted boundary inputs (Tauri IPC commands, WebWorker messages, local persistence, imported PGN/FEN) must be validated at runtime. Use Zod in TypeScript where runtime schema validation is appropriate and Serde in Rust for Rust-side deserialization. Do not introduce runtime schemas for purely internal compile-time TypeScript boundaries unless required by the architecture.
 * **Centralized Error Handling:** Never leak unformatted raw stack traces or internal engine panics to the desktop UI. All IPC and domain operations must return standardized, human-readable error contracts.
-* **State & Persistence Integrity:** Treat local game state and persistence store as authoritative. Guarantee atomic writes for saved games, settings, and PGN/FEN exports without file corruption during unexpected application close.
+* **State & Persistence Integrity:** Treat the Chess Domain / Game Session as authoritative during runtime. Persistence is a durable snapshot, not an independent source of truth. Imported or recovered persistence data must be validated by the domain before becoming active game state. Persistence writes for settings and recoverable game state must be atomic or crash-safe. PGN/FEN exports are user-initiated file operations and must use safe temporary-file/replace semantics where appropriate.
 
 ---
 
@@ -107,6 +107,36 @@ Do not force irrelevant review stages on sprints where they do not apply:
 
 ---
 
+## 4.1 Local-First Infrastructure Rule
+
+ChessForge v1 is a local Windows desktop application.
+
+Agents MUST NOT introduce the following unless explicitly required by an approved sprint:
+- backend services
+- databases
+- authentication
+- cloud infrastructure
+- microservices
+- message queues
+- Redis
+- Kubernetes
+- telemetry platforms
+
+Future multiplayer or cloud capabilities must not be implemented speculatively during v1.
+
+---
+
+## 4.2 Review Severity
+
+Reviewers MUST classify comments as:
+- **BLOCKING:** prevents the next gate.
+- **NON-BLOCKING:** should be fixed when practical but does not prevent progression.
+- **SUGGESTION:** optional improvement.
+
+Only BLOCKING issues prevent the next quality gate.
+
+---
+
 ## 5. Documentation Discipline: No Fake Artifacts
 Do not generate irrelevant or hallucinated documentation artifacts:
 * Never create HTTP API contracts for local desktop apps (`docs/ipc/` and `docs/engine/` are used instead).
@@ -120,7 +150,7 @@ Do not generate irrelevant or hallucinated documentation artifacts:
 * **No Direct Commits to Main:** NEVER push code directly to the `main` branch.
 * **Branching Strategy:** Autonomously check out an isolated branch for every task using `feature/<short-description>` or `bugfix/<short-description>`.
 * **Atomic Conventional Commits:** Autonomously commit work incrementally using clear, conventional commit messages (`feat:`, `fix:`, `test:`, `docs:`, `refactor:`).
-* **Automated Remote Pull Requests:** DevOps Engineer must push the feature branch to GitHub (`git push origin feature/<description>`) and automatically raise the remote Pull Request on GitHub using `gh pr create --body-file <pr_doc_path>` with full description, linking the live PR in `task.md` for human review and approval prior to merging into `main`.
+* **Automated Remote Pull Requests:** When a sprint is ready for shared-repository integration, DevOps Engineer must push the feature branch to GitHub (`git push origin feature/<description>`) and raise the remote Pull Request on GitHub using `gh pr create --body-file <pr_doc_path>` with full description, linking the live PR in `task.md` for human review and approval prior to merging into `main`. Exploratory work, local spikes, or explicitly non-publishable work does not require automatic PR creation.
 
 ---
 
