@@ -17,14 +17,14 @@ Branch: `feature/p01-s03-architecture-and-module-boundaries`
 - [x] **SDE-303**: [Dev Architect / Senior SDE] Conduct Dev Technical Architecture & Specification Acceptance Review.
 - [x] **SDET-302**: [SDET Architect] Conduct Architecture Verification & Quality Gate Review against the Test Matrix.
 - [x] **PO-301**: [Product Owner] Conduct Product & UX Acceptance Criteria Review against Sprint Definition of Done.
-- [x] **DO-301**: [DevOps Engineer] Author PR description (`docs/pull_requests/pr_P01_S03_architecture_and_module_boundaries.md`), commit atomic changes, push branch to origin, and raise GitHub PR.
+- [x] **DO-301**: [DevOps Engineer] Author PR description (`docs/pull_requests/pr_P01_S03_architecture_and_module_boundaries.md`), commit atomic changes, push branch to origin, and raise GitHub PR: [PR #5](https://github.com/munna7862/ChessGame/pull/5).
 
 ---
 
 ## Persona Handoff Status
 - **Current Persona:** Scrum Master / Release Handoff
 - **Handoff Target:** Human Product Owner
-- **Sprint Status:** **COMPLETED & VERIFIED**
+- **Sprint Status:** **COMPLETED & VERIFIED** (PR #5 raised)
 
 ---
 
