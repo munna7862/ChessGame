@@ -3,6 +3,7 @@ import { Header } from "./components/Header";
 import { Board } from "./features/board/Board";
 import type { BoardOrientation } from "./features/board/types";
 import { useBoardInteraction } from "./features/board/useBoardInteraction";
+import { useReducedMotion } from "./features/board/useReducedMotion";
 import { createChessAdapter } from "./domain/chess/adapters/chessJsAdapter";
 import "./App.css";
 
@@ -10,6 +11,8 @@ export const App: React.FC = () => {
   const [chessAdapter] = useState(() => createChessAdapter());
   const [, setGameVersion] = useState(0);
   const [orientation, setOrientation] = useState<BoardOrientation>("w");
+
+  const { prefersReducedMotion, toggleReducedMotion } = useReducedMotion();
 
   const {
     selectedSquare,
@@ -20,6 +23,7 @@ export const App: React.FC = () => {
     gameStatus,
     handleSquareClick,
     clearSelection,
+    resetLastMove,
   } = useBoardInteraction({
     game: chessAdapter,
     onMoveExecuted: () => {
@@ -36,6 +40,7 @@ export const App: React.FC = () => {
   const handleResetGame = () => {
     chessAdapter.reset();
     clearSelection();
+    resetLastMove();
     setGameVersion((v) => v + 1);
   };
 
@@ -73,14 +78,26 @@ export const App: React.FC = () => {
               )}
             </div>
 
-            {selectedSquare && (
-              <span
-                className="selected-square-indicator"
-                data-testid="selected-square-indicator"
-              >
-                Selected: {selectedSquare} ({legalDestinations.size} moves)
-              </span>
-            )}
+            <div className="status-group">
+              {lastMove && (
+                <span
+                  className="last-move-indicator"
+                  data-testid="last-move-indicator"
+                >
+                  Last: {lastMove.from} → {lastMove.to}
+                  {lastMove.san ? ` (${lastMove.san})` : ""}
+                </span>
+              )}
+
+              {selectedSquare && (
+                <span
+                  className="selected-square-indicator"
+                  data-testid="selected-square-indicator"
+                >
+                  Selected: {selectedSquare} ({legalDestinations.size} moves)
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="board-controls" data-testid="board-controls">
@@ -91,6 +108,15 @@ export const App: React.FC = () => {
               onClick={toggleOrientation}
             >
               Flip Board ({orientation === "w" ? "White" : "Black"})
+            </button>
+            <button
+              type="button"
+              className="btn-control"
+              data-testid="btn-toggle-motion"
+              onClick={toggleReducedMotion}
+              aria-pressed={prefersReducedMotion}
+            >
+              Motion: {prefersReducedMotion ? "Reduced" : "Standard"}
             </button>
             <button
               type="button"
@@ -109,6 +135,7 @@ export const App: React.FC = () => {
             legalDestinations={legalDestinations}
             lastMove={lastMove}
             checkSquare={checkSquare}
+            reducedMotion={prefersReducedMotion}
             disabled={isGameOver}
             onSquareClick={handleSquareClick}
           />

@@ -5,6 +5,7 @@
 This pull request implements the piece selection and legal move visualization system for **ChessForge**, connecting the presentation layer directly to the chess domain while upholding the strict decoupled architecture contract.
 
 ### Key Deliverables:
+
 - **`useBoardInteraction` Hook (`src/features/board/useBoardInteraction.ts`)**:
   - Implements the authoritative selection state machine (idle $\rightarrow$ selected $\rightarrow$ move executing / deselecting).
   - Queries `game.getLegalMoves(square)` dynamically and categorizes moves into quiet destinations (`"move"`) and capture / en passant destinations (`"capture"`).
@@ -30,15 +31,15 @@ This pull request implements the piece selection and legal move visualization sy
 
 ## 2. Sprint Quality Gates & Test Execution Report
 
-| Quality Gate | Tool / Command | Result | Details |
-| :--- | :--- | :--- | :--- |
-| **Unit & Integration Tests** | `npm test` (`Vitest`) | **PASS** | 298/298 tests passed across 29 test files (0 skipped) |
-| **Property-Based Fuzzing** | `fast-check` | **PASS** | 100 legal destination property runs + 1,000 invalid click invariant runs |
-| **Desktop E2E Tests** | `npx playwright test` | **PASS** | 13/13 desktop E2E tests passed (9.8s) |
-| **Typecheck** | `npm run typecheck` (`tsc`) | **PASS** | 0 errors |
-| **Lint** | `npm run lint` (`eslint`) | **PASS** | 0 errors, 0 warnings |
-| **Format** | `npm run format:check` | **PASS** | 100% Prettier compliant |
-| **Production Build** | `npm run build` (`vite`) | **PASS** | Built cleanly in 1.08s |
+| Quality Gate                 | Tool / Command              | Result   | Details                                                                  |
+| :--------------------------- | :-------------------------- | :------- | :----------------------------------------------------------------------- |
+| **Unit & Integration Tests** | `npm test` (`Vitest`)       | **PASS** | 298/298 tests passed across 29 test files (0 skipped)                    |
+| **Property-Based Fuzzing**   | `fast-check`                | **PASS** | 100 legal destination property runs + 1,000 invalid click invariant runs |
+| **Desktop E2E Tests**        | `npx playwright test`       | **PASS** | 13/13 desktop E2E tests passed (9.8s)                                    |
+| **Typecheck**                | `npm run typecheck` (`tsc`) | **PASS** | 0 errors                                                                 |
+| **Lint**                     | `npm run lint` (`eslint`)   | **PASS** | 0 errors, 0 warnings                                                     |
+| **Format**                   | `npm run format:check`      | **PASS** | 100% Prettier compliant                                                  |
+| **Production Build**         | `npm run build` (`vite`)    | **PASS** | Built cleanly in 1.08s                                                   |
 
 ---
 

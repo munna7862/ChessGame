@@ -6,7 +6,9 @@
   --square-dark-bg: #64748b;
   --square-dark-text: #cbd5e1;
   --square-selected: rgba(234, 179, 8, 0.55);
-  --square-last-move: rgba(59, 130, 246, 0.4);
+  --square-last-move: rgba(59, 130, 246, 0.38);
+  --square-last-move-from: rgba(59, 130, 246, 0.28);
+  --square-last-move-to: rgba(59, 130, 246, 0.5);
   --square-legal-dot: rgba(34, 197, 94, 0.75);
   --square-legal-dot-shadow: rgba(34, 197, 94, 0.4);
   --square-capture-ring: rgba(239, 68, 68, 0.85);
@@ -91,8 +93,54 @@
   box-shadow: inset 0 0 0 2px rgba(234, 179, 8, 0.9);
 }
 
+/* Last Move Highlighting */
 .chess-square.is-last-move {
   background-color: var(--square-last-move) !important;
+}
+
+.chess-square.is-last-move-from {
+  background-color: var(--square-last-move-from) !important;
+  box-shadow: inset 0 0 0 1.5px rgba(147, 197, 253, 0.5);
+}
+
+.chess-square.is-last-move-to {
+  background-color: var(--square-last-move-to) !important;
+  box-shadow: inset 0 0 0 2px rgba(96, 165, 250, 0.8);
+}
+
+.chess-square.is-last-move-to:not(.reduced-motion) .chess-piece {
+  animation: pieceArrive 0.18s cubic-bezier(0.2, 0, 0.2, 1) forwards;
+}
+
+/* Capture Effect */
+.chess-square.is-capture-effect .chess-piece-svg {
+  animation: capturePop 0.2s cubic-bezier(0.2, 0, 0.2, 1) forwards;
+}
+
+@keyframes pieceArrive {
+  0% {
+    opacity: 0.92;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes capturePop {
+  0% {
+    transform: scale(0.88);
+    filter: brightness(1.3) drop-shadow(0 0 8px rgba(239, 68, 68, 0.8));
+  }
+  50% {
+    transform: scale(1.08);
+    filter: brightness(1.15) drop-shadow(0 0 5px rgba(239, 68, 68, 0.6));
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+  }
 }
 
 .chess-square.is-check {
@@ -198,4 +246,29 @@
   line-height: 1;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   opacity: 0.75;
+}
+
+/* Reduced Motion Mode (OS Media Query & Explicit Class Override) */
+@media (prefers-reduced-motion: reduce) {
+  .chess-board-wrapper,
+  .chess-board-grid,
+  .chess-square,
+  .chess-piece,
+  .chess-piece-svg,
+  .legal-target-indicator {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+.reduced-motion,
+.reduced-motion .chess-board-grid,
+.reduced-motion .chess-square,
+.reduced-motion .chess-piece,
+.reduced-motion .chess-piece-svg,
+.reduced-motion .legal-target-indicator {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
 }

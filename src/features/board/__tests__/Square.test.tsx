@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { Square } from "../Square";
 
-describe("Square Component (Phase 04 · Sprint 01 - Sprint 03)", () => {
+describe("Square Component (Phase 04 · Sprint 01 - Sprint 04)", () => {
   it("TC-BOARD-09: renders single square with required test IDs and dataset attributes", () => {
     render(<Square square="e4" color="light" />);
 
@@ -161,6 +161,66 @@ describe("Square Component (Phase 04 · Sprint 01 - Sprint 03)", () => {
     expect(indicator).toBeInTheDocument();
     expect(indicator).toHaveClass("legal-target-capture-ring");
     expect(indicator).toHaveAttribute("data-target-type", "capture");
+  });
+
+  it("TC-ANIM-02: renders last-move origin square with is-last-move-from and data-is-last-move='from'", () => {
+    render(
+      <Square
+        square="e2"
+        color="light"
+        isLastMove={true}
+        isLastMoveFrom={true}
+      />
+    );
+
+    const squareEl = screen.getByTestId("board-square-e2");
+    expect(squareEl).toHaveClass("is-last-move");
+    expect(squareEl).toHaveClass("is-last-move-from");
+    expect(squareEl).toHaveAttribute("data-is-last-move", "from");
+    expect(squareEl).toHaveAttribute("data-is-last-move-from", "true");
+    expect(squareEl).toHaveAttribute(
+      "aria-label",
+      "Square e2, light, last move origin"
+    );
+  });
+
+  it("TC-ANIM-03: renders last-move destination square with is-last-move-to and data-is-last-move='to'", () => {
+    render(
+      <Square
+        square="e4"
+        color="light"
+        piece={{ color: "w", type: "p" }}
+        isLastMove={true}
+        isLastMoveTo={true}
+      />
+    );
+
+    const squareEl = screen.getByTestId("board-square-e4");
+    expect(squareEl).toHaveClass("is-last-move");
+    expect(squareEl).toHaveClass("is-last-move-to");
+    expect(squareEl).toHaveAttribute("data-is-last-move", "to");
+    expect(squareEl).toHaveAttribute("data-is-last-move-to", "true");
+    expect(squareEl).toHaveAttribute(
+      "aria-label",
+      "Square e4, light, White Pawn, last move destination"
+    );
+  });
+
+  it("TC-ANIM-07: renders capture effect styling on square when isCaptureEffect is true", () => {
+    render(
+      <Square
+        square="d5"
+        color="dark"
+        piece={{ color: "w", type: "q" }}
+        isLastMove={true}
+        isLastMoveTo={true}
+        isCaptureEffect={true}
+      />
+    );
+
+    const squareEl = screen.getByTestId("board-square-d5");
+    expect(squareEl).toHaveClass("is-capture-effect");
+    expect(squareEl).toHaveAttribute("data-is-capture-effect", "true");
   });
 
   it("TC-SEL-13: disables square when disabled=true and suppresses click events", () => {

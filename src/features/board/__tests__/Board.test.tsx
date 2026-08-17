@@ -5,7 +5,7 @@ import { createChessAdapter } from "../../../domain/chess/adapters/chessJsAdapte
 import { Board } from "../Board";
 import type { LegalDestination } from "../types";
 
-describe("Board Component (Phase 04 · Sprint 01 - Sprint 03)", () => {
+describe("Board Component (Phase 04 · Sprint 01 - Sprint 04)", () => {
   it("TC-BOARD-14: renders all 64 squares within the board container", () => {
     render(<Board />);
 
@@ -163,8 +163,15 @@ describe("Board Component (Phase 04 · Sprint 01 - Sprint 03)", () => {
       );
 
       // Last move
-      expect(screen.getByTestId("board-square-e7")).toHaveClass("is-last-move");
-      expect(screen.getByTestId("board-square-e5")).toHaveClass("is-last-move");
+      const e7Square = screen.getByTestId("board-square-e7");
+      const e5Square = screen.getByTestId("board-square-e5");
+      expect(e7Square).toHaveClass("is-last-move");
+      expect(e7Square).toHaveClass("is-last-move-from");
+      expect(e7Square).toHaveAttribute("data-is-last-move", "from");
+
+      expect(e5Square).toHaveClass("is-last-move");
+      expect(e5Square).toHaveClass("is-last-move-to");
+      expect(e5Square).toHaveAttribute("data-is-last-move", "to");
 
       // King in check
       expect(screen.getByTestId("board-square-e1")).toHaveClass("is-check");
@@ -179,6 +186,53 @@ describe("Board Component (Phase 04 · Sprint 01 - Sprint 03)", () => {
       );
       expect(screen.getByTestId("board-square-c3")).toHaveClass(
         "is-legal-target"
+      );
+    });
+  });
+
+  describe("Move Animation & Last-Move State (TC-ANIM-01 to TC-ANIM-13)", () => {
+    it("TC-ANIM-02, TC-ANIM-03: applies origin and destination highlights with capture effect", () => {
+      render(
+        <Board
+          lastMove={{
+            from: "e4",
+            to: "d5",
+            isCapture: true,
+            san: "exd5",
+          }}
+        />
+      );
+
+      const e4Square = screen.getByTestId("board-square-e4");
+      expect(e4Square).toHaveClass("is-last-move-from");
+      expect(e4Square).toHaveAttribute("data-is-last-move", "from");
+
+      const d5Square = screen.getByTestId("board-square-d5");
+      expect(d5Square).toHaveClass("is-last-move-to");
+      expect(d5Square).toHaveClass("is-capture-effect");
+      expect(d5Square).toHaveAttribute("data-is-last-move", "to");
+      expect(d5Square).toHaveAttribute("data-is-capture-effect", "true");
+    });
+
+    it("TC-ANIM-13: applies reduced-motion class on wrapper and grid when reducedMotion is true", () => {
+      render(
+        <Board reducedMotion={true} lastMove={{ from: "e2", to: "e4" }} />
+      );
+
+      const wrapper = screen.getByTestId("chess-board-wrapper");
+      expect(wrapper).toHaveClass("reduced-motion");
+      expect(wrapper).toHaveAttribute("data-reduced-motion", "true");
+
+      const grid = screen.getByTestId("chess-board");
+      expect(grid).toHaveClass("reduced-motion");
+      expect(grid).toHaveAttribute("data-reduced-motion", "true");
+
+      // Last move highlights remain active under reduced motion
+      expect(screen.getByTestId("board-square-e2")).toHaveClass(
+        "is-last-move-from"
+      );
+      expect(screen.getByTestId("board-square-e4")).toHaveClass(
+        "is-last-move-to"
       );
     });
   });
