@@ -2,6 +2,8 @@ import {
   type Square,
   type FileSymbol,
   type RankSymbol,
+  type Piece,
+  type BoardMatrix,
   FILES,
   RANKS,
   isValidSquare,
@@ -26,6 +28,33 @@ export function getSquareColor(
       : squareOrCoords;
 
   return (coords.file + coords.rank) % 2 === 0 ? "dark" : "light";
+}
+
+/**
+ * Retrieve the Piece residing on a given Square from an 8x8 BoardMatrix.
+ *
+ * Matrix indices:
+ * Row 0 = Rank 8, Row 7 = Rank 1 (matrixRow = 7 - rankIndex)
+ * Col 0 = File a, Col 7 = File h (matrixCol = fileIndex)
+ */
+export function getPieceFromMatrix(
+  square: Square,
+  matrix: BoardMatrix
+): Piece | null {
+  const { file: fileIdx, rank: rankIdx } = squareToFileRank(square);
+  const matrixRow = 7 - rankIdx;
+  const matrixCol = fileIdx;
+
+  if (
+    matrixRow < 0 ||
+    matrixRow >= matrix.length ||
+    matrixCol < 0 ||
+    matrixCol >= (matrix[matrixRow]?.length ?? 0)
+  ) {
+    return null;
+  }
+
+  return matrix[matrixRow]?.[matrixCol] ?? null;
 }
 
 /**
@@ -87,10 +116,11 @@ export function getFilesForOrientation(
 
 /**
  * Generate full metadata for all 64 squares in DOM grid order (row 0..7, col 0..7)
- * according to the active board orientation.
+ * according to the active board orientation, optionally resolving occupant pieces.
  */
 export function getGridSquares(
-  orientation: BoardOrientation = "w"
+  orientation: BoardOrientation = "w",
+  pieceResolver?: ((square: Square) => Piece | null | undefined) | null
 ): BoardSquareData[] {
   const squares: BoardSquareData[] = [];
 
@@ -107,6 +137,7 @@ export function getGridSquares(
       const file = square[0] as FileSymbol;
       const rank = square[1] as RankSymbol;
       const color = getSquareColor({ file: fileIndex, rank: rankIndex });
+      const piece = pieceResolver ? pieceResolver(square) : undefined;
 
       squares.push({
         square,
@@ -117,6 +148,7 @@ export function getGridSquares(
         row,
         col,
         color,
+        piece: piece ?? undefined,
       });
     }
   }

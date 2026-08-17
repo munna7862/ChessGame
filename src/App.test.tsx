@@ -4,7 +4,7 @@ import App from "./App";
 import { StatusBadge } from "./components/StatusBadge";
 import { Header } from "./components/Header";
 
-describe("ChessForge Bootstrap Layout (TC-BOOT-05)", () => {
+describe("ChessForge Bootstrap Layout & Board UI (TC-BOOT-05 & TC-PIECE-23)", () => {
   it("renders the root application container and title", () => {
     render(<App />);
     expect(screen.getByTestId("chessforge-app")).toBeInTheDocument();
@@ -36,5 +36,14 @@ describe("ChessForge Bootstrap Layout (TC-BOOT-05)", () => {
     expect(screen.getByTestId("metric-fps")).toHaveTextContent("60 FPS");
     expect(screen.getByTestId("metric-local")).toHaveTextContent("100% Local");
     expect(screen.getByTestId("feature-list")).toBeInTheDocument();
+  });
+
+  it("renders the chessboard with pieces in the initial starting position", () => {
+    render(<App />);
+    expect(screen.getByTestId("chess-board")).toBeInTheDocument();
+    expect(screen.getByTestId("piece-wk")).toBeInTheDocument();
+    expect(screen.getByTestId("piece-bk")).toBeInTheDocument();
+    expect(screen.getAllByTestId("piece-wp")).toHaveLength(8);
+    expect(screen.getAllByTestId("piece-bp")).toHaveLength(8);
   });
 });
