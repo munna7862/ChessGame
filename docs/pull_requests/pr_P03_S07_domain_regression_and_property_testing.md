@@ -30,14 +30,14 @@ This Pull Request delivers **Phase 03 · Sprint 07 (Domain Regression and Proper
 
 ## 3. Automated Quality Gate Verification
 
-| Verification Stage | Command | Result | Details |
-| :--- | :--- | :--- | :--- |
-| **Typecheck** | `npm run typecheck` | **PASS (0 errors)** | TypeScript `strict: true` compliance, no `any`. |
-| **Lint** | `npm run lint` | **PASS (0 warnings)** | ESLint zero warnings/errors. |
-| **Format** | `npm run format:check` | **PASS (0 issues)** | Prettier 100% clean across all docs & code. |
-| **Vitest Unit & Property** | `npm test` | **PASS (227/227)** | 24 test files passed across entire chess domain. |
-| **Playwright E2E Smoke** | `npx playwright test` | **PASS (5/5)** | Desktop webview launch and layout verified. |
-| **Production Build** | `npm run build` | **PASS** | Vite production bundle built in 800ms. |
+| Verification Stage         | Command                | Result                | Details                                          |
+| :------------------------- | :--------------------- | :-------------------- | :----------------------------------------------- |
+| **Typecheck**              | `npm run typecheck`    | **PASS (0 errors)**   | TypeScript `strict: true` compliance, no `any`.  |
+| **Lint**                   | `npm run lint`         | **PASS (0 warnings)** | ESLint zero warnings/errors.                     |
+| **Format**                 | `npm run format:check` | **PASS (0 issues)**   | Prettier 100% clean across all docs & code.      |
+| **Vitest Unit & Property** | `npm test`             | **PASS (227/227)**    | 24 test files passed across entire chess domain. |
+| **Playwright E2E Smoke**   | `npx playwright test`  | **PASS (5/5)**        | Desktop webview launch and layout verified.      |
+| **Production Build**       | `npm run build`        | **PASS**              | Vite production bundle built in 800ms.           |
 
 ---
 

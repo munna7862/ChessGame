@@ -15,6 +15,8 @@ export default tseslint.config(
       "test-results/**",
       "**/*.tsbuildinfo",
       ".gemini/**",
+      ".venv/**",
+      "scripts/**",
     ],
   },
   js.configs.recommended,
