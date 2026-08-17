@@ -21,6 +21,7 @@ import asyncio
 import subprocess
 import sys
 import os
+from google.antigravity import Agent, LocalAgentConfig, CapabilitiesConfig
 
 # Auto-load GEMINI_API_KEY from .env if present
 env_path = os.path.join(os.getcwd(), ".env")
@@ -131,7 +132,10 @@ Follow the Universal Operating Contract in AGENTS.md strictly:
 8. **DevOps Engineer (DO)**: Author PR documentation (docs/pull_requests/pr_P{phase}_S{sprint_num}_*.md), commit atomic changes, push to origin, and create GitHub PR via 'gh pr create'.
 """
 
+    api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
     config = LocalAgentConfig(
+        api_key=api_key,
+        workspaces=[os.getcwd()],
         system_instructions="You are an autonomous agile development team adhering strictly to AGENTS.md in ChessForge.",
         capabilities=CapabilitiesConfig(),
     )
