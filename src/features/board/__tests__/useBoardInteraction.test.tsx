@@ -9,7 +9,7 @@ import {
   findCheckSquare,
 } from "../useBoardInteraction";
 
-describe("useBoardInteraction & Legal Moves (Phase 04 · Sprint 03)", () => {
+describe("useBoardInteraction & Legal Moves (Phase 04 · Sprint 03 - Sprint 04)", () => {
   it("TC-SEL-01 & TC-SEL-02: selecting active White pawn (e2) computes quiet legal moves", () => {
     const game = createChessAdapter();
     const { result } = renderHook(() => useBoardInteraction({ game }));
@@ -148,7 +148,7 @@ describe("useBoardInteraction & Legal Moves (Phase 04 · Sprint 03)", () => {
     expect(game.exportFen()).toBe(initialFen);
   });
 
-  it("TC-SEL-09 & TC-SEL-10: executing legal move updates board, turns, and clears selection", () => {
+  it("TC-SEL-09, TC-ANIM-01: executing legal move updates board, turns, clears selection, and records lastMove with san", () => {
     const game = createChessAdapter();
     const onMoveExecuted = vi.fn();
     const { result } = renderHook(() =>
@@ -163,10 +163,61 @@ describe("useBoardInteraction & Legal Moves (Phase 04 · Sprint 03)", () => {
     });
 
     expect(result.current.selectedSquare).toBeNull();
-    expect(result.current.lastMove).toEqual({ from: "e2", to: "e4" });
+    expect(result.current.lastMove).toEqual({
+      from: "e2",
+      to: "e4",
+      isCapture: false,
+      san: "e4",
+    });
     expect(game.getPosition().turn).toBe("b");
     expect(onMoveExecuted).toHaveBeenCalledTimes(1);
     expect(onMoveExecuted.mock.calls[0]?.[0]?.san).toBe("e4");
+  });
+
+  it("TC-ANIM-01, TC-ANIM-07: records capture in lastMove state on capture move", () => {
+    const game = createChessAdapter();
+    game.loadFen(
+      "r1bqkb1r/pppp1ppp/2n5/4p3/2B1n3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 5"
+    );
+
+    const { result } = renderHook(() => useBoardInteraction({ game }));
+
+    act(() => {
+      result.current.handleSquareClick("c4");
+    });
+    act(() => {
+      result.current.handleSquareClick("f7");
+    });
+
+    expect(result.current.lastMove).toEqual({
+      from: "c4",
+      to: "f7",
+      isCapture: true,
+      san: "Bxf7+",
+    });
+  });
+
+  it("TC-ANIM-04: allows clearing lastMove via resetLastMove or setLastMove", () => {
+    const game = createChessAdapter();
+    const { result } = renderHook(() => useBoardInteraction({ game }));
+
+    act(() => {
+      result.current.handleSquareClick("e2");
+    });
+    act(() => {
+      result.current.handleSquareClick("e4");
+    });
+    expect(result.current.lastMove).toBeDefined();
+
+    act(() => {
+      result.current.resetLastMove();
+    });
+    expect(result.current.lastMove).toBeNull();
+
+    act(() => {
+      result.current.setLastMove({ from: "d2", to: "d4" });
+    });
+    expect(result.current.lastMove).toEqual({ from: "d2", to: "d4" });
   });
 
   it("TC-SEL-11 & TC-SEL-12: clicking empty square or opponent piece when idle does nothing", () => {

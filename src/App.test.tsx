@@ -4,7 +4,7 @@ import App from "./App";
 import { StatusBadge } from "./components/StatusBadge";
 import { Header } from "./components/Header";
 
-describe("ChessForge Bootstrap Layout & Board UI (TC-BOOT-05, TC-PIECE-23, TC-SEL-01 to TC-SEL-10)", () => {
+describe("ChessForge Bootstrap Layout & Board UI (TC-BOOT-05, TC-PIECE-23, TC-SEL-01 to TC-ANIM-13)", () => {
   it("renders the root application container and title", () => {
     render(<App />);
     expect(screen.getByTestId("chessforge-app")).toBeInTheDocument();
@@ -47,7 +47,7 @@ describe("ChessForge Bootstrap Layout & Board UI (TC-BOOT-05, TC-PIECE-23, TC-SE
     expect(screen.getAllByTestId("piece-bp")).toHaveLength(8);
   });
 
-  it("handles piece selection, legal move indicators, and move execution", () => {
+  it("handles piece selection, legal move indicators, move execution, and last move state", () => {
     render(<App />);
 
     expect(screen.getByTestId("turn-indicator")).toHaveTextContent(
@@ -77,6 +77,32 @@ describe("ChessForge Bootstrap Layout & Board UI (TC-BOOT-05, TC-PIECE-23, TC-SE
         .getByTestId("board-square-e4")
         .querySelector("[data-testid='piece-wp']")
     ).toBeInTheDocument();
+
+    // Last move indicator is visible in status bar
+    expect(screen.getByTestId("last-move-indicator")).toHaveTextContent(
+      "Last: e2 → e4 (e4)"
+    );
+    expect(screen.getByTestId("board-square-e2")).toHaveClass(
+      "is-last-move-from"
+    );
+    expect(screen.getByTestId("board-square-e4")).toHaveClass(
+      "is-last-move-to"
+    );
+  });
+
+  it("supports toggling reduced motion preference", () => {
+    render(<App />);
+
+    const motionBtn = screen.getByTestId("btn-toggle-motion");
+    expect(motionBtn).toHaveTextContent("Motion: Standard");
+
+    fireEvent.click(motionBtn);
+    expect(motionBtn).toHaveTextContent("Motion: Reduced");
+    expect(screen.getByTestId("chess-board")).toHaveClass("reduced-motion");
+
+    fireEvent.click(motionBtn);
+    expect(motionBtn).toHaveTextContent("Motion: Standard");
+    expect(screen.getByTestId("chess-board")).not.toHaveClass("reduced-motion");
   });
 
   it("supports flipping board orientation and resetting game", () => {
@@ -88,11 +114,17 @@ describe("ChessForge Bootstrap Layout & Board UI (TC-BOOT-05, TC-PIECE-23, TC-SE
     const board = screen.getByTestId("chess-board");
     expect(board).toHaveAttribute("data-orientation", "b");
 
+    // Make a move first
+    fireEvent.click(screen.getByTestId("board-square-e2"));
+    fireEvent.click(screen.getByTestId("board-square-e4"));
+    expect(screen.getByTestId("last-move-indicator")).toBeInTheDocument();
+
     const resetBtn = screen.getByTestId("btn-reset-game");
     fireEvent.click(resetBtn);
 
     expect(screen.getByTestId("turn-indicator")).toHaveTextContent(
       "White to move"
     );
+    expect(screen.queryByTestId("last-move-indicator")).not.toBeInTheDocument();
   });
 });

@@ -9,7 +9,7 @@ import type {
   PromotionPieceType,
 } from "../../domain/chess/types";
 import type { ChessGame } from "../../domain/chess/ports";
-import type { LegalDestination, LegalTargetType } from "./types";
+import type { LegalDestination, LegalTargetType, LastMoveState } from "./types";
 
 /**
  * Options for the board interaction hook.
@@ -27,13 +27,15 @@ export interface UseBoardInteractionOptions {
 export interface BoardInteractionState {
   readonly selectedSquare: Square | null;
   readonly legalDestinations: ReadonlyMap<Square, LegalDestination>;
-  readonly lastMove: { from: Square; to: Square } | null;
+  readonly lastMove: LastMoveState | null;
   readonly checkSquare: Square | null;
   readonly isGameOver: boolean;
   readonly gameStatus: GameStatus;
   readonly handleSquareClick: (square: Square) => void;
   readonly clearSelection: () => void;
   readonly selectSquare: (square: Square) => void;
+  readonly setLastMove: (lastMove: LastMoveState | null) => void;
+  readonly resetLastMove: () => void;
 }
 
 /**
@@ -107,9 +109,7 @@ export function useBoardInteraction({
   const [legalDestinations, setLegalDestinations] = useState<
     Map<Square, LegalDestination>
   >(() => new Map());
-  const [lastMove, setLastMove] = useState<{ from: Square; to: Square } | null>(
-    null
-  );
+  const [lastMove, setLastMoveState] = useState<LastMoveState | null>(null);
 
   const gameStatus = game.getStatus();
   const isGameOver = disabled || gameStatus.isOver;
@@ -123,6 +123,14 @@ export function useBoardInteraction({
   const clearSelection = useCallback(() => {
     setSelectedSquare(null);
     setLegalDestinations(new Map());
+  }, []);
+
+  const resetLastMove = useCallback(() => {
+    setLastMoveState(null);
+  }, []);
+
+  const setLastMove = useCallback((move: LastMoveState | null) => {
+    setLastMoveState(move);
   }, []);
 
   const selectSquare = useCallback(
@@ -194,9 +202,19 @@ export function useBoardInteraction({
         const moveResult = game.makeMove(moveInput);
 
         if (moveResult.success) {
-          setLastMove({ from: selectedSquare, to: square });
+          const executedMove = moveResult.data;
+          const isCapture = Boolean(
+            executedMove.captured || executedMove.isEnPassant
+          );
+
+          setLastMoveState({
+            from: selectedSquare,
+            to: square,
+            isCapture,
+            san: executedMove.san,
+          });
           clearSelection();
-          onMoveExecuted?.(moveResult.data);
+          onMoveExecuted?.(executedMove);
         } else {
           clearSelection();
         }
@@ -236,5 +254,7 @@ export function useBoardInteraction({
     handleSquareClick,
     clearSelection,
     selectSquare,
+    setLastMove,
+    resetLastMove,
   };
 }

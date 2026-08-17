@@ -26,6 +26,16 @@ export type SquareColor = "light" | "dark";
 export type LegalTargetType = "move" | "capture";
 
 /**
+ * State representing the most recently committed move on the board.
+ */
+export interface LastMoveState {
+  readonly from: Square;
+  readonly to: Square;
+  readonly isCapture?: boolean | undefined;
+  readonly san?: string | undefined;
+}
+
+/**
  * Metadata for a legal destination square.
  */
 export interface LegalDestination {
@@ -51,6 +61,9 @@ export interface BoardSquareData {
   readonly isLegalTarget?: boolean | undefined;
   readonly legalTargetType?: LegalTargetType | undefined;
   readonly isLastMove?: boolean | undefined;
+  readonly isLastMoveFrom?: boolean | undefined;
+  readonly isLastMoveTo?: boolean | undefined;
+  readonly isCaptureEffect?: boolean | undefined;
   readonly isCheck?: boolean | undefined;
 }
 
@@ -64,6 +77,9 @@ export interface SquareProps {
   readonly orientation?: BoardOrientation | undefined;
   readonly isSelected?: boolean | undefined;
   readonly isLastMove?: boolean | undefined;
+  readonly isLastMoveFrom?: boolean | undefined;
+  readonly isLastMoveTo?: boolean | undefined;
+  readonly isCaptureEffect?: boolean | undefined;
   readonly isLegalTarget?: boolean | undefined;
   readonly legalTargetType?: LegalTargetType | undefined;
   readonly isCheck?: boolean | undefined;
@@ -101,10 +117,13 @@ export interface BoardProps {
     | ReadonlyMap<Square, LegalDestination>
     | null
     | undefined;
-  readonly lastMove?: { from: Square; to: Square } | null | undefined;
+  readonly lastMove?:
+    LastMoveState | { from: Square; to: Square } | null | undefined;
   readonly checkSquare?: Square | null | undefined;
   readonly disabled?: boolean | undefined;
   readonly showCoordinates?: boolean | undefined;
+  readonly reducedMotion?: boolean | undefined;
+  readonly animateMoves?: boolean | undefined;
   readonly onSquareClick?: ((square: Square) => void) | undefined;
   readonly renderSquare?: SquareRenderer | undefined;
   readonly renderPiece?: PieceRenderer | undefined;

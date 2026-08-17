@@ -12,6 +12,9 @@ export const Square: React.FC<SquareProps> = ({
   color,
   isSelected = false,
   isLastMove = false,
+  isLastMoveFrom = false,
+  isLastMoveTo = false,
+  isCaptureEffect = false,
   isLegalTarget = false,
   legalTargetType = "move",
   isCheck = false,
@@ -26,6 +29,18 @@ export const Square: React.FC<SquareProps> = ({
   const resolvedColor = color ?? getSquareColor(coords);
   const file = FILES[coords.file];
   const rank = RANKS[coords.rank];
+
+  const effectiveLastMove = isLastMove || isLastMoveFrom || isLastMoveTo;
+  const effectiveLastMoveFrom = isLastMoveFrom || (isLastMove && !isLastMoveTo);
+  const effectiveLastMoveTo = isLastMoveTo || (isLastMove && !isLastMoveFrom);
+
+  const lastMoveAttr = isLastMoveFrom
+    ? "from"
+    : isLastMoveTo
+      ? "to"
+      : effectiveLastMove
+        ? "true"
+        : undefined;
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -56,7 +71,14 @@ export const Square: React.FC<SquareProps> = ({
       : ", legal move target"
     : "";
   const checkLabel = isCheck ? ", in check" : "";
-  const defaultAriaLabel = `Square ${square}, ${resolvedColor}${pieceLabel}${selectedLabel}${legalLabel}${checkLabel}`;
+  const lastMoveLabel = isLastMoveFrom
+    ? ", last move origin"
+    : isLastMoveTo
+      ? ", last move destination"
+      : effectiveLastMove
+        ? ", last move"
+        : "";
+  const defaultAriaLabel = `Square ${square}, ${resolvedColor}${pieceLabel}${selectedLabel}${legalLabel}${checkLabel}${lastMoveLabel}`;
 
   return (
     <div
@@ -75,13 +97,19 @@ export const Square: React.FC<SquareProps> = ({
       data-is-legal-target={isLegalTarget ? "true" : undefined}
       data-target-type={isLegalTarget ? legalTargetType : undefined}
       data-is-check={isCheck ? "true" : undefined}
-      data-is-last-move={isLastMove ? "true" : undefined}
+      data-is-last-move={lastMoveAttr}
+      data-is-last-move-from={isLastMoveFrom ? "true" : undefined}
+      data-is-last-move-to={isLastMoveTo ? "true" : undefined}
+      data-is-capture-effect={isCaptureEffect ? "true" : undefined}
       className={clsx(
         "chess-square",
         `square-${resolvedColor}`,
         {
           "is-selected": isSelected,
-          "is-last-move": isLastMove,
+          "is-last-move": effectiveLastMove,
+          "is-last-move-from": effectiveLastMoveFrom,
+          "is-last-move-to": effectiveLastMoveTo,
+          "is-capture-effect": isCaptureEffect,
           "is-legal-target": isLegalTarget,
           "is-capture-target": isLegalTarget && legalTargetType === "capture",
           "is-check": isCheck,

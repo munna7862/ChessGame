@@ -12,7 +12,12 @@ import {
   getPieceFromMatrix,
 } from "./coordinates";
 import { Square as SquareComponent } from "./Square";
-import type { BoardProps, BoardSquareData, LegalDestination } from "./types";
+import type {
+  BoardProps,
+  BoardSquareData,
+  LegalDestination,
+  LastMoveState,
+} from "./types";
 import "./Board.css";
 
 export const Board: React.FC<BoardProps> = ({
@@ -26,6 +31,7 @@ export const Board: React.FC<BoardProps> = ({
   checkSquare = null,
   disabled = false,
   showCoordinates = true,
+  reducedMotion = false,
   onSquareClick,
   renderSquare,
   renderPiece,
@@ -86,16 +92,21 @@ export const Board: React.FC<BoardProps> = ({
 
   return (
     <div
-      className={clsx("chess-board-wrapper", className)}
+      className={clsx("chess-board-wrapper", className, {
+        "reduced-motion": reducedMotion,
+      })}
       data-testid="chess-board-wrapper"
+      data-reduced-motion={reducedMotion ? "true" : undefined}
     >
       <div
         role="grid"
         aria-label={ariaLabel}
         data-testid="chess-board"
         data-orientation={orientation}
+        data-reduced-motion={reducedMotion ? "true" : undefined}
         className={clsx("chess-board-grid", `orientation-${orientation}`, {
           "is-board-disabled": disabled,
+          "reduced-motion": reducedMotion,
         })}
       >
         {gridSquares.map((squareData: BoardSquareData) => {
@@ -103,9 +114,15 @@ export const Board: React.FC<BoardProps> = ({
           const legalDest = legalDestMap.get(squareData.square);
           const isLegalTarget = Boolean(legalDest);
           const legalTargetType = legalDest?.targetType ?? "move";
-          const isLastMove =
-            lastMove?.from === squareData.square ||
-            lastMove?.to === squareData.square;
+          const isLastMoveFrom = lastMove?.from === squareData.square;
+          const isLastMoveTo = lastMove?.to === squareData.square;
+          const isLastMove = isLastMoveFrom || isLastMoveTo;
+          const isCaptureEffect = Boolean(
+            isLastMoveTo &&
+            lastMove &&
+            "isCapture" in lastMove &&
+            (lastMove as LastMoveState).isCapture
+          );
           const isCheck = checkSquare === squareData.square;
 
           const enhancedSquareData: BoardSquareData = {
@@ -114,6 +131,9 @@ export const Board: React.FC<BoardProps> = ({
             isLegalTarget,
             legalTargetType,
             isLastMove,
+            isLastMoveFrom,
+            isLastMoveTo,
+            isCaptureEffect,
             isCheck,
           };
 
@@ -140,6 +160,9 @@ export const Board: React.FC<BoardProps> = ({
               isLegalTarget={isLegalTarget}
               legalTargetType={legalTargetType}
               isLastMove={isLastMove}
+              isLastMoveFrom={isLastMoveFrom}
+              isLastMoveTo={isLastMoveTo}
+              isCaptureEffect={isCaptureEffect}
               isCheck={isCheck}
               disabled={disabled}
               onClick={
