@@ -118,17 +118,21 @@ function run(command, options = {}) {
 // Generate Persona-Ready Prompt
 export function generateSprintPrompt(sprint) {
   const branchName = `feature/p${sprint.phase.toLowerCase()}-s${sprint.sprint.toLowerCase()}-${sprint.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+  const tagInstruction = sprint.isPhaseEnd
+    ? `\n9. **Phase Tagging (DO)**: Since ${sprint.id} is the final sprint of Phase ${sprint.phase}, after merging to 'main', checkout 'main', pull latest, create tag 'v0.${parseInt(sprint.phase, 10)}.0' and create GitHub release via 'gh release create v0.${parseInt(sprint.phase, 10)}.0 --title "v0.${parseInt(sprint.phase, 10)}.0: Phase ${sprint.phase} Complete"'.`
+    : '';
+
   return `/goal start sprint # Phase ${sprint.phase} · Sprint ${sprint.sprint}: ${sprint.name} using scrum master persona
 
 Follow the Universal Operating Contract in AGENTS.md strictly:
 1. **Scrum Master (SM)**: Read planning/sprints/${sprint.file} and planning/phases/${sprint.phase}-phase-*.md. Initialize task breakdown in task.md, verify dependencies. Checkout branch '${branchName}'.
-2. **Chess Domain / Architecture (CDA/SDE)**: Review domain invariants and architecture boundaries.
+2. **Chess Domain / Architecture (CDA/SDE)**: Review domain invariants, UI architecture, and layout specifications.
 3. **SDET Architect (SDET)**: Author pre-implementation Test Cases Catalog (docs/testing/test_cases_catalog_P${sprint.phase}_S${sprint.sprint}.md).
-4. **Dev Architect & Senior SDE (SDE)**: Implement production code and unit/integration tests on branch '${branchName}'.
+4. **Dev Architect & Senior SDE (SDE)**: Implement production code, UI components, and unit/integration tests on branch '${branchName}'.
 5. **Security Officer (SEC)**: Conduct Desktop & Capability Security Audit.
-6. **SDET Architect (SDET)**: Run complete test suite and quality gates (100% Green, 0 skips).
+6. **SDET Architect (SDET)**: Run complete test suite and quality gates (100% Green, 0 skips: npm run lint, npm run typecheck, npm run format:check, npm test, npm run test:e2e, npm run build).
 7. **Product Owner (PO)**: Conduct Acceptance Review and approve release.
-8. **DevOps Engineer (DO)**: Author PR documentation (docs/pull_requests/pr_P${sprint.phase}_S${sprint.sprint}_*.md), commit atomic changes, push to origin, and create GitHub PR via 'gh pr create'.`;
+8. **DevOps Engineer (DO)**: Author PR documentation (docs/pull_requests/pr_P${sprint.phase}_S${sprint.sprint}_*.md), commit atomic changes, push to origin, create GitHub PR via 'gh pr create', and auto-merge to 'main' via 'gh pr merge --squash --delete-branch --auto || gh pr merge --squash --delete-branch'.${tagInstruction}`;
 }
 
 // Check Sprint Status
