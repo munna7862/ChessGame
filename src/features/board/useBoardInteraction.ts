@@ -9,7 +9,12 @@ import type {
   PromotionPieceType,
 } from "../../domain/chess/types";
 import type { ChessGame } from "../../domain/chess/ports";
-import type { LegalDestination, LegalTargetType, LastMoveState } from "./types";
+import type {
+  LegalDestination,
+  LegalTargetType,
+  LastMoveState,
+  PendingPromotion,
+} from "./types";
 
 /**
  * Options for the board interaction hook.
@@ -29,9 +34,13 @@ export interface BoardInteractionState {
   readonly legalDestinations: ReadonlyMap<Square, LegalDestination>;
   readonly lastMove: LastMoveState | null;
   readonly checkSquare: Square | null;
+  readonly isCheckmate: boolean;
   readonly isGameOver: boolean;
   readonly gameStatus: GameStatus;
+  readonly pendingPromotion: PendingPromotion | null;
   readonly handleSquareClick: (square: Square) => void;
+  readonly handlePromotionSelect: (pieceType: PromotionPieceType) => void;
+  readonly handlePromotionCancel: () => void;
   readonly clearSelection: () => void;
   readonly selectSquare: (square: Square) => void;
   readonly setLastMove: (lastMove: LastMoveState | null) => void;
@@ -76,7 +85,7 @@ export function findCheckSquare(
   activeColor: Color
 ): Square | null {
   const status = game.getStatus();
-  if (!status.isCheck) {
+  if (!status.isCheck && status.state !== "checkmate") {
     return null;
   }
 
@@ -103,16 +112,19 @@ export function useBoardInteraction({
   game,
   onMoveExecuted,
   disabled = false,
-  defaultPromotion = "q",
+  defaultPromotion: _defaultPromotion = "q",
 }: UseBoardInteractionOptions): BoardInteractionState {
   const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);
   const [legalDestinations, setLegalDestinations] = useState<
     Map<Square, LegalDestination>
   >(() => new Map());
   const [lastMove, setLastMoveState] = useState<LastMoveState | null>(null);
+  const [pendingPromotion, setPendingPromotion] =
+    useState<PendingPromotion | null>(null);
 
   const gameStatus = game.getStatus();
   const isGameOver = disabled || gameStatus.isOver;
+  const isCheckmate = gameStatus.state === "checkmate";
   const currentTurn = game.getPosition().turn;
 
   const checkSquare = useMemo(
@@ -133,9 +145,49 @@ export function useBoardInteraction({
     setLastMoveState(move);
   }, []);
 
+  const handlePromotionCancel = useCallback(() => {
+    setPendingPromotion(null);
+    clearSelection();
+  }, [clearSelection]);
+
+  const handlePromotionSelect = useCallback(
+    (pieceType: PromotionPieceType) => {
+      if (!pendingPromotion) return;
+
+      const moveInput: MoveInput = {
+        from: pendingPromotion.from,
+        to: pendingPromotion.to,
+        promotion: pieceType,
+      };
+
+      const moveResult = game.makeMove(moveInput);
+
+      if (moveResult.success) {
+        const executedMove = moveResult.data;
+        const isCapture = Boolean(
+          executedMove.captured || executedMove.isEnPassant
+        );
+
+        setLastMoveState({
+          from: pendingPromotion.from,
+          to: pendingPromotion.to,
+          isCapture,
+          san: executedMove.san,
+        });
+        setPendingPromotion(null);
+        clearSelection();
+        onMoveExecuted?.(executedMove);
+      } else {
+        setPendingPromotion(null);
+        clearSelection();
+      }
+    },
+    [pendingPromotion, game, clearSelection, onMoveExecuted]
+  );
+
   const selectSquare = useCallback(
     (square: Square) => {
-      if (isGameOver) {
+      if (isGameOver || pendingPromotion) {
         clearSelection();
         return;
       }
@@ -150,13 +202,19 @@ export function useBoardInteraction({
       setSelectedSquare(square);
       setLegalDestinations(dests);
     },
-    [game, currentTurn, isGameOver, clearSelection]
+    [game, currentTurn, isGameOver, pendingPromotion, clearSelection]
   );
 
   const handleSquareClick = useCallback(
     (square: Square) => {
       if (isGameOver) {
         clearSelection();
+        setPendingPromotion(null);
+        return;
+      }
+
+      // If promotion dialog is active, ignore board square clicks or dismiss
+      if (pendingPromotion) {
         return;
       }
 
@@ -179,7 +237,7 @@ export function useBoardInteraction({
         return;
       }
 
-      // B. Click a legal destination -> Execute Move
+      // B. Click a legal destination -> Execute Move or Trigger Promotion
       const legalDest = legalDestinations.get(square);
       if (legalDest) {
         const fromPiece = game.getPiece(selectedSquare);
@@ -188,16 +246,23 @@ export function useBoardInteraction({
           ((fromPiece.color === "w" && square[1] === "8") ||
             (fromPiece.color === "b" && square[1] === "1"));
 
-        const moveInput: MoveInput = isPawnPromotion
-          ? {
-              from: selectedSquare,
-              to: square,
-              promotion: legalDest.move?.promotion ?? defaultPromotion,
-            }
-          : {
-              from: selectedSquare,
-              to: square,
-            };
+        if (isPawnPromotion && fromPiece) {
+          // Open interactive promotion dialog
+          setPendingPromotion({
+            from: selectedSquare,
+            to: square,
+            color: fromPiece.color,
+          });
+          return;
+        }
+
+        const moveInput: MoveInput = {
+          from: selectedSquare,
+          to: square,
+          ...(legalDest.move?.promotion
+            ? { promotion: legalDest.move.promotion }
+            : {}),
+        };
 
         const moveResult = game.makeMove(moveInput);
 
@@ -234,11 +299,11 @@ export function useBoardInteraction({
     },
     [
       isGameOver,
+      pendingPromotion,
       selectedSquare,
       legalDestinations,
       currentTurn,
       game,
-      defaultPromotion,
       onMoveExecuted,
       clearSelection,
     ]
@@ -249,9 +314,13 @@ export function useBoardInteraction({
     legalDestinations,
     lastMove,
     checkSquare,
+    isCheckmate,
     isGameOver,
     gameStatus,
+    pendingPromotion,
     handleSquareClick,
+    handlePromotionSelect,
+    handlePromotionCancel,
     clearSelection,
     selectSquare,
     setLastMove,

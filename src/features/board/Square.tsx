@@ -18,6 +18,7 @@ export const Square: React.FC<SquareProps> = ({
   isLegalTarget = false,
   legalTargetType = "move",
   isCheck = false,
+  isCheckmate = false,
   disabled = false,
   children,
   onClick,
@@ -30,6 +31,7 @@ export const Square: React.FC<SquareProps> = ({
   const file = FILES[coords.file];
   const rank = RANKS[coords.rank];
 
+  const effectiveCheck = isCheck || isCheckmate;
   const effectiveLastMove = isLastMove || isLastMoveFrom || isLastMoveTo;
   const effectiveLastMoveFrom = isLastMoveFrom || (isLastMove && !isLastMoveTo);
   const effectiveLastMoveTo = isLastMoveTo || (isLastMove && !isLastMoveFrom);
@@ -70,7 +72,11 @@ export const Square: React.FC<SquareProps> = ({
       ? ", legal capture target"
       : ", legal move target"
     : "";
-  const checkLabel = isCheck ? ", in check" : "";
+  const checkLabel = isCheckmate
+    ? ", in checkmate"
+    : effectiveCheck
+      ? ", in check"
+      : "";
   const lastMoveLabel = isLastMoveFrom
     ? ", last move origin"
     : isLastMoveTo
@@ -96,7 +102,8 @@ export const Square: React.FC<SquareProps> = ({
       data-is-selected={isSelected ? "true" : undefined}
       data-is-legal-target={isLegalTarget ? "true" : undefined}
       data-target-type={isLegalTarget ? legalTargetType : undefined}
-      data-is-check={isCheck ? "true" : undefined}
+      data-is-check={effectiveCheck ? "true" : undefined}
+      data-is-checkmate={isCheckmate ? "true" : undefined}
       data-is-last-move={lastMoveAttr}
       data-is-last-move-from={isLastMoveFrom ? "true" : undefined}
       data-is-last-move-to={isLastMoveTo ? "true" : undefined}
@@ -112,7 +119,8 @@ export const Square: React.FC<SquareProps> = ({
           "is-capture-effect": isCaptureEffect,
           "is-legal-target": isLegalTarget,
           "is-capture-target": isLegalTarget && legalTargetType === "capture",
-          "is-check": isCheck,
+          "is-check": effectiveCheck,
+          "is-checkmate": isCheckmate,
           "is-disabled": disabled,
           "has-piece": Boolean(piece),
         },
@@ -121,6 +129,43 @@ export const Square: React.FC<SquareProps> = ({
       onClick={handleClick}
       onKeyDown={handleKeyDown}
     >
+      {effectiveCheck && (
+        <span
+          className={clsx("check-indicator-badge", {
+            "is-checkmate-badge": isCheckmate,
+          })}
+          data-testid={
+            isCheckmate
+              ? `checkmate-indicator-${square}`
+              : `check-indicator-${square}`
+          }
+          aria-hidden="true"
+        >
+          <svg
+            className="check-indicator-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            {isCheckmate ? (
+              <>
+                <circle cx="12" cy="12" r="9" strokeWidth="2" />
+                <line x1="15" y1="9" x2="9" y2="15" />
+                <line x1="9" y1="9" x2="15" y2="15" />
+              </>
+            ) : (
+              <>
+                <circle cx="12" cy="12" r="9" strokeWidth="2" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" strokeWidth="3" />
+              </>
+            )}
+          </svg>
+        </span>
+      )}
       {isLegalTarget && (
         <span
           className={clsx(

@@ -19,10 +19,13 @@ export const App: React.FC = () => {
     legalDestinations,
     lastMove,
     checkSquare,
+    isCheckmate,
     isGameOver,
     gameStatus,
+    pendingPromotion,
     handleSquareClick,
-    clearSelection,
+    handlePromotionSelect,
+    handlePromotionCancel,
     resetLastMove,
   } = useBoardInteraction({
     game: chessAdapter,
@@ -39,7 +42,7 @@ export const App: React.FC = () => {
 
   const handleResetGame = () => {
     chessAdapter.reset();
-    clearSelection();
+    handlePromotionCancel();
     resetLastMove();
     setGameVersion((v) => v + 1);
   };
@@ -135,6 +138,10 @@ export const App: React.FC = () => {
             legalDestinations={legalDestinations}
             lastMove={lastMove}
             checkSquare={checkSquare}
+            isCheckmate={isCheckmate}
+            pendingPromotion={pendingPromotion}
+            onPromotionSelect={handlePromotionSelect}
+            onPromotionCancel={handlePromotionCancel}
             reducedMotion={prefersReducedMotion}
             disabled={isGameOver}
             onSquareClick={handleSquareClick}

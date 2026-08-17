@@ -335,4 +335,180 @@ describe("useBoardInteraction & Legal Moves (Phase 04 · Sprint 03 - Sprint 04)"
       { numRuns: 100 }
     );
   });
+
+  describe("Promotion Interaction & State Machine (TC-PROM-05 to TC-PROM-15)", () => {
+    it("TC-PROM-05: White pawn moving to rank 8 sets pendingPromotion instead of immediate commit", () => {
+      const game = createChessAdapter();
+      // White pawn on e7 ready to promote on e8 (Kings at g1, g8)
+      game.loadFen("6k1/4P3/8/8/8/8/8/6K1 w - - 0 1");
+
+      const onMoveExecuted = vi.fn();
+      const { result } = renderHook(() =>
+        useBoardInteraction({ game, onMoveExecuted })
+      );
+
+      act(() => {
+        result.current.handleSquareClick("e7");
+      });
+      expect(result.current.selectedSquare).toBe("e7");
+
+      act(() => {
+        result.current.handleSquareClick("e8");
+      });
+
+      // Promotion dialog is triggered
+      expect(result.current.pendingPromotion).toEqual({
+        from: "e7",
+        to: "e8",
+        color: "w",
+      });
+      // Move not executed yet
+      expect(onMoveExecuted).not.toHaveBeenCalled();
+      expect(game.getPosition().turn).toBe("w");
+    });
+
+    it("TC-PROM-06: Black pawn moving to rank 1 sets pendingPromotion for Black", () => {
+      const game = createChessAdapter();
+      // Black pawn on a2 ready to promote on a1 (Kings at g1, g8)
+      game.loadFen("6k1/8/8/8/8/8/p7/6K1 b - - 0 1");
+
+      const { result } = renderHook(() => useBoardInteraction({ game }));
+
+      act(() => {
+        result.current.handleSquareClick("a2");
+      });
+      act(() => {
+        result.current.handleSquareClick("a1");
+      });
+
+      expect(result.current.pendingPromotion).toEqual({
+        from: "a2",
+        to: "a1",
+        color: "b",
+      });
+    });
+
+    it("TC-PROM-07: Pawn capture onto back rank triggers promotion dialog", () => {
+      const game = createChessAdapter();
+      // White pawn on e7, enemy knight on d8
+      game.loadFen("3n2k1/4P3/8/8/8/8/8/6K1 w - - 0 1");
+
+      const { result } = renderHook(() => useBoardInteraction({ game }));
+
+      act(() => {
+        result.current.handleSquareClick("e7");
+      });
+      act(() => {
+        result.current.handleSquareClick("d8");
+      });
+
+      expect(result.current.pendingPromotion).toEqual({
+        from: "e7",
+        to: "d8",
+        color: "w",
+      });
+    });
+
+    it("TC-PROM-08: Non-pawn piece moving to 8th rank commits immediately without promotion dialog", () => {
+      const game = createChessAdapter();
+      // White Rook on a1 moving to a8
+      game.loadFen("6k1/8/8/8/8/8/8/R5K1 w - - 0 1");
+
+      const onMoveExecuted = vi.fn();
+      const { result } = renderHook(() =>
+        useBoardInteraction({ game, onMoveExecuted })
+      );
+
+      act(() => {
+        result.current.handleSquareClick("a1");
+      });
+      act(() => {
+        result.current.handleSquareClick("a8");
+      });
+
+      expect(result.current.pendingPromotion).toBeNull();
+      expect(onMoveExecuted).toHaveBeenCalledTimes(1);
+      expect(onMoveExecuted.mock.calls[0]?.[0]?.san).toBe("Ra8+");
+    });
+
+    it("TC-PROM-10 to TC-PROM-13: handlePromotionSelect executes chosen promotion (Q, R, B, N)", () => {
+      const promotionChoices = [
+        { type: "q" as const, expectedSan: "e8=Q+" },
+        { type: "r" as const, expectedSan: "e8=R+" },
+        { type: "b" as const, expectedSan: "e8=B" },
+        { type: "n" as const, expectedSan: "e8=N" },
+      ];
+
+      for (const { type, expectedSan } of promotionChoices) {
+        const game = createChessAdapter();
+        game.loadFen("6k1/4P3/8/8/8/8/8/6K1 w - - 0 1");
+
+        const onMoveExecuted = vi.fn();
+        const { result } = renderHook(() =>
+          useBoardInteraction({ game, onMoveExecuted })
+        );
+
+        act(() => {
+          result.current.handleSquareClick("e7");
+        });
+        act(() => {
+          result.current.handleSquareClick("e8");
+        });
+
+        expect(result.current.pendingPromotion).toBeDefined();
+
+        act(() => {
+          result.current.handlePromotionSelect(type);
+        });
+
+        expect(result.current.pendingPromotion).toBeNull();
+        expect(result.current.selectedSquare).toBeNull();
+        expect(onMoveExecuted).toHaveBeenCalledTimes(1);
+        expect(onMoveExecuted.mock.calls[0]?.[0]?.san).toBe(expectedSan);
+        expect(result.current.lastMove?.to).toBe("e8");
+      }
+    });
+
+    it("TC-PROM-14 & TC-PROM-15: handlePromotionCancel cancels pending promotion without mutating game", () => {
+      const game = createChessAdapter();
+      const initialFen = "6k1/4P3/8/8/8/8/8/6K1 w - - 0 1";
+      game.loadFen(initialFen);
+
+      const onMoveExecuted = vi.fn();
+      const { result } = renderHook(() =>
+        useBoardInteraction({ game, onMoveExecuted })
+      );
+
+      act(() => {
+        result.current.handleSquareClick("e7");
+      });
+      act(() => {
+        result.current.handleSquareClick("e8");
+      });
+      expect(result.current.pendingPromotion).toBeDefined();
+
+      act(() => {
+        result.current.handlePromotionCancel();
+      });
+
+      expect(result.current.pendingPromotion).toBeNull();
+      expect(result.current.selectedSquare).toBeNull();
+      expect(game.exportFen()).toBe(initialFen);
+      expect(onMoveExecuted).not.toHaveBeenCalled();
+    });
+
+    it("TC-PROM-03: identifies checkmate state correctly", () => {
+      const game = createChessAdapter();
+      // Scholar's Mate checkmate position
+      game.loadFen(
+        "r1bqkb1r/pppp1Qpp/2n5/4p3/2B1n3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4"
+      );
+
+      const { result } = renderHook(() => useBoardInteraction({ game }));
+
+      expect(result.current.isCheckmate).toBe(true);
+      expect(result.current.isGameOver).toBe(true);
+      expect(result.current.checkSquare).toBe("e8");
+    });
+  });
 });

@@ -8,6 +8,7 @@ import type {
   BoardMatrix,
   Position,
   Move,
+  PromotionPieceType,
 } from "../../domain/chess/types";
 
 /**
@@ -33,6 +34,15 @@ export interface LastMoveState {
   readonly to: Square;
   readonly isCapture?: boolean | undefined;
   readonly san?: string | undefined;
+}
+
+/**
+ * Pending promotion state awaiting user piece selection.
+ */
+export interface PendingPromotion {
+  readonly from: Square;
+  readonly to: Square;
+  readonly color: Color;
 }
 
 /**
@@ -65,6 +75,7 @@ export interface BoardSquareData {
   readonly isLastMoveTo?: boolean | undefined;
   readonly isCaptureEffect?: boolean | undefined;
   readonly isCheck?: boolean | undefined;
+  readonly isCheckmate?: boolean | undefined;
 }
 
 /**
@@ -83,6 +94,7 @@ export interface SquareProps {
   readonly isLegalTarget?: boolean | undefined;
   readonly legalTargetType?: LegalTargetType | undefined;
   readonly isCheck?: boolean | undefined;
+  readonly isCheckmate?: boolean | undefined;
   readonly disabled?: boolean | undefined;
   readonly children?: React.ReactNode | undefined;
   readonly onClick?: ((square: Square) => void) | undefined;
@@ -103,6 +115,19 @@ export type SquareRenderer = (data: BoardSquareData) => React.ReactNode;
 export type PieceRenderer = (piece: Piece, square: Square) => React.ReactNode;
 
 /**
+ * Props for the interactive PromotionDialog component.
+ */
+export interface PromotionDialogProps {
+  readonly color: Color;
+  readonly targetSquare?: Square | undefined;
+  readonly orientation?: BoardOrientation | undefined;
+  readonly onSelect: (pieceType: PromotionPieceType) => void;
+  readonly onCancel: () => void;
+  readonly disabled?: boolean | undefined;
+  readonly className?: string | undefined;
+}
+
+/**
  * Props for the full Board component.
  */
 export interface BoardProps {
@@ -120,6 +145,11 @@ export interface BoardProps {
   readonly lastMove?:
     LastMoveState | { from: Square; to: Square } | null | undefined;
   readonly checkSquare?: Square | null | undefined;
+  readonly isCheckmate?: boolean | undefined;
+  readonly pendingPromotion?: PendingPromotion | null | undefined;
+  readonly onPromotionSelect?:
+    ((pieceType: PromotionPieceType) => void) | undefined;
+  readonly onPromotionCancel?: (() => void) | undefined;
   readonly disabled?: boolean | undefined;
   readonly showCoordinates?: boolean | undefined;
   readonly reducedMotion?: boolean | undefined;

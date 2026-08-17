@@ -223,6 +223,56 @@ describe("Square Component (Phase 04 · Sprint 01 - Sprint 04)", () => {
     expect(squareEl).toHaveAttribute("data-is-capture-effect", "true");
   });
 
+  it("TC-PROM-01 / TC-PROM-02: renders check indicator badge and accessible ARIA label when in check", () => {
+    render(
+      <Square
+        square="e1"
+        color="dark"
+        piece={{ color: "w", type: "k" }}
+        isCheck={true}
+      />
+    );
+
+    const squareEl = screen.getByTestId("board-square-e1");
+    expect(squareEl).toHaveClass("is-check");
+    expect(squareEl).toHaveAttribute("data-is-check", "true");
+    expect(squareEl).toHaveAttribute(
+      "aria-label",
+      "Square e1, dark, White King, in check"
+    );
+
+    const badge = screen.getByTestId("check-indicator-e1");
+    expect(badge).toBeInTheDocument();
+    expect(badge).toHaveClass("check-indicator-badge");
+    expect(badge).not.toHaveClass("is-checkmate-badge");
+  });
+
+  it("TC-PROM-03: renders checkmate indicator badge and distinct styling when in checkmate", () => {
+    render(
+      <Square
+        square="e8"
+        color="dark"
+        piece={{ color: "b", type: "k" }}
+        isCheckmate={true}
+      />
+    );
+
+    const squareEl = screen.getByTestId("board-square-e8");
+    expect(squareEl).toHaveClass("is-check");
+    expect(squareEl).toHaveClass("is-checkmate");
+    expect(squareEl).toHaveAttribute("data-is-check", "true");
+    expect(squareEl).toHaveAttribute("data-is-checkmate", "true");
+    expect(squareEl).toHaveAttribute(
+      "aria-label",
+      "Square e8, dark, Black King, in checkmate"
+    );
+
+    const badge = screen.getByTestId("checkmate-indicator-e8");
+    expect(badge).toBeInTheDocument();
+    expect(badge).toHaveClass("check-indicator-badge");
+    expect(badge).toHaveClass("is-checkmate-badge");
+  });
+
   it("TC-SEL-13: disables square when disabled=true and suppresses click events", () => {
     const handleClick = vi.fn();
     render(

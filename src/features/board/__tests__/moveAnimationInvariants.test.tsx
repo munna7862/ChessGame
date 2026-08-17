@@ -24,13 +24,7 @@ describe("Move Animation & Last-Move Invariants (TC-ANIM-05 to TC-ANIM-18)", () 
       san: "exd6",
     };
 
-    render(
-      <Board
-        position={position}
-        lastMove={lastMove}
-        orientation="w"
-      />
-    );
+    render(<Board position={position} lastMove={lastMove} orientation="w" />);
 
     // Origin e5 is empty and highlighted as origin
     const e5Square = screen.getByTestId("board-square-e5");
@@ -69,13 +63,7 @@ describe("Move Animation & Last-Move Invariants (TC-ANIM-05 to TC-ANIM-18)", () 
       san: "O-O",
     };
 
-    render(
-      <Board
-        position={position}
-        lastMove={lastMove}
-        orientation="w"
-      />
-    );
+    render(<Board position={position} lastMove={lastMove} orientation="w" />);
 
     const e1Square = screen.getByTestId("board-square-e1");
     expect(e1Square).toHaveClass("is-last-move-from");
@@ -108,13 +96,7 @@ describe("Move Animation & Last-Move Invariants (TC-ANIM-05 to TC-ANIM-18)", () 
       san: "e8=Q+",
     };
 
-    render(
-      <Board
-        position={position}
-        lastMove={lastMove}
-        orientation="w"
-      />
-    );
+    render(<Board position={position} lastMove={lastMove} orientation="w" />);
 
     const e7Square = screen.getByTestId("board-square-e7");
     expect(e7Square).toHaveClass("is-last-move-from");
@@ -225,11 +207,7 @@ describe("Move Animation & Last-Move Invariants (TC-ANIM-05 to TC-ANIM-18)", () 
 
         const position = game.getPosition();
         const { unmount } = render(
-          <Board
-            position={position}
-            lastMove={lastMove}
-            orientation="w"
-          />
+          <Board position={position} lastMove={lastMove} orientation="w" />
         );
 
         // Verify domain pieces match DOM pieces

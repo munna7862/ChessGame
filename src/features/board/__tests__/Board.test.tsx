@@ -430,4 +430,42 @@ describe("Board Component (Phase 04 · Sprint 01 - Sprint 04)", () => {
       expect(customPieceEl).toHaveTextContent("Custom w-k");
     });
   });
+
+  describe("Checkmate and Promotion UI Integration (TC-PROM-01 to TC-PROM-18)", () => {
+    it("TC-PROM-03: renders checkmate styling when checkSquare and isCheckmate are true", () => {
+      render(
+        <Board
+          checkSquare="e8"
+          isCheckmate={true}
+          pieces={{ e8: { color: "b", type: "k" } }}
+        />
+      );
+
+      const e8Square = screen.getByTestId("board-square-e8");
+      expect(e8Square).toHaveClass("is-checkmate");
+      expect(screen.getByTestId("checkmate-indicator-e8")).toBeInTheDocument();
+    });
+
+    it("TC-PROM-05, TC-PROM-09: renders PromotionDialog overlay when pendingPromotion is set", () => {
+      const handleSelect = vi.fn();
+      const handleCancel = vi.fn();
+
+      render(
+        <Board
+          pendingPromotion={{ from: "e7", to: "e8", color: "w" }}
+          onPromotionSelect={handleSelect}
+          onPromotionCancel={handleCancel}
+        />
+      );
+
+      expect(screen.getByTestId("promotion-dialog")).toBeInTheDocument();
+      expect(screen.getByTestId("promotion-choice-q")).toBeInTheDocument();
+
+      fireEvent.click(screen.getByTestId("promotion-choice-q"));
+      expect(handleSelect).toHaveBeenCalledWith("q");
+
+      fireEvent.click(screen.getByTestId("promotion-cancel-btn"));
+      expect(handleCancel).toHaveBeenCalledTimes(1);
+    });
+  });
 });

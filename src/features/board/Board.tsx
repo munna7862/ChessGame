@@ -12,6 +12,7 @@ import {
   getPieceFromMatrix,
 } from "./coordinates";
 import { Square as SquareComponent } from "./Square";
+import { PromotionDialog } from "./PromotionDialog";
 import type {
   BoardProps,
   BoardSquareData,
@@ -29,6 +30,10 @@ export const Board: React.FC<BoardProps> = ({
   legalDestinations = null,
   lastMove = null,
   checkSquare = null,
+  isCheckmate = false,
+  pendingPromotion = null,
+  onPromotionSelect,
+  onPromotionCancel,
   disabled = false,
   showCoordinates = true,
   reducedMotion = false,
@@ -123,7 +128,8 @@ export const Board: React.FC<BoardProps> = ({
             "isCapture" in lastMove &&
             (lastMove as LastMoveState).isCapture
           );
-          const isCheck = checkSquare === squareData.square;
+          const isSquareCheck = checkSquare === squareData.square;
+          const isSquareCheckmate = isSquareCheck && isCheckmate;
 
           const enhancedSquareData: BoardSquareData = {
             ...squareData,
@@ -134,7 +140,8 @@ export const Board: React.FC<BoardProps> = ({
             isLastMoveFrom,
             isLastMoveTo,
             isCaptureEffect,
-            isCheck,
+            isCheck: isSquareCheck,
+            isCheckmate: isSquareCheckmate,
           };
 
           if (renderSquare) {
@@ -163,7 +170,8 @@ export const Board: React.FC<BoardProps> = ({
               isLastMoveFrom={isLastMoveFrom}
               isLastMoveTo={isLastMoveTo}
               isCaptureEffect={isCaptureEffect}
-              isCheck={isCheck}
+              isCheck={isSquareCheck}
+              isCheckmate={isSquareCheckmate}
               disabled={disabled}
               onClick={
                 onSquareClick ? (sq: Square) => onSquareClick(sq) : undefined
@@ -207,6 +215,17 @@ export const Board: React.FC<BoardProps> = ({
               ))}
             </div>
           </>
+        )}
+
+        {pendingPromotion && (
+          <PromotionDialog
+            color={pendingPromotion.color}
+            targetSquare={pendingPromotion.to}
+            orientation={orientation}
+            disabled={disabled}
+            onSelect={(pieceType) => onPromotionSelect?.(pieceType)}
+            onCancel={() => onPromotionCancel?.()}
+          />
         )}
       </div>
     </div>

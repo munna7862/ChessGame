@@ -127,4 +127,32 @@ describe("ChessForge Bootstrap Layout & Board UI (TC-BOOT-05, TC-PIECE-23, TC-SE
     );
     expect(screen.queryByTestId("last-move-indicator")).not.toBeInTheDocument();
   });
+
+  it("TC-PROM-01: renders check indicator when a move delivers check", () => {
+    render(<App />);
+
+    // Play Fool's mate setup: 1. f3 e5 2. g4 Qh4# (checkmate)
+    // 1. f3
+    fireEvent.click(screen.getByTestId("board-square-f2"));
+    fireEvent.click(screen.getByTestId("board-square-f3"));
+
+    // 1... e5
+    fireEvent.click(screen.getByTestId("board-square-e7"));
+    fireEvent.click(screen.getByTestId("board-square-e5"));
+
+    // 2. g4
+    fireEvent.click(screen.getByTestId("board-square-g2"));
+    fireEvent.click(screen.getByTestId("board-square-g4"));
+
+    // 2... Qh4#
+    fireEvent.click(screen.getByTestId("board-square-d8"));
+    fireEvent.click(screen.getByTestId("board-square-h4"));
+
+    // Verify Checkmate status in bar and on King square e1
+    expect(screen.getByTestId("checkmate-indicator")).toHaveTextContent(
+      "Checkmate! Black wins"
+    );
+    expect(screen.getByTestId("board-square-e1")).toHaveClass("is-checkmate");
+    expect(screen.getByTestId("checkmate-indicator-e1")).toBeInTheDocument();
+  });
 });
