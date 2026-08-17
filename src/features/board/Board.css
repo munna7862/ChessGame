@@ -1,0 +1,146 @@
+:root {
+  --board-bg: #1e293b;
+  --board-border: #334155;
+  --square-light-bg: #e2e8f0;
+  --square-light-text: #475569;
+  --square-dark-bg: #64748b;
+  --square-dark-text: #cbd5e1;
+  --square-selected: rgba(234, 179, 8, 0.55);
+  --square-last-move: rgba(59, 130, 246, 0.4);
+  --square-legal-target: rgba(34, 197, 94, 0.5);
+  --square-check: rgba(239, 68, 68, 0.65);
+  --board-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+}
+
+.chess-board-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: min(85vw, 85vh, 600px);
+  aspect-ratio: 1 / 1;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.chess-board-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--board-shadow);
+  border: 4px solid var(--board-border);
+  background-color: var(--board-bg);
+  user-select: none;
+  touch-action: none;
+}
+
+.chess-square {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  box-sizing: border-box;
+  cursor: pointer;
+  outline: none;
+  transition:
+    background-color 0.15s ease,
+    filter 0.15s ease;
+}
+
+.chess-square:focus-visible {
+  outline: 2px solid #38bdf8;
+  outline-offset: -2px;
+  z-index: 10;
+}
+
+.square-light {
+  background-color: var(--square-light-bg);
+  color: var(--square-light-text);
+}
+
+.square-dark {
+  background-color: var(--square-dark-bg);
+  color: var(--square-dark-text);
+}
+
+.chess-square:hover:not(.is-disabled) {
+  filter: brightness(1.06);
+}
+
+.chess-square.is-selected {
+  background-color: var(--square-selected) !important;
+}
+
+.chess-square.is-last-move {
+  background-color: var(--square-last-move) !important;
+}
+
+.chess-square.is-check {
+  background-color: var(--square-check) !important;
+}
+
+.chess-square.is-disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+/* Overlay coordinate labels on ranks and files */
+.board-coordinates-ranks {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+  z-index: 5;
+  height: 100%;
+}
+
+.coordinate-rank {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  padding-top: 2px;
+  padding-left: 4px;
+  font-size: clamp(9px, 1.4vw, 13px);
+  font-weight: 700;
+  line-height: 1;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  opacity: 0.75;
+}
+
+.board-coordinates-files {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: row;
+  pointer-events: none;
+  z-index: 5;
+  width: 100%;
+}
+
+.coordinate-file {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: 2px;
+  padding-right: 4px;
+  font-size: clamp(9px, 1.4vw, 13px);
+  font-weight: 700;
+  line-height: 1;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  opacity: 0.75;
+}

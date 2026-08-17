@@ -59,13 +59,13 @@ sequenceDiagram
 
 ## 3. Next Sprints Roadmap
 
-| Sprint ID | Phase & Name | Execution Command / Prompt |
-| :--- | :--- | :--- |
-| **`P04-S01`** | **Phase 04 · Sprint 01: Board Layout & Coordinate System** | `node scripts/sprint_orchestrator.mjs prompt P04-S01` |
-| **`P04-S02`** | **Phase 04 · Sprint 02: Piece Rendering & SVGs** | `node scripts/sprint_orchestrator.mjs prompt P04-S02` |
-| **`P04-S03`** | **Phase 04 · Sprint 03: Selection & Legal Move Interaction** | `node scripts/sprint_orchestrator.mjs prompt P04-S03` |
-| **`P04-S04`** | **Phase 04 · Sprint 04: Move Animation & Last Move State** | `node scripts/sprint_orchestrator.mjs prompt P04-S04` |
-| **`P04-S05`** | **Phase 04 · Sprint 05: Check & Promotion UI Dialogs** | `node scripts/sprint_orchestrator.mjs prompt P04-S05` |
+| Sprint ID     | Phase & Name                                                                    | Execution Command / Prompt                            |
+| :------------ | :------------------------------------------------------------------------------ | :---------------------------------------------------- |
+| **`P04-S01`** | **Phase 04 · Sprint 01: Board Layout & Coordinate System**                      | `node scripts/sprint_orchestrator.mjs prompt P04-S01` |
+| **`P04-S02`** | **Phase 04 · Sprint 02: Piece Rendering & SVGs**                                | `node scripts/sprint_orchestrator.mjs prompt P04-S02` |
+| **`P04-S03`** | **Phase 04 · Sprint 03: Selection & Legal Move Interaction**                    | `node scripts/sprint_orchestrator.mjs prompt P04-S03` |
+| **`P04-S04`** | **Phase 04 · Sprint 04: Move Animation & Last Move State**                      | `node scripts/sprint_orchestrator.mjs prompt P04-S04` |
+| **`P04-S05`** | **Phase 04 · Sprint 05: Check & Promotion UI Dialogs**                          | `node scripts/sprint_orchestrator.mjs prompt P04-S05` |
 | **`P04-S06`** | **Phase 04 · Sprint 06: Board Accessibility & Visual Themes (🏷️ Phase 04 Tag)** | `node scripts/sprint_orchestrator.mjs prompt P04-S06` |
-| **`P05-S01`** | **Phase 05 · Sprint 01: Game Session State** | `node scripts/sprint_orchestrator.mjs prompt P05-S01` |
-| ... | ... | ... |
+| **`P05-S01`** | **Phase 05 · Sprint 01: Game Session State**                                    | `node scripts/sprint_orchestrator.mjs prompt P05-S01` |
+| ...           | ...                                                                             | ...                                                   |

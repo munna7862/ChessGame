@@ -1,12 +1,48 @@
-import React from "react";
+import React, { useState } from "react";
 import { Header } from "./components/Header";
+import { Board } from "./features/board/Board";
+import type { BoardOrientation } from "./features/board/types";
+import type { Square } from "./domain/chess/types";
 import "./App.css";
 
 export const App: React.FC = () => {
+  const [orientation, setOrientation] = useState<BoardOrientation>("w");
+  const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);
+
+  const toggleOrientation = () => {
+    setOrientation((prev) => (prev === "w" ? "b" : "w"));
+  };
+
+  const handleSquareClick = (square: Square) => {
+    setSelectedSquare(square);
+  };
+
   return (
     <div className="app-container" data-testid="chessforge-app">
       <Header />
       <main className="main-content">
+        <div className="board-section" data-testid="board-section">
+          <div className="board-controls" data-testid="board-controls">
+            <button
+              type="button"
+              className="btn-control"
+              data-testid="btn-flip-board"
+              onClick={toggleOrientation}
+            >
+              Flip Board ({orientation === "w" ? "White" : "Black"})
+            </button>
+            {selectedSquare && (
+              <span
+                className="selected-square-indicator"
+                data-testid="selected-square-indicator"
+              >
+                Selected: {selectedSquare}
+              </span>
+            )}
+          </div>
+          <Board orientation={orientation} onSquareClick={handleSquareClick} />
+        </div>
+
         <div className="hero-card">
           <h1 className="hero-title" data-testid="app-title">
             ChessForge
