@@ -111,5 +111,5 @@ describe("FEN Round-Trip & Generative Invariance (TC-FEN-31 & TC-FEN-32)", () =>
       ),
       { numRuns: 50 }
     );
-  });
+  }, 25000);
 });

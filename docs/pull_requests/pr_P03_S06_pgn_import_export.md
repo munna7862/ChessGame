@@ -31,14 +31,14 @@ This Pull Request delivers **Phase 03 · Sprint 06 (PGN Import Export)** for **C
 
 ## 3. Automated Quality Gate Verification
 
-| Verification Stage | Command | Result | Details |
-| :--- | :--- | :--- | :--- |
-| **Typecheck** | `npm run typecheck` | **PASS (0 errors)** | TypeScript `strict: true` compliance, no `any`. |
-| **Lint** | `npm run lint` | **PASS (0 warnings)** | ESLint zero warnings/errors. |
-| **Format** | `npm run format:check` | **PASS (0 issues)** | Prettier 100% clean across all docs & code. |
-| **Vitest Unit & Property** | `npm test` | **PASS (203/203)** | 21 test files passed, including fast-check generative fuzzing. |
-| **Playwright E2E Smoke** | `npx playwright test` | **PASS (5/5)** | Desktop webview launch and responsiveness verified. |
-| **Production Build** | `npm run build` | **PASS** | Vite production bundle built in 888ms. |
+| Verification Stage         | Command                | Result                | Details                                                        |
+| :------------------------- | :--------------------- | :-------------------- | :------------------------------------------------------------- |
+| **Typecheck**              | `npm run typecheck`    | **PASS (0 errors)**   | TypeScript `strict: true` compliance, no `any`.                |
+| **Lint**                   | `npm run lint`         | **PASS (0 warnings)** | ESLint zero warnings/errors.                                   |
+| **Format**                 | `npm run format:check` | **PASS (0 issues)**   | Prettier 100% clean across all docs & code.                    |
+| **Vitest Unit & Property** | `npm test`             | **PASS (203/203)**    | 21 test files passed, including fast-check generative fuzzing. |
+| **Playwright E2E Smoke**   | `npx playwright test`  | **PASS (5/5)**        | Desktop webview launch and responsiveness verified.            |
+| **Production Build**       | `npm run build`        | **PASS**              | Vite production bundle built in 888ms.                         |
 
 ---
 
