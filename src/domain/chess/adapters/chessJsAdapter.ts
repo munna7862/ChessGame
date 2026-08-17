@@ -6,6 +6,7 @@ import {
   ok,
   type Result,
 } from "../errors";
+import { validateFen } from "../fen";
 import type { ChessAdapterPort } from "../ports";
 import {
   type BoardMatrix,
@@ -34,6 +35,12 @@ export class ChessJsAdapter implements ChessAdapterPort {
 
   constructor(initialFen?: string) {
     if (initialFen) {
+      const validation = validateFen(initialFen);
+      if (!validation.isValid) {
+        throw new Error(
+          validation.error ?? `Invalid initial FEN: ${initialFen}`
+        );
+      }
       this.instance = new Chess(initialFen);
     } else {
       this.instance = new Chess();
@@ -286,9 +293,24 @@ export class ChessJsAdapter implements ChessAdapterPort {
   }
 
   public loadFen(fen: string): Result<void, ChessDomainError> {
+    const validation = validateFen(fen);
+    if (!validation.isValid) {
+      return err(
+        createDomainError(
+          "INVALID_FEN",
+          validation.error ?? "Invalid FEN string.",
+          {
+            fen,
+            error: validation.error,
+          }
+        )
+      );
+    }
+
     try {
-      // In chess.js, load resets and parses the FEN
-      this.instance.load(fen);
+      const newInstance = new Chess();
+      newInstance.load(fen);
+      this.instance = newInstance;
       this.manualStatus = null;
       return ok(undefined);
     } catch (e: unknown) {
