@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import App from "./App";
 import { StatusBadge } from "./components/StatusBadge";
 import { Header } from "./components/Header";
 
-describe("ChessForge Bootstrap Layout & Board UI (TC-BOOT-05 & TC-PIECE-23)", () => {
+describe("ChessForge Bootstrap Layout & Board UI (TC-BOOT-05, TC-PIECE-23, TC-SEL-01 to TC-SEL-10)", () => {
   it("renders the root application container and title", () => {
     render(<App />);
     expect(screen.getByTestId("chessforge-app")).toBeInTheDocument();
@@ -45,5 +45,54 @@ describe("ChessForge Bootstrap Layout & Board UI (TC-BOOT-05 & TC-PIECE-23)", ()
     expect(screen.getByTestId("piece-bk")).toBeInTheDocument();
     expect(screen.getAllByTestId("piece-wp")).toHaveLength(8);
     expect(screen.getAllByTestId("piece-bp")).toHaveLength(8);
+  });
+
+  it("handles piece selection, legal move indicators, and move execution", () => {
+    render(<App />);
+
+    expect(screen.getByTestId("turn-indicator")).toHaveTextContent(
+      "White to move"
+    );
+
+    const e2Square = screen.getByTestId("board-square-e2");
+    fireEvent.click(e2Square);
+
+    expect(e2Square).toHaveClass("is-selected");
+    expect(screen.getByTestId("selected-square-indicator")).toHaveTextContent(
+      "Selected: e2 (2 moves)"
+    );
+    expect(screen.getByTestId("legal-target-e3")).toBeInTheDocument();
+    expect(screen.getByTestId("legal-target-e4")).toBeInTheDocument();
+
+    // Click destination e4
+    const e4Square = screen.getByTestId("board-square-e4");
+    fireEvent.click(e4Square);
+
+    // After move, turn is Black and piece moved to e4
+    expect(screen.getByTestId("turn-indicator")).toHaveTextContent(
+      "Black to move"
+    );
+    expect(
+      screen
+        .getByTestId("board-square-e4")
+        .querySelector("[data-testid='piece-wp']")
+    ).toBeInTheDocument();
+  });
+
+  it("supports flipping board orientation and resetting game", () => {
+    render(<App />);
+
+    const flipBtn = screen.getByTestId("btn-flip-board");
+    fireEvent.click(flipBtn);
+
+    const board = screen.getByTestId("chess-board");
+    expect(board).toHaveAttribute("data-orientation", "b");
+
+    const resetBtn = screen.getByTestId("btn-reset-game");
+    fireEvent.click(resetBtn);
+
+    expect(screen.getByTestId("turn-indicator")).toHaveTextContent(
+      "White to move"
+    );
   });
 });

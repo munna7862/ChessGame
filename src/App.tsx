@@ -2,14 +2,30 @@ import React, { useState } from "react";
 import { Header } from "./components/Header";
 import { Board } from "./features/board/Board";
 import type { BoardOrientation } from "./features/board/types";
-import type { Square } from "./domain/chess/types";
+import { useBoardInteraction } from "./features/board/useBoardInteraction";
 import { createChessAdapter } from "./domain/chess/adapters/chessJsAdapter";
 import "./App.css";
 
 export const App: React.FC = () => {
   const [chessAdapter] = useState(() => createChessAdapter());
+  const [, setGameVersion] = useState(0);
   const [orientation, setOrientation] = useState<BoardOrientation>("w");
-  const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);
+
+  const {
+    selectedSquare,
+    legalDestinations,
+    lastMove,
+    checkSquare,
+    isGameOver,
+    gameStatus,
+    handleSquareClick,
+    clearSelection,
+  } = useBoardInteraction({
+    game: chessAdapter,
+    onMoveExecuted: () => {
+      setGameVersion((v) => v + 1);
+    },
+  });
 
   const position = chessAdapter.getPosition();
 
@@ -17,15 +33,56 @@ export const App: React.FC = () => {
     setOrientation((prev) => (prev === "w" ? "b" : "w"));
   };
 
-  const handleSquareClick = (square: Square) => {
-    setSelectedSquare(square);
+  const handleResetGame = () => {
+    chessAdapter.reset();
+    clearSelection();
+    setGameVersion((v) => v + 1);
   };
+
+  const turnLabel = position.turn === "w" ? "White to move" : "Black to move";
 
   return (
     <div className="app-container" data-testid="chessforge-app">
       <Header />
       <main className="main-content">
         <div className="board-section" data-testid="board-section">
+          <div className="board-status-bar" data-testid="board-status-bar">
+            <div className="status-group">
+              <span
+                className="turn-badge"
+                data-testid="turn-indicator"
+                data-turn={position.turn}
+              >
+                {turnLabel}
+              </span>
+              {gameStatus.isCheck && gameStatus.state !== "checkmate" && (
+                <span className="check-badge" data-testid="check-indicator">
+                  Check!
+                </span>
+              )}
+              {gameStatus.state === "checkmate" && (
+                <span className="check-badge" data-testid="checkmate-indicator">
+                  Checkmate! {gameStatus.winner === "w" ? "White" : "Black"}{" "}
+                  wins
+                </span>
+              )}
+              {gameStatus.inDraw && (
+                <span className="check-badge" data-testid="draw-indicator">
+                  Draw ({gameStatus.drawReason ?? "draw"})
+                </span>
+              )}
+            </div>
+
+            {selectedSquare && (
+              <span
+                className="selected-square-indicator"
+                data-testid="selected-square-indicator"
+              >
+                Selected: {selectedSquare} ({legalDestinations.size} moves)
+              </span>
+            )}
+          </div>
+
           <div className="board-controls" data-testid="board-controls">
             <button
               type="button"
@@ -35,18 +92,24 @@ export const App: React.FC = () => {
             >
               Flip Board ({orientation === "w" ? "White" : "Black"})
             </button>
-            {selectedSquare && (
-              <span
-                className="selected-square-indicator"
-                data-testid="selected-square-indicator"
-              >
-                Selected: {selectedSquare}
-              </span>
-            )}
+            <button
+              type="button"
+              className="btn-control"
+              data-testid="btn-reset-game"
+              onClick={handleResetGame}
+            >
+              New Game
+            </button>
           </div>
+
           <Board
             orientation={orientation}
             position={position}
+            selectedSquare={selectedSquare}
+            legalDestinations={legalDestinations}
+            lastMove={lastMove}
+            checkSquare={checkSquare}
+            disabled={isGameOver}
             onSquareClick={handleSquareClick}
           />
         </div>

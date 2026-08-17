@@ -6,3 +6,4 @@ export * from "./assets/pieceSvgMap";
 export * from "./Piece";
 export * from "./Square";
 export * from "./Board";
+export * from "./useBoardInteraction";

@@ -55,13 +55,13 @@ test.describe("ChessForge Board Layout & Coordinate System (Phase 04 · Sprint 0
   test("should handle square interaction and update selection indicator", async ({
     page,
   }) => {
-    const squareE4 = page.getByTestId("board-square-e4");
-    await expect(squareE4).toBeVisible();
+    const squareE2 = page.getByTestId("board-square-e2");
+    await expect(squareE2).toBeVisible();
 
-    await squareE4.click();
+    await squareE2.click();
 
     const indicator = page.getByTestId("selected-square-indicator");
     await expect(indicator).toBeVisible();
-    await expect(indicator).toHaveText("Selected: e4");
+    await expect(indicator).toContainText("Selected: e2");
   });
 });
