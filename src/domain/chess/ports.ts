@@ -1,4 +1,5 @@
 import type { ChessDomainError, Result } from "./errors";
+import type { PgnTags } from "./pgn";
 import type {
   Color,
   GameStatus,
@@ -62,9 +63,9 @@ export interface ChessGame {
   importPgn(pgn: string): Result<void, ChessDomainError>;
 
   /**
-   * Exports the entire played game as a PGN string.
+   * Exports the entire played game as a PGN string, optionally merging custom tags.
    */
-  exportPgn(): string;
+  exportPgn(tags?: Partial<PgnTags>): string;
 
   /**
    * Returns the authoritative game status (active, checkmate, draw reason, etc.).
