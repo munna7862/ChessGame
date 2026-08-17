@@ -7,6 +7,7 @@ import {
   type Result,
 } from "../errors";
 import { validateFen } from "../fen";
+import { formatPgn, parsePgn, type PgnResult, type PgnTags } from "../pgn";
 import type { ChessAdapterPort } from "../ports";
 import {
   type BoardMatrix,
@@ -32,6 +33,8 @@ import {
 export class ChessJsAdapter implements ChessAdapterPort {
   private instance: Chess;
   private manualStatus: GameStatus | null = null;
+  private initialFen?: string | undefined;
+  private currentTags: PgnTags = {};
 
   constructor(initialFen?: string) {
     if (initialFen) {
@@ -42,6 +45,7 @@ export class ChessJsAdapter implements ChessAdapterPort {
         );
       }
       this.instance = new Chess(initialFen);
+      this.initialFen = initialFen;
     } else {
       this.instance = new Chess();
     }
@@ -311,6 +315,8 @@ export class ChessJsAdapter implements ChessAdapterPort {
       const newInstance = new Chess();
       newInstance.load(fen);
       this.instance = newInstance;
+      this.initialFen = fen;
+      this.currentTags = {};
       this.manualStatus = null;
       return ok(undefined);
     } catch (e: unknown) {
@@ -329,14 +335,97 @@ export class ChessJsAdapter implements ChessAdapterPort {
   }
 
   public importPgn(pgn: string): Result<void, ChessDomainError> {
+    const parseResult = parsePgn(pgn);
+    if (!parseResult.success) {
+      return err(parseResult.error);
+    }
+
+    const { tags, moves, result, startingFen } = parseResult.data;
+
     try {
-      this.instance.loadPgn(pgn);
-      this.manualStatus = null;
+      const tempInstance = startingFen ? new Chess(startingFen) : new Chess();
+
+      for (let i = 0; i < moves.length; i++) {
+        const moveToken = moves[i]!;
+        try {
+          const executedMove = tempInstance.move(moveToken);
+          if (!executedMove) {
+            return err(
+              createDomainError(
+                "ILLEGAL_MOVE",
+                `Illegal move '${moveToken}' encountered at ply ${i + 1} during PGN replay.`,
+                {
+                  ply: i + 1,
+                  moveToken,
+                  fenBeforeMove: tempInstance.fen(),
+                }
+              )
+            );
+          }
+        } catch (moveErr: unknown) {
+          const msg =
+            moveErr instanceof Error ? moveErr.message : String(moveErr);
+          return err(
+            createDomainError(
+              "ILLEGAL_MOVE",
+              `Illegal move '${moveToken}' encountered at ply ${i + 1} during PGN replay: ${msg}`,
+              {
+                ply: i + 1,
+                moveToken,
+                fenBeforeMove: tempInstance.fen(),
+                error: msg,
+              }
+            )
+          );
+        }
+      }
+
+      // Reconcile non-natural terminal status if game was not concluded by board rule (checkmate/stalemate)
+      let manualStatus: GameStatus | null = null;
+      if (!tempInstance.isGameOver()) {
+        if (result === "1-0") {
+          manualStatus = {
+            state: "resigned",
+            isOver: true,
+            winner: "w",
+            isCheck: tempInstance.inCheck(),
+            inDraw: false,
+            drawReason: null,
+            description: "White won by resignation or adjudication.",
+          };
+        } else if (result === "0-1") {
+          manualStatus = {
+            state: "resigned",
+            isOver: true,
+            winner: "b",
+            isCheck: tempInstance.inCheck(),
+            inDraw: false,
+            drawReason: null,
+            description: "Black won by resignation or adjudication.",
+          };
+        } else if (result === "1/2-1/2") {
+          manualStatus = {
+            state: "draw_agreement",
+            isOver: true,
+            winner: null,
+            isCheck: tempInstance.inCheck(),
+            inDraw: true,
+            drawReason: "agreement",
+            description: "Draw agreed by mutual consent.",
+          };
+        }
+      }
+
+      // State is committed only after complete replay validation succeeds (state immutability)
+      this.instance = tempInstance;
+      this.initialFen = startingFen;
+      this.currentTags = { ...tags };
+      this.manualStatus = manualStatus;
       return ok(undefined);
     } catch (e: unknown) {
-      const message = e instanceof Error ? e.message : "Invalid PGN structure.";
+      const message = e instanceof Error ? e.message : "Failed to load PGN.";
       return err(
-        createDomainError("INVALID_PGN", `Failed to load PGN: ${message}`, {
+        createDomainError("INVALID_PGN", `PGN execution failed: ${message}`, {
           pgn,
           error: message,
         })
@@ -344,8 +433,25 @@ export class ChessJsAdapter implements ChessAdapterPort {
     }
   }
 
-  public exportPgn(): string {
-    return this.instance.pgn();
+  public exportPgn(tags?: Partial<PgnTags>): string {
+    const status = this.getStatus();
+    let result: PgnResult = "*";
+    if (status.isOver) {
+      if (status.winner === "w") {
+        result = "1-0";
+      } else if (status.winner === "b") {
+        result = "0-1";
+      } else if (status.inDraw) {
+        result = "1/2-1/2";
+      }
+    }
+
+    return formatPgn({
+      historySan: this.instance.history(),
+      tags: { ...this.currentTags, ...tags },
+      result,
+      startingFen: this.initialFen,
+    });
   }
 
   public getStatus(): GameStatus {
@@ -560,6 +666,8 @@ export class ChessJsAdapter implements ChessAdapterPort {
 
   public reset(): void {
     this.instance.reset();
+    this.initialFen = undefined;
+    this.currentTags = {};
     this.manualStatus = null;
   }
 
