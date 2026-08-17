@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import clsx from "clsx";
 import {
   isValidSquare,
@@ -10,6 +10,7 @@ import {
   getRanksForOrientation,
   getFilesForOrientation,
   getPieceFromMatrix,
+  getNextSquare,
 } from "./coordinates";
 import { Square as SquareComponent } from "./Square";
 import { PromotionDialog } from "./PromotionDialog";
@@ -27,6 +28,7 @@ export const Board: React.FC<BoardProps> = ({
   position,
   pieces,
   selectedSquare = null,
+  focusedSquare = null,
   legalDestinations = null,
   lastMove = null,
   checkSquare = null,
@@ -38,11 +40,39 @@ export const Board: React.FC<BoardProps> = ({
   showCoordinates = true,
   reducedMotion = false,
   onSquareClick,
+  onSquareFocus,
+  onClearSelection,
+  announcement = null,
   renderSquare,
   renderPiece,
   className,
   ariaLabel = "Chessboard",
 }) => {
+  const [internalFocusedSquare, setInternalFocusedSquare] =
+    useState<Square | null>(null);
+
+  const effectiveFocusedSquare: Square = useMemo(() => {
+    if (focusedSquare && isValidSquare(focusedSquare)) {
+      return focusedSquare;
+    }
+    if (internalFocusedSquare && isValidSquare(internalFocusedSquare)) {
+      return internalFocusedSquare;
+    }
+    if (selectedSquare && isValidSquare(selectedSquare)) {
+      return selectedSquare;
+    }
+    if (lastMove && "to" in lastMove && isValidSquare(lastMove.to)) {
+      return lastMove.to;
+    }
+    return orientation === "w" ? "e2" : "e7";
+  }, [
+    focusedSquare,
+    internalFocusedSquare,
+    selectedSquare,
+    lastMove,
+    orientation,
+  ]);
+
   const pieceResolver = useMemo(() => {
     if (position?.board) {
       return (sq: Square): Piece | null =>
@@ -95,6 +125,72 @@ export const Board: React.FC<BoardProps> = ({
     [orientation]
   );
 
+  const handleSquareKeyDown = useCallback(
+    (e: React.KeyboardEvent, sq: Square) => {
+      if (disabled) return;
+
+      const navKeys = [
+        "ArrowUp",
+        "ArrowDown",
+        "ArrowLeft",
+        "ArrowRight",
+        "Home",
+        "End",
+        "PageUp",
+        "PageDown",
+      ];
+
+      if (navKeys.includes(e.key)) {
+        e.preventDefault();
+        const nextSq = getNextSquare(sq, e.key, orientation);
+        setInternalFocusedSquare(nextSq);
+        onSquareFocus?.(nextSq);
+        const el = document.querySelector<HTMLElement>(
+          `[data-square="${nextSq}"]`
+        );
+        el?.focus();
+        return;
+      }
+
+      if (e.key === "Escape") {
+        e.preventDefault();
+        if (pendingPromotion) {
+          onPromotionCancel?.();
+        } else if (selectedSquare) {
+          if (onClearSelection) {
+            onClearSelection();
+          } else if (onSquareClick) {
+            onSquareClick(selectedSquare);
+          }
+        }
+        return;
+      }
+
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        onSquareClick?.(sq);
+      }
+    },
+    [
+      disabled,
+      orientation,
+      pendingPromotion,
+      selectedSquare,
+      onSquareFocus,
+      onPromotionCancel,
+      onClearSelection,
+      onSquareClick,
+    ]
+  );
+
+  const handleSquareFocus = useCallback(
+    (sq: Square) => {
+      setInternalFocusedSquare(sq);
+      onSquareFocus?.(sq);
+    },
+    [onSquareFocus]
+  );
+
   return (
     <div
       className={clsx("chess-board-wrapper", className, {
@@ -103,6 +199,16 @@ export const Board: React.FC<BoardProps> = ({
       data-testid="chess-board-wrapper"
       data-reduced-motion={reducedMotion ? "true" : undefined}
     >
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+        data-testid="board-live-announcer"
+      >
+        {announcement}
+      </div>
+
       <div
         role="grid"
         aria-label={ariaLabel}
@@ -116,6 +222,7 @@ export const Board: React.FC<BoardProps> = ({
       >
         {gridSquares.map((squareData: BoardSquareData) => {
           const isSelected = selectedSquare === squareData.square;
+          const isFocused = effectiveFocusedSquare === squareData.square;
           const legalDest = legalDestMap.get(squareData.square);
           const isLegalTarget = Boolean(legalDest);
           const legalTargetType = legalDest?.targetType ?? "move";
@@ -163,6 +270,7 @@ export const Board: React.FC<BoardProps> = ({
               square={squareData.square}
               piece={renderedPieceChild ? undefined : squareData.piece}
               color={squareData.color}
+              tabIndex={disabled ? -1 : isFocused ? 0 : -1}
               isSelected={isSelected}
               isLegalTarget={isLegalTarget}
               legalTargetType={legalTargetType}
@@ -176,6 +284,8 @@ export const Board: React.FC<BoardProps> = ({
               onClick={
                 onSquareClick ? (sq: Square) => onSquareClick(sq) : undefined
               }
+              onKeyDown={handleSquareKeyDown}
+              onFocus={handleSquareFocus}
             >
               {renderedPieceChild}
             </SquareComponent>

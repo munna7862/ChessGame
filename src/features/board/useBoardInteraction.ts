@@ -9,6 +9,7 @@ import type {
   PromotionPieceType,
 } from "../../domain/chess/types";
 import type { ChessGame } from "../../domain/chess/ports";
+import { getPieceAriaLabel } from "./pieceUtils";
 import type {
   LegalDestination,
   LegalTargetType,
@@ -31,6 +32,7 @@ export interface UseBoardInteractionOptions {
  */
 export interface BoardInteractionState {
   readonly selectedSquare: Square | null;
+  readonly focusedSquare: Square | null;
   readonly legalDestinations: ReadonlyMap<Square, LegalDestination>;
   readonly lastMove: LastMoveState | null;
   readonly checkSquare: Square | null;
@@ -38,11 +40,14 @@ export interface BoardInteractionState {
   readonly isGameOver: boolean;
   readonly gameStatus: GameStatus;
   readonly pendingPromotion: PendingPromotion | null;
+  readonly announcement: string | null;
   readonly handleSquareClick: (square: Square) => void;
   readonly handlePromotionSelect: (pieceType: PromotionPieceType) => void;
   readonly handlePromotionCancel: () => void;
   readonly clearSelection: () => void;
   readonly selectSquare: (square: Square) => void;
+  readonly setFocusedSquare: (square: Square | null) => void;
+  readonly setAnnouncement: (announcement: string | null) => void;
   readonly setLastMove: (lastMove: LastMoveState | null) => void;
   readonly resetLastMove: () => void;
 }
@@ -115,12 +120,14 @@ export function useBoardInteraction({
   defaultPromotion: _defaultPromotion = "q",
 }: UseBoardInteractionOptions): BoardInteractionState {
   const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);
+  const [focusedSquare, setFocusedSquare] = useState<Square | null>(null);
   const [legalDestinations, setLegalDestinations] = useState<
     Map<Square, LegalDestination>
   >(() => new Map());
   const [lastMove, setLastMoveState] = useState<LastMoveState | null>(null);
   const [pendingPromotion, setPendingPromotion] =
     useState<PendingPromotion | null>(null);
+  const [announcement, setAnnouncement] = useState<string | null>(null);
 
   const gameStatus = game.getStatus();
   const isGameOver = disabled || gameStatus.isOver;
@@ -132,9 +139,12 @@ export function useBoardInteraction({
     [game, currentTurn]
   );
 
-  const clearSelection = useCallback(() => {
+  const clearSelection = useCallback((announce = true) => {
     setSelectedSquare(null);
     setLegalDestinations(new Map());
+    if (announce) {
+      setAnnouncement("Selection cleared.");
+    }
   }, []);
 
   const resetLastMove = useCallback(() => {
@@ -147,7 +157,8 @@ export function useBoardInteraction({
 
   const handlePromotionCancel = useCallback(() => {
     setPendingPromotion(null);
-    clearSelection();
+    clearSelection(false);
+    setAnnouncement("Promotion cancelled.");
   }, [clearSelection]);
 
   const handlePromotionSelect = useCallback(
@@ -174,12 +185,23 @@ export function useBoardInteraction({
           isCapture,
           san: executedMove.san,
         });
+        setFocusedSquare(pendingPromotion.to);
+        const checkText = executedMove.isCheckmate
+          ? ", checkmate"
+          : executedMove.isCheck
+            ? ", check"
+            : "";
+        const colorName = pendingPromotion.color === "w" ? "White" : "Black";
+        setAnnouncement(
+          `${colorName} pawn promoted to ${pieceType} on ${pendingPromotion.to}${checkText}.`
+        );
+
         setPendingPromotion(null);
-        clearSelection();
+        clearSelection(false);
         onMoveExecuted?.(executedMove);
       } else {
         setPendingPromotion(null);
-        clearSelection();
+        clearSelection(false);
       }
     },
     [pendingPromotion, game, clearSelection, onMoveExecuted]
@@ -188,19 +210,27 @@ export function useBoardInteraction({
   const selectSquare = useCallback(
     (square: Square) => {
       if (isGameOver || pendingPromotion) {
-        clearSelection();
+        clearSelection(false);
         return;
       }
 
       const piece: Piece | null = game.getPiece(square);
       if (!piece || piece.color !== currentTurn) {
-        clearSelection();
+        clearSelection(false);
         return;
       }
 
       const dests = computeLegalDestinations(square, game);
       setSelectedSquare(square);
+      setFocusedSquare(square);
       setLegalDestinations(dests);
+      const pieceLabel = getPieceAriaLabel(piece);
+      const moveCount = dests.size;
+      const moveWord = moveCount === 1 ? "move" : "moves";
+      const destList = Array.from(dests.keys()).join(", ");
+      setAnnouncement(
+        `Selected ${pieceLabel} on ${square}. ${moveCount} legal ${moveWord} available${moveCount > 0 ? `: ${destList}` : ""}.`
+      );
     },
     [game, currentTurn, isGameOver, pendingPromotion, clearSelection]
   );
@@ -208,7 +238,7 @@ export function useBoardInteraction({
   const handleSquareClick = useCallback(
     (square: Square) => {
       if (isGameOver) {
-        clearSelection();
+        clearSelection(false);
         setPendingPromotion(null);
         return;
       }
@@ -219,6 +249,7 @@ export function useBoardInteraction({
       }
 
       const piece: Piece | null = game.getPiece(square);
+      setFocusedSquare(square);
 
       // 1. Idle state (no square currently selected)
       if (selectedSquare === null) {
@@ -226,6 +257,13 @@ export function useBoardInteraction({
           const dests = computeLegalDestinations(square, game);
           setSelectedSquare(square);
           setLegalDestinations(dests);
+          const pieceLabel = getPieceAriaLabel(piece);
+          const moveCount = dests.size;
+          const moveWord = moveCount === 1 ? "move" : "moves";
+          const destList = Array.from(dests.keys()).join(", ");
+          setAnnouncement(
+            `Selected ${pieceLabel} on ${square}. ${moveCount} legal ${moveWord} available${moveCount > 0 ? `: ${destList}` : ""}.`
+          );
         }
         return;
       }
@@ -233,7 +271,7 @@ export function useBoardInteraction({
       // 2. Square already selected
       // A. Click the exact same square -> Deselect
       if (square === selectedSquare) {
-        clearSelection();
+        clearSelection(true);
         return;
       }
 
@@ -253,6 +291,9 @@ export function useBoardInteraction({
             to: square,
             color: fromPiece.color,
           });
+          setAnnouncement(
+            `Pawn promotion dialog opened on ${square}. Choose Queen, Rook, Bishop, or Knight.`
+          );
           return;
         }
 
@@ -278,10 +319,27 @@ export function useBoardInteraction({
             isCapture,
             san: executedMove.san,
           });
-          clearSelection();
+          setFocusedSquare(square);
+          const movePiece = executedMove.piece
+            ? getPieceAriaLabel(executedMove.piece)
+            : "Piece";
+          const captureText = executedMove.captured
+            ? `, captured ${getPieceAriaLabel(executedMove.captured)} on ${executedMove.to}`
+            : "";
+          const checkText = executedMove.isCheckmate
+            ? ", checkmate"
+            : executedMove.isCheck
+              ? ", check"
+              : "";
+          setAnnouncement(
+            `${movePiece} moved from ${executedMove.from} to ${executedMove.to}${captureText}${checkText}.`
+          );
+
+          clearSelection(false);
           onMoveExecuted?.(executedMove);
         } else {
-          clearSelection();
+          clearSelection(false);
+          setAnnouncement("Move failed.");
         }
         return;
       }
@@ -291,11 +349,18 @@ export function useBoardInteraction({
         const dests = computeLegalDestinations(square, game);
         setSelectedSquare(square);
         setLegalDestinations(dests);
+        const pieceLabel = getPieceAriaLabel(piece);
+        const moveCount = dests.size;
+        const moveWord = moveCount === 1 ? "move" : "moves";
+        const destList = Array.from(dests.keys()).join(", ");
+        setAnnouncement(
+          `Selected ${pieceLabel} on ${square}. ${moveCount} legal ${moveWord} available${moveCount > 0 ? `: ${destList}` : ""}.`
+        );
         return;
       }
 
       // D. Click non-legal square -> Clear selection (no mutation)
-      clearSelection();
+      clearSelection(true);
     },
     [
       isGameOver,
@@ -311,6 +376,7 @@ export function useBoardInteraction({
 
   return {
     selectedSquare,
+    focusedSquare,
     legalDestinations,
     lastMove,
     checkSquare,
@@ -318,11 +384,14 @@ export function useBoardInteraction({
     isGameOver,
     gameStatus,
     pendingPromotion,
+    announcement,
     handleSquareClick,
     handlePromotionSelect,
     handlePromotionCancel,
     clearSelection,
     selectSquare,
+    setFocusedSquare,
+    setAnnouncement,
     setLastMove,
     resetLastMove,
   };

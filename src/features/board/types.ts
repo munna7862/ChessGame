@@ -96,10 +96,13 @@ export interface SquareProps {
   readonly isCheck?: boolean | undefined;
   readonly isCheckmate?: boolean | undefined;
   readonly disabled?: boolean | undefined;
+  readonly tabIndex?: number | undefined;
   readonly children?: React.ReactNode | undefined;
   readonly onClick?: ((square: Square) => void) | undefined;
   readonly onKeyDown?:
     ((event: React.KeyboardEvent, square: Square) => void) | undefined;
+  readonly onFocus?: ((square: Square) => void) | undefined;
+  readonly onBlur?: ((square: Square) => void) | undefined;
   readonly className?: string | undefined;
   readonly ariaLabel?: string | undefined;
 }
@@ -137,6 +140,7 @@ export interface BoardProps {
   readonly pieces?:
     Partial<Record<Square, Piece>> | Map<Square, Piece> | null | undefined;
   readonly selectedSquare?: Square | null | undefined;
+  readonly focusedSquare?: Square | null | undefined;
   readonly legalDestinations?:
     | ReadonlyArray<Square | LegalDestination>
     | ReadonlyMap<Square, LegalDestination>
@@ -155,6 +159,9 @@ export interface BoardProps {
   readonly reducedMotion?: boolean | undefined;
   readonly animateMoves?: boolean | undefined;
   readonly onSquareClick?: ((square: Square) => void) | undefined;
+  readonly onSquareFocus?: ((square: Square) => void) | undefined;
+  readonly onClearSelection?: (() => void) | undefined;
+  readonly announcement?: string | null | undefined;
   readonly renderSquare?: SquareRenderer | undefined;
   readonly renderPiece?: PieceRenderer | undefined;
   readonly className?: string | undefined;

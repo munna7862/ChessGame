@@ -69,8 +69,9 @@
 }
 
 .chess-square:focus-visible {
-  outline: 2px solid #38bdf8;
-  outline-offset: -2px;
+  outline: 3px solid #38bdf8 !important;
+  outline-offset: -3px;
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.85);
   z-index: 10;
 }
 
@@ -90,7 +91,7 @@
 
 .chess-square.is-selected {
   background-color: var(--square-selected) !important;
-  box-shadow: inset 0 0 0 2px rgba(234, 179, 8, 0.9);
+  box-shadow: inset 0 0 0 2.5px rgba(234, 179, 8, 0.95);
 }
 
 /* Last Move Highlighting */
@@ -314,6 +315,64 @@
   opacity: 0.75;
 }
 
+/* Screen Reader Only Utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* High-Contrast Forced Colors Mode (Windows Contrast Themes) */
+@media (forced-colors: active) {
+  .chess-board-grid {
+    border: 3px solid ButtonBorder;
+  }
+
+  .chess-square {
+    forced-color-adjust: none;
+  }
+
+  .chess-square:focus-visible {
+    outline: 3px solid Highlight !important;
+    outline-offset: -3px;
+  }
+
+  .chess-square.is-selected {
+    outline: 3px solid Highlight !important;
+    outline-offset: -3px;
+  }
+
+  .chess-square.is-check,
+  .chess-square.is-checkmate {
+    outline: 3px dashed Highlight !important;
+  }
+
+  .check-indicator-badge {
+    background: Canvas !important;
+    color: CanvasText !important;
+    border: 2px solid Highlight !important;
+  }
+
+  .legal-target-dot {
+    background: Highlight !important;
+    border: 1px solid CanvasText;
+  }
+
+  .legal-target-capture-ring {
+    border-color: Highlight !important;
+  }
+
+  .coordinate-label {
+    color: CanvasText !important;
+  }
+}
+
 /* Reduced Motion Mode (OS Media Query & Explicit Class Override) */
 @media (prefers-reduced-motion: reduce) {
   .chess-board-wrapper,
@@ -321,7 +380,9 @@
   .chess-square,
   .chess-piece,
   .chess-piece-svg,
-  .legal-target-indicator {
+  .legal-target-indicator,
+  .check-indicator-badge,
+  .check-indicator-badge.is-checkmate-badge {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
@@ -333,7 +394,9 @@
 .reduced-motion .chess-square,
 .reduced-motion .chess-piece,
 .reduced-motion .chess-piece-svg,
-.reduced-motion .legal-target-indicator {
+.reduced-motion .legal-target-indicator,
+.reduced-motion .check-indicator-badge,
+.reduced-motion .check-indicator-badge.is-checkmate-badge {
   animation-duration: 0.001ms !important;
   animation-iteration-count: 1 !important;
   transition-duration: 0.001ms !important;

@@ -16,6 +16,7 @@ export const App: React.FC = () => {
 
   const {
     selectedSquare,
+    focusedSquare,
     legalDestinations,
     lastMove,
     checkSquare,
@@ -23,6 +24,9 @@ export const App: React.FC = () => {
     isGameOver,
     gameStatus,
     pendingPromotion,
+    announcement,
+    setAnnouncement,
+    clearSelection,
     handleSquareClick,
     handlePromotionSelect,
     handlePromotionCancel,
@@ -37,13 +41,20 @@ export const App: React.FC = () => {
   const position = chessAdapter.getPosition();
 
   const toggleOrientation = () => {
-    setOrientation((prev) => (prev === "w" ? "b" : "w"));
+    setOrientation((prev) => {
+      const next = prev === "w" ? "b" : "w";
+      setAnnouncement(
+        `Board flipped to ${next === "w" ? "White" : "Black"} perspective.`
+      );
+      return next;
+    });
   };
 
   const handleResetGame = () => {
     chessAdapter.reset();
     handlePromotionCancel();
     resetLastMove();
+    setAnnouncement("New game started.");
     setGameVersion((v) => v + 1);
   };
 
@@ -135,6 +146,7 @@ export const App: React.FC = () => {
             orientation={orientation}
             position={position}
             selectedSquare={selectedSquare}
+            focusedSquare={focusedSquare}
             legalDestinations={legalDestinations}
             lastMove={lastMove}
             checkSquare={checkSquare}
@@ -142,6 +154,8 @@ export const App: React.FC = () => {
             pendingPromotion={pendingPromotion}
             onPromotionSelect={handlePromotionSelect}
             onPromotionCancel={handlePromotionCancel}
+            onClearSelection={clearSelection}
+            announcement={announcement}
             reducedMotion={prefersReducedMotion}
             disabled={isGameOver}
             onSquareClick={handleSquareClick}
