@@ -17,7 +17,7 @@ Branch: `feature/p03-s05-fen-import-export`
 - [x] **SEC-3501**: [Security Officer] Conduct Desktop & Runtime Safety Audit (untrusted FEN string input sanitization, ReDoS prevention, boundary validation, and zero unsafe memory/eval patterns).
 - [x] **SDET-3502**: [SDET Architect] Author comprehensive unit and property-based test suites (`fenImportExport.test.ts`, `fenRoundTrip.test.ts`), verify typecheck, lint, formatting, and conduct Test Automation Quality Gate Review.
 - [x] **PO-3501**: [Product Owner] Conduct Product & Chess Domain Acceptance Criteria Review against Sprint 05 Definition of Done.
-- [x] **DO-3501**: [DevOps Engineer] Author PR documentation (`docs/pull_requests/pr_P03_S05_fen_import_export.md`), commit atomic changes, push branch to origin, and raise GitHub PR.
+- [x] **DO-3501**: [DevOps Engineer] Author PR documentation (`docs/pull_requests/pr_P03_S05_fen_import_export.md`), commit atomic changes, push branch to origin, and raise GitHub PR: [PR #17](https://github.com/munna7862/ChessGame/pull/17).
 
 ---
 
