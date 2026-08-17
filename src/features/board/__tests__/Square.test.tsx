@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { Square } from "../Square";
 
-describe("Square Component (Phase 04 · Sprint 01)", () => {
+describe("Square Component (Phase 04 · Sprint 01 & Sprint 02)", () => {
   it("TC-BOARD-09: renders single square with required test IDs and dataset attributes", () => {
     render(<Square square="e4" color="light" />);
 
@@ -12,6 +12,7 @@ describe("Square Component (Phase 04 · Sprint 01)", () => {
     expect(squareEl).toHaveAttribute("data-file", "e");
     expect(squareEl).toHaveAttribute("data-rank", "4");
     expect(squareEl).toHaveAttribute("data-square-color", "light");
+    expect(squareEl).toHaveAttribute("data-has-piece", "false");
   });
 
   it("TC-BOARD-10: applies correct CSS color class for light and dark squares", () => {
@@ -37,16 +38,37 @@ describe("Square Component (Phase 04 · Sprint 01)", () => {
     expect(squareEl).toHaveAttribute("tabIndex", "0");
   });
 
+  it("TC-PIECE-13: renders empty square without piece child element and updates when piece is passed", () => {
+    const { rerender } = render(<Square square="e4" color="light" />);
+    let squareEl = screen.getByTestId("board-square-e4");
+    expect(squareEl).toHaveAttribute("data-has-piece", "false");
+    expect(squareEl.querySelector(".chess-piece")).toBeNull();
+    expect(squareEl).toHaveAttribute("aria-label", "Square e4, light");
+
+    // Pass piece to square
+    rerender(
+      <Square square="e4" color="light" piece={{ color: "w", type: "p" }} />
+    );
+    squareEl = screen.getByTestId("board-square-e4");
+    expect(squareEl).toHaveAttribute("data-has-piece", "true");
+    expect(squareEl).toHaveClass("has-piece");
+    expect(squareEl).toHaveAttribute(
+      "aria-label",
+      "Square e4, light, White Pawn"
+    );
+    expect(screen.getByTestId("piece-wp")).toBeInTheDocument();
+  });
+
   it("TC-BOARD-12: renders child elements pass-through correctly", () => {
     render(
       <Square square="e2">
-        <span data-testid="test-child">Pawn</span>
+        <span data-testid="test-child">Custom Overlay</span>
       </Square>
     );
 
     const child = screen.getByTestId("test-child");
     expect(child).toBeInTheDocument();
-    expect(child).toHaveTextContent("Pawn");
+    expect(child).toHaveTextContent("Custom Overlay");
   });
 
   it("TC-BOARD-13: handles click and keyboard interactions correctly", () => {

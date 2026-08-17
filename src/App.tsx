@@ -3,11 +3,15 @@ import { Header } from "./components/Header";
 import { Board } from "./features/board/Board";
 import type { BoardOrientation } from "./features/board/types";
 import type { Square } from "./domain/chess/types";
+import { createChessAdapter } from "./domain/chess/adapters/chessJsAdapter";
 import "./App.css";
 
 export const App: React.FC = () => {
+  const [chessAdapter] = useState(() => createChessAdapter());
   const [orientation, setOrientation] = useState<BoardOrientation>("w");
   const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);
+
+  const position = chessAdapter.getPosition();
 
   const toggleOrientation = () => {
     setOrientation((prev) => (prev === "w" ? "b" : "w"));
@@ -40,7 +44,11 @@ export const App: React.FC = () => {
               </span>
             )}
           </div>
-          <Board orientation={orientation} onSquareClick={handleSquareClick} />
+          <Board
+            orientation={orientation}
+            position={position}
+            onSquareClick={handleSquareClick}
+          />
         </div>
 
         <div className="hero-card">

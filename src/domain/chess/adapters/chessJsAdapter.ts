@@ -708,3 +708,10 @@ export class ChessJsAdapter implements ChessAdapterPort {
     };
   }
 }
+
+/**
+ * Factory function to create a new ChessAdapterPort instance backed by ChessJsAdapter.
+ */
+export function createChessAdapter(initialFen?: string): ChessAdapterPort {
+  return new ChessJsAdapter(initialFen);
+}

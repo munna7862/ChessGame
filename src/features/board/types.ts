@@ -4,6 +4,9 @@ import type {
   FileSymbol,
   RankSymbol,
   Color,
+  Piece,
+  BoardMatrix,
+  Position,
 } from "../../domain/chess/types";
 
 /**
@@ -28,6 +31,7 @@ export interface BoardSquareData {
   readonly row: number; // 0 (top) to 7 (bottom) in DOM grid
   readonly col: number; // 0 (left) to 7 (right) in DOM grid
   readonly color: SquareColor;
+  readonly piece?: Piece | null | undefined;
 }
 
 /**
@@ -35,6 +39,7 @@ export interface BoardSquareData {
  */
 export interface SquareProps {
   readonly square: Square;
+  readonly piece?: Piece | null | undefined;
   readonly color?: SquareColor | undefined;
   readonly orientation?: BoardOrientation | undefined;
   readonly isSelected?: boolean | undefined;
@@ -56,13 +61,23 @@ export interface SquareProps {
 export type SquareRenderer = (data: BoardSquareData) => React.ReactNode;
 
 /**
+ * Custom piece render function signature.
+ */
+export type PieceRenderer = (piece: Piece, square: Square) => React.ReactNode;
+
+/**
  * Props for the full Board component.
  */
 export interface BoardProps {
   readonly orientation?: BoardOrientation | undefined;
+  readonly board?: BoardMatrix | null | undefined;
+  readonly position?: Position | null | undefined;
+  readonly pieces?:
+    Partial<Record<Square, Piece>> | Map<Square, Piece> | null | undefined;
   readonly showCoordinates?: boolean | undefined;
   readonly onSquareClick?: ((square: Square) => void) | undefined;
   readonly renderSquare?: SquareRenderer | undefined;
+  readonly renderPiece?: PieceRenderer | undefined;
   readonly className?: string | undefined;
   readonly ariaLabel?: string | undefined;
 }

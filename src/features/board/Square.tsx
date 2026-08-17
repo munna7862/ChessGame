@@ -2,10 +2,13 @@ import React from "react";
 import clsx from "clsx";
 import { squareToFileRank, FILES, RANKS } from "../../domain/chess/types";
 import { getSquareColor } from "./coordinates";
+import { Piece } from "./Piece";
+import { getPieceAriaLabel } from "./pieceUtils";
 import type { SquareProps } from "./types";
 
 export const Square: React.FC<SquareProps> = ({
   square,
+  piece,
   color,
   isSelected = false,
   isLastMove = false,
@@ -44,7 +47,8 @@ export const Square: React.FC<SquareProps> = ({
     }
   };
 
-  const defaultAriaLabel = `Square ${square}, ${resolvedColor}`;
+  const pieceLabel = piece ? `, ${getPieceAriaLabel(piece)}` : "";
+  const defaultAriaLabel = `Square ${square}, ${resolvedColor}${pieceLabel}`;
 
   return (
     <div
@@ -58,6 +62,7 @@ export const Square: React.FC<SquareProps> = ({
       data-file={file}
       data-rank={rank}
       data-square-color={resolvedColor}
+      data-has-piece={Boolean(piece)}
       className={clsx(
         "chess-square",
         `square-${resolvedColor}`,
@@ -67,12 +72,14 @@ export const Square: React.FC<SquareProps> = ({
           "is-legal-target": isLegalTarget,
           "is-check": isCheck,
           "is-disabled": disabled,
+          "has-piece": Boolean(piece),
         },
         className
       )}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
     >
+      {piece ? <Piece piece={piece} /> : null}
       {children}
     </div>
   );

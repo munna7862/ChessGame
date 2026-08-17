@@ -1,9 +1,10 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { SQUARES } from "../../../domain/chess/types";
+import { SQUARES, type Piece } from "../../../domain/chess/types";
+import { createChessAdapter } from "../../../domain/chess/adapters/chessJsAdapter";
 import { Board } from "../Board";
 
-describe("Board Component (Phase 04 · Sprint 01)", () => {
+describe("Board Component (Phase 04 · Sprint 01 & Sprint 02)", () => {
   it("TC-BOARD-14: renders all 64 squares within the board container", () => {
     render(<Board />);
 
@@ -113,5 +114,199 @@ describe("Board Component (Phase 04 · Sprint 01)", () => {
 
     expect(handleSquareClick).toHaveBeenCalledTimes(1);
     expect(handleSquareClick).toHaveBeenCalledWith("e4");
+  });
+
+  describe("Piece Rendering Integration (TC-PIECE-14 to TC-PIECE-16)", () => {
+    it("TC-PIECE-14: renders all 32 pieces in the standard initial chess position", () => {
+      const adapter = createChessAdapter();
+      const position = adapter.getPosition();
+
+      render(<Board position={position} orientation="w" />);
+
+      // Verify 16 white pieces
+      expect(
+        screen
+          .getByTestId("board-square-e1")
+          .querySelector("[data-testid='piece-wk']")
+      ).toBeInTheDocument();
+      expect(
+        screen
+          .getByTestId("board-square-d1")
+          .querySelector("[data-testid='piece-wq']")
+      ).toBeInTheDocument();
+      expect(
+        screen
+          .getByTestId("board-square-a1")
+          .querySelector("[data-testid='piece-wr']")
+      ).toBeInTheDocument();
+      expect(
+        screen
+          .getByTestId("board-square-h1")
+          .querySelector("[data-testid='piece-wr']")
+      ).toBeInTheDocument();
+      expect(
+        screen
+          .getByTestId("board-square-b1")
+          .querySelector("[data-testid='piece-wn']")
+      ).toBeInTheDocument();
+      expect(
+        screen
+          .getByTestId("board-square-g1")
+          .querySelector("[data-testid='piece-wn']")
+      ).toBeInTheDocument();
+      expect(
+        screen
+          .getByTestId("board-square-c1")
+          .querySelector("[data-testid='piece-wb']")
+      ).toBeInTheDocument();
+      expect(
+        screen
+          .getByTestId("board-square-f1")
+          .querySelector("[data-testid='piece-wb']")
+      ).toBeInTheDocument();
+
+      for (const file of ["a", "b", "c", "d", "e", "f", "g", "h"]) {
+        expect(
+          screen
+            .getByTestId(`board-square-${file}2`)
+            .querySelector("[data-testid='piece-wp']")
+        ).toBeInTheDocument();
+      }
+
+      // Verify 16 black pieces
+      expect(
+        screen
+          .getByTestId("board-square-e8")
+          .querySelector("[data-testid='piece-bk']")
+      ).toBeInTheDocument();
+      expect(
+        screen
+          .getByTestId("board-square-d8")
+          .querySelector("[data-testid='piece-bq']")
+      ).toBeInTheDocument();
+      expect(
+        screen
+          .getByTestId("board-square-a8")
+          .querySelector("[data-testid='piece-br']")
+      ).toBeInTheDocument();
+      expect(
+        screen
+          .getByTestId("board-square-h8")
+          .querySelector("[data-testid='piece-br']")
+      ).toBeInTheDocument();
+      expect(
+        screen
+          .getByTestId("board-square-b8")
+          .querySelector("[data-testid='piece-bn']")
+      ).toBeInTheDocument();
+      expect(
+        screen
+          .getByTestId("board-square-g8")
+          .querySelector("[data-testid='piece-bn']")
+      ).toBeInTheDocument();
+      expect(
+        screen
+          .getByTestId("board-square-c8")
+          .querySelector("[data-testid='piece-bb']")
+      ).toBeInTheDocument();
+      expect(
+        screen
+          .getByTestId("board-square-f8")
+          .querySelector("[data-testid='piece-bb']")
+      ).toBeInTheDocument();
+
+      for (const file of ["a", "b", "c", "d", "e", "f", "g", "h"]) {
+        expect(
+          screen
+            .getByTestId(`board-square-${file}7`)
+            .querySelector("[data-testid='piece-bp']")
+        ).toBeInTheDocument();
+      }
+
+      // Verify empty center squares
+      expect(
+        screen.getByTestId("board-square-e4").querySelector(".chess-piece")
+      ).toBeNull();
+      expect(
+        screen.getByTestId("board-square-d5").querySelector(".chess-piece")
+      ).toBeNull();
+    });
+
+    it("TC-PIECE-15: renders custom position containing all 12 piece types via pieces Map/Record prop", () => {
+      const customPieces: Record<string, Piece> = {
+        e4: { color: "w", type: "k" },
+        b2: { color: "w", type: "q" },
+        d2: { color: "w", type: "r" },
+        f2: { color: "w", type: "b" },
+        h2: { color: "w", type: "n" },
+        h1: { color: "w", type: "p" },
+        d5: { color: "b", type: "k" },
+        b3: { color: "b", type: "q" },
+        d3: { color: "b", type: "r" },
+        f3: { color: "b", type: "b" },
+        h3: { color: "b", type: "n" },
+        c1: { color: "b", type: "p" },
+      };
+
+      render(<Board pieces={customPieces} />);
+
+      expect(screen.getByTestId("piece-wk")).toBeInTheDocument();
+      expect(screen.getByTestId("piece-wq")).toBeInTheDocument();
+      expect(screen.getByTestId("piece-wr")).toBeInTheDocument();
+      expect(screen.getByTestId("piece-wb")).toBeInTheDocument();
+      expect(screen.getByTestId("piece-wn")).toBeInTheDocument();
+      expect(screen.getByTestId("piece-wp")).toBeInTheDocument();
+
+      expect(screen.getByTestId("piece-bk")).toBeInTheDocument();
+      expect(screen.getByTestId("piece-bq")).toBeInTheDocument();
+      expect(screen.getByTestId("piece-br")).toBeInTheDocument();
+      expect(screen.getByTestId("piece-bb")).toBeInTheDocument();
+      expect(screen.getByTestId("piece-bn")).toBeInTheDocument();
+      expect(screen.getByTestId("piece-bp")).toBeInTheDocument();
+    });
+
+    it("TC-PIECE-16: board orientation flip preserves piece-to-square binding", () => {
+      const customPieces: Record<string, Piece> = {
+        e4: { color: "w", type: "q" },
+      };
+
+      const { rerender } = render(
+        <Board pieces={customPieces} orientation="w" />
+      );
+
+      let e4Square = screen.getByTestId("board-square-e4");
+      expect(
+        e4Square.querySelector("[data-testid='piece-wq']")
+      ).toBeInTheDocument();
+
+      // Flip orientation to Black
+      rerender(<Board pieces={customPieces} orientation="b" />);
+
+      e4Square = screen.getByTestId("board-square-e4");
+      expect(
+        e4Square.querySelector("[data-testid='piece-wq']")
+      ).toBeInTheDocument();
+    });
+
+    it("supports custom renderPiece prop", () => {
+      const customPieces: Record<string, Piece> = {
+        e4: { color: "w", type: "k" },
+      };
+
+      render(
+        <Board
+          pieces={customPieces}
+          renderPiece={(piece, square) => (
+            <div data-testid={`custom-piece-${square}`}>
+              Custom {piece.color}-{piece.type}
+            </div>
+          )}
+        />
+      );
+
+      const customPieceEl = screen.getByTestId("custom-piece-e4");
+      expect(customPieceEl).toBeInTheDocument();
+      expect(customPieceEl).toHaveTextContent("Custom w-k");
+    });
   });
 });

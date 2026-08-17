@@ -1,10 +1,11 @@
 import React, { useMemo } from "react";
 import clsx from "clsx";
-import type { Square } from "../../domain/chess/types";
+import type { Square, Piece } from "../../domain/chess/types";
 import {
   getGridSquares,
   getRanksForOrientation,
   getFilesForOrientation,
+  getPieceFromMatrix,
 } from "./coordinates";
 import { Square as SquareComponent } from "./Square";
 import type { BoardProps, BoardSquareData } from "./types";
@@ -12,13 +13,39 @@ import "./Board.css";
 
 export const Board: React.FC<BoardProps> = ({
   orientation = "w",
+  board,
+  position,
+  pieces,
   showCoordinates = true,
   onSquareClick,
   renderSquare,
+  renderPiece,
   className,
   ariaLabel = "Chessboard",
 }) => {
-  const gridSquares = useMemo(() => getGridSquares(orientation), [orientation]);
+  const pieceResolver = useMemo(() => {
+    if (position?.board) {
+      return (sq: Square): Piece | null =>
+        getPieceFromMatrix(sq, position.board);
+    }
+    if (board) {
+      return (sq: Square): Piece | null => getPieceFromMatrix(sq, board);
+    }
+    if (pieces) {
+      if (pieces instanceof Map) {
+        return (sq: Square): Piece | null => pieces.get(sq) ?? null;
+      }
+      return (sq: Square): Piece | null =>
+        (pieces as Partial<Record<Square, Piece>>)[sq] ?? null;
+    }
+    return null;
+  }, [position, board, pieces]);
+
+  const gridSquares = useMemo(
+    () => getGridSquares(orientation, pieceResolver),
+    [orientation, pieceResolver]
+  );
+
   const ranks = useMemo(
     () => getRanksForOrientation(orientation),
     [orientation]
@@ -49,15 +76,23 @@ export const Board: React.FC<BoardProps> = ({
             );
           }
 
+          const renderedPieceChild =
+            renderPiece && squareData.piece
+              ? renderPiece(squareData.piece, squareData.square)
+              : undefined;
+
           return (
             <SquareComponent
               key={squareData.square}
               square={squareData.square}
+              piece={renderedPieceChild ? undefined : squareData.piece}
               color={squareData.color}
               onClick={
                 onSquareClick ? (sq: Square) => onSquareClick(sq) : undefined
               }
-            />
+            >
+              {renderedPieceChild}
+            </SquareComponent>
           );
         })}
 
