@@ -21,7 +21,16 @@ import asyncio
 import subprocess
 import sys
 import os
-from google.antigravity import Agent, LocalAgentConfig, CapabilitiesConfig
+
+# Auto-load GEMINI_API_KEY from .env if present
+env_path = os.path.join(os.getcwd(), ".env")
+if os.path.exists(env_path):
+    with open(env_path, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                k, v = line.split("=", 1)
+                os.environ[k.strip()] = v.strip().strip('"').strip("'")
 
 # All remaining sprints from Phase 04 to Phase 11
 SPRINT_PIPELINE = [
@@ -154,6 +163,20 @@ Follow the Universal Operating Contract in AGENTS.md strictly:
     await asyncio.sleep(3)
 
 async def main():
+    api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+    if not api_key:
+        print("\n" + "="*70)
+        print("🔑 GEMINI_API_KEY Required for Standalone Python SDK Pipeline")
+        print("="*70)
+        print("\nTo run the 100% headless external Python runner, provide your Gemini API key:")
+        print("  1. In PowerShell:  $env:GEMINI_API_KEY=\"your_gemini_api_key\"")
+        print("  2. Or in a .env file: GEMINI_API_KEY=your_gemini_api_key")
+        print("\n💡 Alternatively, if you are using your Antigravity IDE subscription:")
+        print("  Simply open a New Chat in the Antigravity IDE and paste the prompt:")
+        print("  node scripts/sprint_orchestrator.mjs prompt P04-S01")
+        print("="*70 + "\n")
+        sys.exit(1)
+
     target = sys.argv[1] if len(sys.argv) > 1 else None
 
     if target:
