@@ -20,9 +20,12 @@ export const Square: React.FC<SquareProps> = ({
   isCheck = false,
   isCheckmate = false,
   disabled = false,
+  tabIndex,
   children,
   onClick,
   onKeyDown,
+  onFocus,
+  onBlur,
   className,
   ariaLabel,
 }) => {
@@ -48,6 +51,18 @@ export const Square: React.FC<SquareProps> = ({
     e.preventDefault();
     if (!disabled && onClick) {
       onClick(square);
+    }
+  };
+
+  const handleFocus = () => {
+    if (!disabled && onFocus) {
+      onFocus(square);
+    }
+  };
+
+  const handleBlur = () => {
+    if (!disabled && onBlur) {
+      onBlur(square);
     }
   };
 
@@ -89,7 +104,7 @@ export const Square: React.FC<SquareProps> = ({
   return (
     <div
       role="gridcell"
-      tabIndex={disabled ? -1 : 0}
+      tabIndex={tabIndex ?? (disabled ? -1 : 0)}
       aria-label={ariaLabel ?? defaultAriaLabel}
       aria-selected={isSelected}
       aria-disabled={disabled}
@@ -128,6 +143,8 @@ export const Square: React.FC<SquareProps> = ({
       )}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
     >
       {effectiveCheck && (
         <span

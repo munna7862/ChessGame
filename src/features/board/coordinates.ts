@@ -155,3 +155,53 @@ export function getGridSquares(
 
   return squares;
 }
+
+/**
+ * Calculate the target Square when navigating via keyboard from an origin Square
+ * based on spatial direction keys and the active board orientation.
+ */
+export function getNextSquare(
+  currentSquare: Square,
+  key: string,
+  orientation: BoardOrientation = "w"
+): Square {
+  const { file: fileIdx, rank: rankIdx } = squareToFileRank(currentSquare);
+
+  let targetFile = fileIdx;
+  let targetRank = rankIdx;
+
+  switch (key) {
+    case "ArrowUp":
+      targetRank = orientation === "w" ? rankIdx + 1 : rankIdx - 1;
+      break;
+    case "ArrowDown":
+      targetRank = orientation === "w" ? rankIdx - 1 : rankIdx + 1;
+      break;
+    case "ArrowLeft":
+      targetFile = orientation === "w" ? fileIdx - 1 : fileIdx + 1;
+      break;
+    case "ArrowRight":
+      targetFile = orientation === "w" ? fileIdx + 1 : fileIdx - 1;
+      break;
+    case "Home":
+      targetFile = orientation === "w" ? 0 : 7;
+      break;
+    case "End":
+      targetFile = orientation === "w" ? 7 : 0;
+      break;
+    case "PageUp":
+      targetRank = orientation === "w" ? 7 : 0;
+      break;
+    case "PageDown":
+      targetRank = orientation === "w" ? 0 : 7;
+      break;
+    default:
+      return currentSquare;
+  }
+
+  // Clamp within 8x8 boundaries [0..7]
+  const clampedFile = Math.max(0, Math.min(7, targetFile));
+  const clampedRank = Math.max(0, Math.min(7, targetRank));
+
+  return fileRankToSquare(clampedFile, clampedRank) ?? currentSquare;
+}

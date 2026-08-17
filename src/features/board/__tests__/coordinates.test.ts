@@ -8,7 +8,9 @@ import {
   getRanksForOrientation,
   getFilesForOrientation,
   getGridSquares,
+  getNextSquare,
 } from "../coordinates";
+
 import type { BoardOrientation } from "../types";
 
 describe("Board Coordinates & Geometry (Phase 04 · Sprint 01)", () => {
@@ -194,6 +196,77 @@ describe("Board Coordinates & Geometry (Phase 04 · Sprint 01)", () => {
         "b",
         "a",
       ]);
+    });
+  });
+
+  describe("Spatial Keyboard Navigation (getNextSquare)", () => {
+    it("moves in cardinal directions accurately for White orientation", () => {
+      expect(getNextSquare("e2", "ArrowUp", "w")).toBe("e3");
+      expect(getNextSquare("e2", "ArrowDown", "w")).toBe("e1");
+      expect(getNextSquare("e2", "ArrowLeft", "w")).toBe("d2");
+      expect(getNextSquare("e2", "ArrowRight", "w")).toBe("f2");
+    });
+
+    it("inverts spatial direction for Black orientation", () => {
+      expect(getNextSquare("e7", "ArrowUp", "b")).toBe("e6");
+      expect(getNextSquare("e7", "ArrowDown", "b")).toBe("e8");
+      expect(getNextSquare("e7", "ArrowLeft", "b")).toBe("f7");
+      expect(getNextSquare("e7", "ArrowRight", "b")).toBe("d7");
+    });
+
+    it("handles Home, End, PageUp, PageDown correctly", () => {
+      // White orientation
+      expect(getNextSquare("e4", "Home", "w")).toBe("a4");
+      expect(getNextSquare("e4", "End", "w")).toBe("h4");
+      expect(getNextSquare("e4", "PageUp", "w")).toBe("e8");
+      expect(getNextSquare("e4", "PageDown", "w")).toBe("e1");
+
+      // Black orientation
+      expect(getNextSquare("e4", "Home", "b")).toBe("h4");
+      expect(getNextSquare("e4", "End", "b")).toBe("a4");
+      expect(getNextSquare("e4", "PageUp", "b")).toBe("e1");
+      expect(getNextSquare("e4", "PageDown", "b")).toBe("e8");
+    });
+
+    it("clamps at boundaries without going out of bounds", () => {
+      expect(getNextSquare("a1", "ArrowLeft", "w")).toBe("a1");
+      expect(getNextSquare("a1", "ArrowDown", "w")).toBe("a1");
+      expect(getNextSquare("h8", "ArrowRight", "w")).toBe("h8");
+      expect(getNextSquare("h8", "ArrowUp", "w")).toBe("h8");
+
+      expect(getNextSquare("h1", "ArrowLeft", "b")).toBe("h1");
+      expect(getNextSquare("h1", "ArrowUp", "b")).toBe("h1");
+      expect(getNextSquare("a8", "ArrowRight", "b")).toBe("a8");
+      expect(getNextSquare("a8", "ArrowDown", "b")).toBe("a8");
+    });
+
+    it("returns unmodified square on unhandled key", () => {
+      expect(getNextSquare("e4", "KeyA", "w")).toBe("e4");
+      expect(getNextSquare("e4", "Enter", "w")).toBe("e4");
+    });
+
+    it("fast-check property test: always produces a valid 8x8 algebraic square", () => {
+      const squaresArb = fc.constantFrom(...SQUARES);
+      const keysArb = fc.constantFrom(
+        "ArrowUp",
+        "ArrowDown",
+        "ArrowLeft",
+        "ArrowRight",
+        "Home",
+        "End",
+        "PageUp",
+        "PageDown",
+        "InvalidKey"
+      );
+      const orientationArb = fc.constantFrom<BoardOrientation>("w", "b");
+
+      fc.assert(
+        fc.property(squaresArb, keysArb, orientationArb, (sq, key, orient) => {
+          const res = getNextSquare(sq, key, orient);
+          return isValidSquare(res);
+        }),
+        { numRuns: 500, seed: 101 }
+      );
     });
   });
 });
