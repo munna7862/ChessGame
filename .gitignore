@@ -79,6 +79,11 @@ jspm_packages/
 .env.production.local
 .env.local
 
+# Python Virtual Environment
+.venv/
+__pycache__/
+*.pyc
+
 # Stores VSCode versions used for testing Extension
 .vscode-test
 
