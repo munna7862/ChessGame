@@ -38,15 +38,15 @@ This pull request implements the foundational 8x8 chessboard layout, orientation
 
 ## 2. Quality Gate & Test Automation Report
 
-| Suite / Gate | Tool / Command | Result | Coverage / Metric |
-| :--- | :--- | :--- | :--- |
-| **Code Formatting** | `npm run format:check` | **PASS** | 100% Prettier compliant |
-| **TypeScript Typecheck** | `npm run typecheck` | **PASS** | `strict: true`, 0 errors |
-| **ESLint Static Analysis** | `npm run lint` | **PASS** | 0 errors, 0 warnings |
-| **Domain & UI Unit Tests** | `npm test` | **PASS** | **253 / 253 passed** (27 test files, 0 skips) |
-| **Property Invariant Fuzzing**| `fast-check` (seed 42) | **PASS** | 1,000 randomized bijective runs |
-| **Playwright Desktop E2E** | `npm run test:e2e` | **PASS** | **8 / 8 passed** (0 skips) |
-| **Production Build** | `npm run build` | **PASS** | Dist bundle built in 944ms |
+| Suite / Gate                   | Tool / Command         | Result   | Coverage / Metric                             |
+| :----------------------------- | :--------------------- | :------- | :-------------------------------------------- |
+| **Code Formatting**            | `npm run format:check` | **PASS** | 100% Prettier compliant                       |
+| **TypeScript Typecheck**       | `npm run typecheck`    | **PASS** | `strict: true`, 0 errors                      |
+| **ESLint Static Analysis**     | `npm run lint`         | **PASS** | 0 errors, 0 warnings                          |
+| **Domain & UI Unit Tests**     | `npm test`             | **PASS** | **253 / 253 passed** (27 test files, 0 skips) |
+| **Property Invariant Fuzzing** | `fast-check` (seed 42) | **PASS** | 1,000 randomized bijective runs               |
+| **Playwright Desktop E2E**     | `npm run test:e2e`     | **PASS** | **8 / 8 passed** (0 skips)                    |
+| **Production Build**           | `npm run build`        | **PASS** | Dist bundle built in 944ms                    |
 
 ---
 
