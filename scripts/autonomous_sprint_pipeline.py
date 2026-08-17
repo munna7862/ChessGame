@@ -21,7 +21,7 @@ import asyncio
 import subprocess
 import sys
 import os
-from google.antigravity import Agent, LocalAgentConfig, CapabilitiesConfig
+from google.antigravity import Agent, LocalAgentConfig, CapabilitiesConfig, RetryConfig, ModelAPIRetryConfig
 
 # Auto-load GEMINI_API_KEY from .env if present
 env_path = os.path.join(os.getcwd(), ".env")
@@ -133,19 +133,39 @@ Follow the Universal Operating Contract in AGENTS.md strictly:
 """
 
     api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+    retry_cfg = RetryConfig(
+        api_retry=ModelAPIRetryConfig(
+            max_retries=10,
+            initial_sleep_duration_ms=3000,
+            exponential_multiplier=2.0,
+        )
+    )
+
     config = LocalAgentConfig(
         api_key=api_key,
         workspaces=[os.getcwd()],
         system_instructions="You are an autonomous agile development team adhering strictly to AGENTS.md in ChessForge.",
         capabilities=CapabilitiesConfig(),
+        retry_config=retry_cfg,
     )
 
-    # 1. Initialize a 100% fresh, isolated Agent conversation session
-    async with Agent(config) as agent:
-        print(f"🤖 Agent session started with 0 initial tokens.")
-        response = await agent.chat(prompt)
-        async for token in response:
-            print(token, end="", flush=True)
+    # 1. Initialize a 100% fresh, isolated Agent conversation session with backoff
+    max_session_attempts = 5
+    for attempt in range(1, max_session_attempts + 1):
+        try:
+            print(f"🤖 Attempt {attempt}/{max_session_attempts}: Starting Agent session (0 initial tokens)...")
+            async with Agent(config) as agent:
+                response = await agent.chat(prompt)
+                async for token in response:
+                    print(token, end="", flush=True)
+            break
+        except Exception as e:
+            if "503" in str(e) or "high demand" in str(e).lower():
+                wait_s = attempt * 10
+                print(f"\n⚠️ Gemini 503 (Temporary High Demand). Backing off for {wait_s}s before retrying...")
+                await asyncio.sleep(wait_s)
+            else:
+                raise e
 
     print(f"\n\n✅ Agent session for {sprint_id} finished. Context memory disposed.")
 
