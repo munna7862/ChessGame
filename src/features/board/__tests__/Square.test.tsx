@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { Square } from "../Square";
 
-describe("Square Component (Phase 04 · Sprint 01 & Sprint 02)", () => {
+describe("Square Component (Phase 04 · Sprint 01 - Sprint 03)", () => {
   it("TC-BOARD-09: renders single square with required test IDs and dataset attributes", () => {
     render(<Square square="e4" color="light" />);
 
@@ -91,7 +91,79 @@ describe("Square Component (Phase 04 · Sprint 01 & Sprint 02)", () => {
     expect(handleClick).toHaveBeenCalledTimes(3);
   });
 
-  it("TC-BOARD-13b: supports visual state modifiers (selected, last-move, legal-target, check, disabled)", () => {
+  it("TC-SEL-01: renders selected square state with is-selected class and aria-selected='true'", () => {
+    render(
+      <Square
+        square="e2"
+        color="light"
+        piece={{ color: "w", type: "p" }}
+        isSelected={true}
+      />
+    );
+
+    const squareEl = screen.getByTestId("board-square-e2");
+    expect(squareEl).toHaveClass("is-selected");
+    expect(squareEl).toHaveAttribute("aria-selected", "true");
+    expect(squareEl).toHaveAttribute("data-is-selected", "true");
+    expect(squareEl).toHaveAttribute(
+      "aria-label",
+      "Square e2, light, White Pawn, selected"
+    );
+  });
+
+  it("TC-SEL-02: renders quiet move legal target indicator dot", () => {
+    render(
+      <Square
+        square="e4"
+        color="light"
+        isLegalTarget={true}
+        legalTargetType="move"
+      />
+    );
+
+    const squareEl = screen.getByTestId("board-square-e4");
+    expect(squareEl).toHaveClass("is-legal-target");
+    expect(squareEl).not.toHaveClass("is-capture-target");
+    expect(squareEl).toHaveAttribute("data-is-legal-target", "true");
+    expect(squareEl).toHaveAttribute("data-target-type", "move");
+    expect(squareEl).toHaveAttribute(
+      "aria-label",
+      "Square e4, light, legal move target"
+    );
+
+    const indicator = screen.getByTestId("legal-target-e4");
+    expect(indicator).toBeInTheDocument();
+    expect(indicator).toHaveClass("legal-target-dot");
+    expect(indicator).toHaveAttribute("data-target-type", "move");
+  });
+
+  it("TC-SEL-03: renders capture legal target indicator ring", () => {
+    render(
+      <Square
+        square="d5"
+        color="dark"
+        piece={{ color: "b", type: "p" }}
+        isLegalTarget={true}
+        legalTargetType="capture"
+      />
+    );
+
+    const squareEl = screen.getByTestId("board-square-d5");
+    expect(squareEl).toHaveClass("is-legal-target");
+    expect(squareEl).toHaveClass("is-capture-target");
+    expect(squareEl).toHaveAttribute("data-target-type", "capture");
+    expect(squareEl).toHaveAttribute(
+      "aria-label",
+      "Square d5, dark, Black Pawn, legal capture target"
+    );
+
+    const indicator = screen.getByTestId("legal-target-d5");
+    expect(indicator).toBeInTheDocument();
+    expect(indicator).toHaveClass("legal-target-capture-ring");
+    expect(indicator).toHaveAttribute("data-target-type", "capture");
+  });
+
+  it("TC-SEL-13: disables square when disabled=true and suppresses click events", () => {
     const handleClick = vi.fn();
     render(
       <Square
@@ -115,8 +187,10 @@ describe("Square Component (Phase 04 · Sprint 01 & Sprint 02)", () => {
     expect(squareEl).toHaveAttribute("aria-disabled", "true");
     expect(squareEl).toHaveAttribute("tabIndex", "-1");
 
-    // Disabled squares should not trigger click
     fireEvent.click(squareEl);
+    expect(handleClick).not.toHaveBeenCalled();
+
+    fireEvent.keyDown(squareEl, { key: "Enter" });
     expect(handleClick).not.toHaveBeenCalled();
   });
 });

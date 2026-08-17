@@ -1,6 +1,10 @@
 import React, { useMemo } from "react";
 import clsx from "clsx";
-import type { Square, Piece } from "../../domain/chess/types";
+import {
+  isValidSquare,
+  type Square,
+  type Piece,
+} from "../../domain/chess/types";
 import {
   getGridSquares,
   getRanksForOrientation,
@@ -8,7 +12,7 @@ import {
   getPieceFromMatrix,
 } from "./coordinates";
 import { Square as SquareComponent } from "./Square";
-import type { BoardProps, BoardSquareData } from "./types";
+import type { BoardProps, BoardSquareData, LegalDestination } from "./types";
 import "./Board.css";
 
 export const Board: React.FC<BoardProps> = ({
@@ -16,6 +20,11 @@ export const Board: React.FC<BoardProps> = ({
   board,
   position,
   pieces,
+  selectedSquare = null,
+  legalDestinations = null,
+  lastMove = null,
+  checkSquare = null,
+  disabled = false,
   showCoordinates = true,
   onSquareClick,
   renderSquare,
@@ -41,6 +50,26 @@ export const Board: React.FC<BoardProps> = ({
     return null;
   }, [position, board, pieces]);
 
+  const legalDestMap = useMemo(() => {
+    if (!legalDestinations) {
+      return new Map<Square, LegalDestination>();
+    }
+    if (legalDestinations instanceof Map) {
+      return legalDestinations;
+    }
+    const map = new Map<Square, LegalDestination>();
+    if (Array.isArray(legalDestinations)) {
+      for (const item of legalDestinations) {
+        if (typeof item === "string" && isValidSquare(item)) {
+          map.set(item, { square: item, targetType: "move" });
+        } else if (item && typeof item === "object" && "square" in item) {
+          map.set(item.square, item);
+        }
+      }
+    }
+    return map;
+  }, [legalDestinations]);
+
   const gridSquares = useMemo(
     () => getGridSquares(orientation, pieceResolver),
     [orientation, pieceResolver]
@@ -65,13 +94,33 @@ export const Board: React.FC<BoardProps> = ({
         aria-label={ariaLabel}
         data-testid="chess-board"
         data-orientation={orientation}
-        className={clsx("chess-board-grid", `orientation-${orientation}`)}
+        className={clsx("chess-board-grid", `orientation-${orientation}`, {
+          "is-board-disabled": disabled,
+        })}
       >
         {gridSquares.map((squareData: BoardSquareData) => {
+          const isSelected = selectedSquare === squareData.square;
+          const legalDest = legalDestMap.get(squareData.square);
+          const isLegalTarget = Boolean(legalDest);
+          const legalTargetType = legalDest?.targetType ?? "move";
+          const isLastMove =
+            lastMove?.from === squareData.square ||
+            lastMove?.to === squareData.square;
+          const isCheck = checkSquare === squareData.square;
+
+          const enhancedSquareData: BoardSquareData = {
+            ...squareData,
+            isSelected,
+            isLegalTarget,
+            legalTargetType,
+            isLastMove,
+            isCheck,
+          };
+
           if (renderSquare) {
             return (
               <React.Fragment key={squareData.square}>
-                {renderSquare(squareData)}
+                {renderSquare(enhancedSquareData)}
               </React.Fragment>
             );
           }
@@ -87,6 +136,12 @@ export const Board: React.FC<BoardProps> = ({
               square={squareData.square}
               piece={renderedPieceChild ? undefined : squareData.piece}
               color={squareData.color}
+              isSelected={isSelected}
+              isLegalTarget={isLegalTarget}
+              legalTargetType={legalTargetType}
+              isLastMove={isLastMove}
+              isCheck={isCheck}
+              disabled={disabled}
               onClick={
                 onSquareClick ? (sq: Square) => onSquareClick(sq) : undefined
               }

@@ -7,6 +7,7 @@ import type {
   Piece,
   BoardMatrix,
   Position,
+  Move,
 } from "../../domain/chess/types";
 
 /**
@@ -18,6 +19,20 @@ export type BoardOrientation = Color;
  * Square color parity.
  */
 export type SquareColor = "light" | "dark";
+
+/**
+ * Legal target indicator type (quiet move vs capture/en-passant).
+ */
+export type LegalTargetType = "move" | "capture";
+
+/**
+ * Metadata for a legal destination square.
+ */
+export interface LegalDestination {
+  readonly square: Square;
+  readonly targetType: LegalTargetType;
+  readonly move?: Move | undefined;
+}
 
 /**
  * Computed metadata for a board square on the screen grid.
@@ -32,6 +47,11 @@ export interface BoardSquareData {
   readonly col: number; // 0 (left) to 7 (right) in DOM grid
   readonly color: SquareColor;
   readonly piece?: Piece | null | undefined;
+  readonly isSelected?: boolean | undefined;
+  readonly isLegalTarget?: boolean | undefined;
+  readonly legalTargetType?: LegalTargetType | undefined;
+  readonly isLastMove?: boolean | undefined;
+  readonly isCheck?: boolean | undefined;
 }
 
 /**
@@ -45,6 +65,7 @@ export interface SquareProps {
   readonly isSelected?: boolean | undefined;
   readonly isLastMove?: boolean | undefined;
   readonly isLegalTarget?: boolean | undefined;
+  readonly legalTargetType?: LegalTargetType | undefined;
   readonly isCheck?: boolean | undefined;
   readonly disabled?: boolean | undefined;
   readonly children?: React.ReactNode | undefined;
@@ -74,6 +95,15 @@ export interface BoardProps {
   readonly position?: Position | null | undefined;
   readonly pieces?:
     Partial<Record<Square, Piece>> | Map<Square, Piece> | null | undefined;
+  readonly selectedSquare?: Square | null | undefined;
+  readonly legalDestinations?:
+    | ReadonlyArray<Square | LegalDestination>
+    | ReadonlyMap<Square, LegalDestination>
+    | null
+    | undefined;
+  readonly lastMove?: { from: Square; to: Square } | null | undefined;
+  readonly checkSquare?: Square | null | undefined;
+  readonly disabled?: boolean | undefined;
   readonly showCoordinates?: boolean | undefined;
   readonly onSquareClick?: ((square: Square) => void) | undefined;
   readonly renderSquare?: SquareRenderer | undefined;

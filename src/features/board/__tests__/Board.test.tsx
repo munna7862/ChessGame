@@ -1,10 +1,11 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { SQUARES, type Piece } from "../../../domain/chess/types";
+import { SQUARES, type Piece, type Square } from "../../../domain/chess/types";
 import { createChessAdapter } from "../../../domain/chess/adapters/chessJsAdapter";
 import { Board } from "../Board";
+import type { LegalDestination } from "../types";
 
-describe("Board Component (Phase 04 · Sprint 01 & Sprint 02)", () => {
+describe("Board Component (Phase 04 · Sprint 01 - Sprint 03)", () => {
   it("TC-BOARD-14: renders all 64 squares within the board container", () => {
     render(<Board />);
 
@@ -114,6 +115,72 @@ describe("Board Component (Phase 04 · Sprint 01 & Sprint 02)", () => {
 
     expect(handleSquareClick).toHaveBeenCalledTimes(1);
     expect(handleSquareClick).toHaveBeenCalledWith("e4");
+  });
+
+  describe("Selection & Legal Move Indicators Integration (TC-SEL-01 to TC-SEL-04)", () => {
+    it("renders selected square and legal destinations from Map", () => {
+      const destinations = new Map<Square, LegalDestination>([
+        ["e3", { square: "e3", targetType: "move" }],
+        ["e4", { square: "e4", targetType: "move" }],
+        ["d5", { square: "d5", targetType: "capture" }],
+      ]);
+
+      render(
+        <Board
+          selectedSquare="e2"
+          legalDestinations={destinations}
+          lastMove={{ from: "e7", to: "e5" }}
+          checkSquare="e1"
+        />
+      );
+
+      // Selected square
+      const e2Square = screen.getByTestId("board-square-e2");
+      expect(e2Square).toHaveClass("is-selected");
+
+      // Quiet targets
+      const e3Square = screen.getByTestId("board-square-e3");
+      expect(e3Square).toHaveClass("is-legal-target");
+      expect(screen.getByTestId("legal-target-e3")).toHaveAttribute(
+        "data-target-type",
+        "move"
+      );
+
+      const e4Square = screen.getByTestId("board-square-e4");
+      expect(e4Square).toHaveClass("is-legal-target");
+      expect(screen.getByTestId("legal-target-e4")).toHaveAttribute(
+        "data-target-type",
+        "move"
+      );
+
+      // Capture target
+      const d5Square = screen.getByTestId("board-square-d5");
+      expect(d5Square).toHaveClass("is-legal-target");
+      expect(d5Square).toHaveClass("is-capture-target");
+      expect(screen.getByTestId("legal-target-d5")).toHaveAttribute(
+        "data-target-type",
+        "capture"
+      );
+
+      // Last move
+      expect(screen.getByTestId("board-square-e7")).toHaveClass("is-last-move");
+      expect(screen.getByTestId("board-square-e5")).toHaveClass("is-last-move");
+
+      // King in check
+      expect(screen.getByTestId("board-square-e1")).toHaveClass("is-check");
+    });
+
+    it("renders legal destinations passed as string array", () => {
+      render(<Board selectedSquare="b1" legalDestinations={["a3", "c3"]} />);
+
+      expect(screen.getByTestId("board-square-b1")).toHaveClass("is-selected");
+      expect(screen.getByTestId("board-square-a3")).toHaveClass(
+        "is-legal-target"
+      );
+      expect(screen.getByTestId("board-square-c3")).toHaveClass(
+        "is-legal-target"
+      );
+    });
   });
 
   describe("Piece Rendering Integration (TC-PIECE-14 to TC-PIECE-16)", () => {

@@ -7,7 +7,10 @@
   --square-dark-text: #cbd5e1;
   --square-selected: rgba(234, 179, 8, 0.55);
   --square-last-move: rgba(59, 130, 246, 0.4);
-  --square-legal-target: rgba(34, 197, 94, 0.5);
+  --square-legal-dot: rgba(34, 197, 94, 0.75);
+  --square-legal-dot-shadow: rgba(34, 197, 94, 0.4);
+  --square-capture-ring: rgba(239, 68, 68, 0.85);
+  --square-capture-glow: rgba(239, 68, 68, 0.4);
   --square-check: rgba(239, 68, 68, 0.65);
   --board-shadow:
     0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
@@ -41,6 +44,11 @@
   touch-action: none;
 }
 
+.chess-board-grid.is-board-disabled {
+  pointer-events: none;
+  opacity: 0.85;
+}
+
 .chess-square {
   position: relative;
   display: flex;
@@ -54,7 +62,8 @@
   outline: none;
   transition:
     background-color 0.15s ease,
-    filter 0.15s ease;
+    filter 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .chess-square:focus-visible {
@@ -79,6 +88,7 @@
 
 .chess-square.is-selected {
   background-color: var(--square-selected) !important;
+  box-shadow: inset 0 0 0 2px rgba(234, 179, 8, 0.9);
 }
 
 .chess-square.is-last-move {
@@ -87,11 +97,56 @@
 
 .chess-square.is-check {
   background-color: var(--square-check) !important;
+  box-shadow: inset 0 0 12px rgba(239, 68, 68, 0.8);
 }
 
 .chess-square.is-disabled {
   cursor: default;
   opacity: 0.7;
+}
+
+/* Legal Move Quiet Indicator (Center Dot) */
+.legal-target-dot {
+  position: absolute;
+  width: 28%;
+  height: 28%;
+  border-radius: 50%;
+  background-color: var(--square-legal-dot);
+  box-shadow: 0 0 8px var(--square-legal-dot-shadow);
+  pointer-events: none;
+  z-index: 6;
+  transition:
+    transform 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.chess-square.is-legal-target:hover .legal-target-dot {
+  transform: scale(1.3);
+  background-color: rgba(34, 197, 94, 0.95);
+}
+
+/* Legal Move Capture Indicator (Outer Ring / Corner Notch) */
+.legal-target-capture-ring {
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  border: 3.5px solid var(--square-capture-ring);
+  box-shadow:
+    0 0 8px var(--square-capture-glow),
+    inset 0 0 4px var(--square-capture-glow);
+  pointer-events: none;
+  z-index: 6;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.chess-square.is-capture-target:hover .legal-target-capture-ring {
+  transform: scale(1.04);
+  border-color: #ef4444;
+  box-shadow:
+    0 0 12px rgba(239, 68, 68, 0.75),
+    inset 0 0 6px rgba(239, 68, 68, 0.5);
 }
 
 /* Overlay coordinate labels on ranks and files */
