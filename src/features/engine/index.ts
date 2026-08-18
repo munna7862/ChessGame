@@ -5,3 +5,5 @@ export * from "./StockfishWorkerBridge";
 export * from "./EngineServiceImpl";
 export * from "./EnginePositionSynchronizer";
 export * from "./uciProtocol";
+export * from "./difficulty";
+export * from "./useEngineDifficulty";

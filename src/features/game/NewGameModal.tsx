@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { validateFen } from "../../domain/chess/fen";
+import {
+  useEngineDifficulty,
+  DIFFICULTY_PRESETS,
+  type EngineDifficultyLevel,
+} from "../engine";
 import type {
   GameMode,
   NewGameConfigOptions,
@@ -24,6 +29,9 @@ export const NewGameModal: React.FC<NewGameModalProps> = ({
 }) => {
   const [mode, setMode] = useState<GameMode>(
     initialValues?.mode ?? "human_vs_human"
+  );
+  const { difficulty, preset, setDifficulty } = useEngineDifficulty(
+    (initialValues?.difficulty as EngineDifficultyLevel) || undefined
   );
   const [player1Name, setPlayer1Name] = useState<string>(
     initialValues?.player1Name ?? "White"
@@ -143,6 +151,7 @@ export const NewGameModal: React.FC<NewGameModalProps> = ({
       player1Name: player1Name.slice(0, 32),
       player2Name: player2Name.slice(0, 32),
       player1Color,
+      difficulty: mode === "human_vs_engine" ? difficulty : undefined,
       initialFen:
         showCustomFen && customFen.trim() ? customFen.trim() : undefined,
     };
@@ -220,6 +229,69 @@ export const NewGameModal: React.FC<NewGameModalProps> = ({
                 </button>
               </div>
             </div>
+
+            {mode === "human_vs_engine" && (
+              <div
+                className="form-group"
+                data-testid="difficulty-selection-group"
+              >
+                <label
+                  htmlFor="engine-difficulty-select"
+                  className="form-label"
+                >
+                  Computer Difficulty
+                </label>
+                <select
+                  id="engine-difficulty-select"
+                  className="form-input form-select"
+                  data-testid="select-engine-difficulty"
+                  value={difficulty}
+                  onChange={(e) =>
+                    setDifficulty(
+                      Number(e.target.value) as EngineDifficultyLevel
+                    )
+                  }
+                >
+                  {DIFFICULTY_PRESETS.map((p) => (
+                    <option key={p.level} value={p.level}>
+                      Level {p.level} – {p.label} (Depth {p.depth}, Max{" "}
+                      {p.movetimeMs}ms)
+                    </option>
+                  ))}
+                </select>
+
+                <div
+                  className="difficulty-info-card"
+                  data-testid="difficulty-info-card"
+                >
+                  <div className="difficulty-info-header">
+                    <span
+                      className="difficulty-badge"
+                      data-testid="difficulty-badge"
+                    >
+                      Level {preset.level}: {preset.label}
+                    </span>
+                    <span
+                      className="difficulty-stats"
+                      data-testid="difficulty-stats"
+                    >
+                      Skill {preset.skillLevel}/20 · Depth {preset.depth} · Max{" "}
+                      {preset.movetimeMs}ms
+                    </span>
+                  </div>
+                  <p
+                    className="difficulty-desc"
+                    data-testid="difficulty-description"
+                  >
+                    {preset.description}
+                  </p>
+                  <p className="difficulty-disclaimer">
+                    Calculation depth and search time are strictly bounded for
+                    responsive desktop play.
+                  </p>
+                </div>
+              </div>
+            )}
 
             <div className="form-group">
               <label htmlFor="player1-name-input" className="form-label">

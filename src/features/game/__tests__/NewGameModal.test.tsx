@@ -115,6 +115,60 @@ describe("NewGameModal Component (TC-NG-01 to TC-NG-15)", () => {
     expect(session.config.mode).toBe("human_vs_engine");
     expect(session.config.players?.w.type).toBe("human");
     expect(session.config.players?.b.type).toBe("engine");
+    expect(session.config.players?.b.difficulty).toBe(3); // Default difficulty
+  });
+
+  it("TC-DIFF-09: renders difficulty selector in vs Computer mode and submits custom difficulty", () => {
+    const handleStartGame = vi.fn();
+
+    render(
+      <NewGameModal
+        isOpen={true}
+        onClose={vi.fn()}
+        onStartGame={handleStartGame}
+      />
+    );
+
+    // Human vs Human mode should not display difficulty selector
+    expect(
+      screen.queryByTestId("difficulty-selection-group")
+    ).not.toBeInTheDocument();
+
+    // Switch to vs Computer
+    fireEvent.click(screen.getByTestId("mode-human-vs-engine"));
+
+    // Difficulty selector should now be visible
+    expect(
+      screen.getByTestId("difficulty-selection-group")
+    ).toBeInTheDocument();
+    const select = screen.getByTestId(
+      "select-engine-difficulty"
+    ) as HTMLSelectElement;
+    expect(select.value).toBe("3"); // Default Level 3 (Intermediate)
+
+    expect(screen.getByTestId("difficulty-badge")).toHaveTextContent(
+      "Level 3: Intermediate"
+    );
+    expect(screen.getByTestId("difficulty-stats")).toHaveTextContent(
+      "Skill 6/20 · Depth 5 · Max 800ms"
+    );
+
+    // Select Level 6 (Expert)
+    fireEvent.change(select, { target: { value: "6" } });
+    expect(select.value).toBe("6");
+    expect(screen.getByTestId("difficulty-badge")).toHaveTextContent(
+      "Level 6: Expert"
+    );
+    expect(screen.getByTestId("difficulty-stats")).toHaveTextContent(
+      "Skill 15/20 · Depth 14 · Max 2500ms"
+    );
+
+    // Submit new game
+    fireEvent.click(screen.getByTestId("btn-submit-new-game"));
+
+    const session: ResolvedNewGameSession = handleStartGame.mock.calls[0]![0];
+    expect(session.config.mode).toBe("human_vs_engine");
+    expect(session.config.players?.b.difficulty).toBe(6);
   });
 
   it("TC-NG-10 & TC-NG-11: validates custom starting FEN position input", () => {
