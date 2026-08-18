@@ -36,14 +36,14 @@ This pull request completes **Phase 05 · Sprint 06: Human vs Human End-to-End**
 
 ## 3. Quality Gate & Test Execution Summary
 
-| Quality Gate | Tool / Command | Result |
-| :--- | :--- | :--- |
-| **Unit & Property Tests** | `npm test` (Vitest) | **47 test files passed, 442 tests passing (100% green, 0 skips)** |
-| **E2E Automation** | `npm run test:e2e` (Playwright) | **42 tests passing across 12 test files (100% green, 0 skips)** |
-| **Type Safety** | `npm run typecheck` (`tsc --noEmit`) | **0 errors, strict mode clean** |
-| **Linting** | `npm run lint` (`eslint .`) | **0 errors, 0 warnings** |
-| **Formatting** | `npm run format:check` (`prettier`) | **All files compliant** |
-| **Production Build** | `npm run build` (Vite) | **Build succeeded in 1.20s** |
+| Quality Gate              | Tool / Command                       | Result                                                            |
+| :------------------------ | :----------------------------------- | :---------------------------------------------------------------- |
+| **Unit & Property Tests** | `npm test` (Vitest)                  | **47 test files passed, 442 tests passing (100% green, 0 skips)** |
+| **E2E Automation**        | `npm run test:e2e` (Playwright)      | **42 tests passing across 12 test files (100% green, 0 skips)**   |
+| **Type Safety**           | `npm run typecheck` (`tsc --noEmit`) | **0 errors, strict mode clean**                                   |
+| **Linting**               | `npm run lint` (`eslint .`)          | **0 errors, 0 warnings**                                          |
+| **Formatting**            | `npm run format:check` (`prettier`)  | **All files compliant**                                           |
+| **Production Build**      | `npm run build` (Vite)               | **Build succeeded in 1.20s**                                      |
 
 ---
 
