@@ -155,4 +155,62 @@ describe("ChessForge Bootstrap Layout & Board UI (TC-BOOT-05, TC-PIECE-23, TC-SE
     expect(screen.getByTestId("board-square-e1")).toHaveClass("is-checkmate");
     expect(screen.getByTestId("checkmate-indicator-e1")).toBeInTheDocument();
   });
+
+  it("TC-GS-12 & TC-GS-13: executes complete Scholar's Mate through UI, updates session, and verifies game over", () => {
+    render(<App />);
+
+    // 1. e4
+    fireEvent.click(screen.getByTestId("board-square-e2"));
+    fireEvent.click(screen.getByTestId("board-square-e4"));
+    expect(screen.getByTestId("turn-indicator")).toHaveTextContent(
+      "Black to move"
+    );
+
+    // 1... e5
+    fireEvent.click(screen.getByTestId("board-square-e7"));
+    fireEvent.click(screen.getByTestId("board-square-e5"));
+    expect(screen.getByTestId("turn-indicator")).toHaveTextContent(
+      "White to move"
+    );
+
+    // 2. Qh5
+    fireEvent.click(screen.getByTestId("board-square-d1"));
+    fireEvent.click(screen.getByTestId("board-square-h5"));
+
+    // 2... Nc6
+    fireEvent.click(screen.getByTestId("board-square-b8"));
+    fireEvent.click(screen.getByTestId("board-square-c6"));
+
+    // 3. Bc4
+    fireEvent.click(screen.getByTestId("board-square-f1"));
+    fireEvent.click(screen.getByTestId("board-square-c4"));
+
+    // 3... Nf6
+    fireEvent.click(screen.getByTestId("board-square-g8"));
+    fireEvent.click(screen.getByTestId("board-square-f6"));
+
+    // 4. Qxf7#
+    fireEvent.click(screen.getByTestId("board-square-h5"));
+    fireEvent.click(screen.getByTestId("board-square-f7"));
+
+    expect(screen.getByTestId("checkmate-indicator")).toHaveTextContent(
+      "Checkmate! White wins"
+    );
+    expect(screen.getByTestId("board-square-e8")).toHaveClass("is-checkmate");
+    expect(screen.getByTestId("chess-board")).toHaveAttribute(
+      "aria-disabled",
+      "true"
+    );
+
+    // Reset game and verify new game state is completely clean
+    fireEvent.click(screen.getByTestId("btn-reset-game"));
+    expect(screen.getByTestId("turn-indicator")).toHaveTextContent(
+      "White to move"
+    );
+    expect(screen.queryByTestId("checkmate-indicator")).not.toBeInTheDocument();
+    expect(screen.getByTestId("chess-board")).toHaveAttribute(
+      "aria-disabled",
+      "false"
+    );
+  });
 });

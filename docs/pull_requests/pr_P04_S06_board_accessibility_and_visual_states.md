@@ -36,15 +36,15 @@ Phase 04 · Sprint 06 delivers comprehensive keyboard accessibility and non-colo
 
 ## 3. Automated Quality Gate Verification
 
-| Verification Gate | Result | Details |
-| :--- | :--- | :--- |
-| **Unit & Integration Tests** | **PASS (100% Green)** | 35 test files, 361 tests passed (0 failed, 0 skipped) |
-| **Property-Based Fuzzing** | **PASS (100% Green)** | `fast-check` roving tabindex and spatial key sequence invariants passed |
-| **Playwright E2E Tests** | **PASS (100% Green)** | 21/21 E2E tests passed across Chromium webview |
-| **TypeScript Typecheck** | **PASS (0 errors)** | `tsc --noEmit` clean |
-| **ESLint Linting** | **PASS (0 warnings)** | `eslint .` clean |
-| **Prettier Code Format** | **PASS (0 issues)** | `prettier --check .` clean |
-| **Vite Production Build** | **PASS** | Bundle compiled in 1.09s (`dist/assets/index-D1MqF9lx.js`) |
+| Verification Gate            | Result                | Details                                                                 |
+| :--------------------------- | :-------------------- | :---------------------------------------------------------------------- |
+| **Unit & Integration Tests** | **PASS (100% Green)** | 35 test files, 361 tests passed (0 failed, 0 skipped)                   |
+| **Property-Based Fuzzing**   | **PASS (100% Green)** | `fast-check` roving tabindex and spatial key sequence invariants passed |
+| **Playwright E2E Tests**     | **PASS (100% Green)** | 21/21 E2E tests passed across Chromium webview                          |
+| **TypeScript Typecheck**     | **PASS (0 errors)**   | `tsc --noEmit` clean                                                    |
+| **ESLint Linting**           | **PASS (0 warnings)** | `eslint .` clean                                                        |
+| **Prettier Code Format**     | **PASS (0 issues)**   | `prettier --check .` clean                                              |
+| **Vite Production Build**    | **PASS**              | Bundle compiled in 1.09s (`dist/assets/index-D1MqF9lx.js`)              |
 
 ---
 
