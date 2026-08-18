@@ -7,3 +7,4 @@ export * from "./EnginePositionSynchronizer";
 export * from "./uciProtocol";
 export * from "./difficulty";
 export * from "./useEngineDifficulty";
+export * from "./useEngineOpponent";

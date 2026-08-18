@@ -58,4 +58,20 @@ describe("PlayerPanel Component (TC-NG-13)", () => {
     expect(panel).toHaveClass("player-panel--in-check");
     expect(panel).toHaveClass("player-panel--active-turn");
   });
+
+  it("displays thinking indicator when engine player is thinking (TC-HVC-04)", () => {
+    render(
+      <PlayerPanel
+        player={defaultBlackPlayer}
+        isTurn={true}
+        isThinking={true}
+      />
+    );
+
+    expect(screen.getByTestId("player-thinking-b")).toHaveTextContent(
+      "Thinking..."
+    );
+    // When thinking, regular turn badge is replaced by thinking badge
+    expect(screen.queryByTestId("player-turn-b")).toBeNull();
+  });
 });

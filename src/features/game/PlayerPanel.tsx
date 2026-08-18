@@ -7,6 +7,7 @@ import "./PlayerPanel.css";
 export interface PlayerPanelProps {
   readonly player: PlayerConfig;
   readonly isTurn: boolean;
+  readonly isThinking?: boolean | undefined;
   readonly isCheck?: boolean | undefined;
   readonly capturedPieces?: readonly PieceType[] | undefined;
   readonly materialAdvantage?: number | undefined;
@@ -17,6 +18,7 @@ export interface PlayerPanelProps {
 export const PlayerPanel: React.FC<PlayerPanelProps> = ({
   player,
   isTurn,
+  isThinking = false,
   isCheck = false,
   capturedPieces = [],
   materialAdvantage,
@@ -88,6 +90,15 @@ export const PlayerPanel: React.FC<PlayerPanelProps> = ({
           </div>
         )}
 
+        {isThinking && (
+          <span
+            className="player-panel__thinking-indicator"
+            data-testid={`player-thinking-${player.color}`}
+          >
+            Thinking...
+          </span>
+        )}
+
         {isCheck && (
           <span
             className="player-panel__check-indicator"
@@ -97,7 +108,7 @@ export const PlayerPanel: React.FC<PlayerPanelProps> = ({
           </span>
         )}
 
-        {isTurn && (
+        {isTurn && !isThinking && (
           <span
             className="player-panel__turn-indicator"
             data-testid={`player-turn-${player.color}`}

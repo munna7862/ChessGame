@@ -80,24 +80,20 @@ describe("StockfishWorkerBridge Integration Suite (TC-SF-06 to TC-SF-11)", () =>
       config: { threads: 2, hashSizeMb: 32, skillLevel: 10, multiPv: 1 },
     });
 
-    // Stage 1: bridge must send "uci\n"
-    expect(mockWorker.sentMessages).toContain("uci\n");
+    // Stage 1: bridge must send "uci"
+    expect(mockWorker.sentMessages).toContain("uci");
 
     // Worker replies with banner and uciok
     mockWorker.emitMessage("id name Stockfish 10\nuciok\n");
 
-    // Stage 2: bridge must configure options and send "isready\n"
+    // Stage 2: bridge must configure options and send "isready"
+    expect(mockWorker.sentMessages).toContain("setoption name Threads value 2");
+    expect(mockWorker.sentMessages).toContain("setoption name Hash value 32");
     expect(mockWorker.sentMessages).toContain(
-      "setoption name Threads value 2\n"
+      "setoption name Skill Level value 10"
     );
-    expect(mockWorker.sentMessages).toContain("setoption name Hash value 32\n");
-    expect(mockWorker.sentMessages).toContain(
-      "setoption name Skill Level value 10\n"
-    );
-    expect(mockWorker.sentMessages).toContain(
-      "setoption name MultiPV value 1\n"
-    );
-    expect(mockWorker.sentMessages).toContain("isready\n");
+    expect(mockWorker.sentMessages).toContain("setoption name MultiPV value 1");
+    expect(mockWorker.sentMessages).toContain("isready");
 
     // Worker replies with readyok
     mockWorker.emitMessage("readyok\n");
@@ -128,10 +124,10 @@ describe("StockfishWorkerBridge Integration Suite (TC-SF-06 to TC-SF-11)", () =>
     });
 
     expect(mockWorker.sentMessages).toContain(
-      "setoption name Skill Level value 12\n"
+      "setoption name Skill Level value 12"
     );
-    expect(mockWorker.sentMessages).toContain(`position fen ${fen}\n`);
-    expect(mockWorker.sentMessages).toContain("go depth 10\n");
+    expect(mockWorker.sentMessages).toContain(`position fen ${fen}`);
+    expect(mockWorker.sentMessages).toContain("go depth 10");
 
     // Engine streams search info
     mockWorker.emitMessage(
@@ -178,7 +174,7 @@ describe("StockfishWorkerBridge Integration Suite (TC-SF-06 to TC-SF-11)", () =>
 
     bridge.postMessage({ type: "STOP" });
 
-    expect(mockWorker.sentMessages).toContain("stop\n");
+    expect(mockWorker.sentMessages).toContain("stop");
     expect(receivedResponses).toContainEqual({
       type: "STOPPED",
       searchToken: "tok-cancel",
@@ -197,13 +193,11 @@ describe("StockfishWorkerBridge Integration Suite (TC-SF-06 to TC-SF-11)", () =>
 
   it("forwards SET_OPTION and NEW_GAME commands (TC-SF-09)", () => {
     bridge.postMessage({ type: "SET_OPTION", name: "Threads", value: 4 });
-    expect(mockWorker.sentMessages).toContain(
-      "setoption name Threads value 4\n"
-    );
+    expect(mockWorker.sentMessages).toContain("setoption name Threads value 4");
 
     bridge.postMessage({ type: "NEW_GAME" });
-    expect(mockWorker.sentMessages).toContain("ucinewgame\n");
-    expect(mockWorker.sentMessages).toContain("isready\n");
+    expect(mockWorker.sentMessages).toContain("ucinewgame");
+    expect(mockWorker.sentMessages).toContain("isready");
   });
 
   it("terminates worker cleanly on disposal (TC-SF-10)", () => {
@@ -212,7 +206,7 @@ describe("StockfishWorkerBridge Integration Suite (TC-SF-06 to TC-SF-11)", () =>
 
     bridge.terminate();
 
-    expect(mockWorker.sentMessages).toContain("quit\n");
+    expect(mockWorker.sentMessages).toContain("quit");
     expect(mockWorker.terminated).toBe(true);
   });
 

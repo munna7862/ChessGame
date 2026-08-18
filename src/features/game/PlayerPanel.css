@@ -154,6 +154,30 @@
   border: 1px solid rgba(244, 63, 94, 0.4);
 }
 
+.player-panel__thinking-indicator {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 0.1875rem 0.5rem;
+  border-radius: 4px;
+  background: rgba(168, 85, 247, 0.2);
+  color: #d8b4fe;
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  animation: thinking-pulse 1.2s infinite ease-in-out;
+}
+
+@keyframes thinking-pulse {
+  0%,
+  100% {
+    opacity: 0.7;
+    transform: scale(0.98);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+}
+
 @keyframes pulse-glow {
   0%,
   100% {

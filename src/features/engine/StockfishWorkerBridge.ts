@@ -43,13 +43,9 @@ export function createDefaultStockfishWorker(): IWorkerLike {
   if (typeof Worker === "undefined") {
     throw new Error("WebWorker is not available in current environment");
   }
-  const isWasmSupported =
-    typeof WebAssembly === "object" &&
-    typeof WebAssembly.validate === "function";
 
-  const scriptPath = isWasmSupported
-    ? "/vendor/stockfish/stockfish.wasm.js"
-    : "/vendor/stockfish/stockfish.js";
+  // Use stockfish.js for self-contained execution without external binary fetch dependencies
+  const scriptPath = "/vendor/stockfish/stockfish.js";
 
   return new Worker(scriptPath);
 }
@@ -205,7 +201,10 @@ export class StockfishWorkerBridge implements EngineWorkerBridge {
     if (!this.worker) {
       throw new Error("Worker is not initialized");
     }
-    this.worker.postMessage(command);
+    const cleanCommand = command.trim();
+    if (cleanCommand) {
+      this.worker.postMessage(cleanCommand);
+    }
   }
 
   private handleWorkerMessage(event: MessageEvent): void {
@@ -232,8 +231,12 @@ export class StockfishWorkerBridge implements EngineWorkerBridge {
         if (this.handshakeStage === "WAITING_UCIOK") {
           this.handshakeStage = "SETTING_OPTIONS";
           const cfg = this.pendingInitConfig;
-          this.sendToWorker(formatSetOption("Threads", cfg?.threads ?? 1));
-          this.sendToWorker(formatSetOption("Hash", cfg?.hashSizeMb ?? 16));
+          if (cfg?.threads && cfg.threads > 1) {
+            this.sendToWorker(formatSetOption("Threads", cfg.threads));
+          }
+          if (cfg?.hashSizeMb !== undefined) {
+            this.sendToWorker(formatSetOption("Hash", cfg.hashSizeMb));
+          }
           if (cfg?.skillLevel !== undefined) {
             this.sendToWorker(formatSetOption("Skill Level", cfg.skillLevel));
           }

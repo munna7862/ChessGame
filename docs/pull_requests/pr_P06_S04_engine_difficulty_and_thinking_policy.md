@@ -4,7 +4,7 @@
 **Branch:** `feature/p06-s04-engine-difficulty-thinking-policy`  
 **Author:** DevOps Engineer / Dev Architect  
 **Reviewers:** Scrum Master, Chess Domain Architect, SDET Architect, Security Officer, Product Owner  
-**Status:** Approved for Merge  
+**Status:** Approved for Merge
 
 ---
 
@@ -23,14 +23,14 @@ This sprint delivers a robust, deterministic, and bounded engine difficulty mana
 
 ## 2. Invariants & Verification Matrix
 
-| Invariant / Test Scenario | Implementation Target | Verification Result |
-| :--- | :--- | :---: |
-| **INV-DIFF-01: Discrete 8 Difficulty Levels** | `DIFFICULTY_PRESETS` in `difficulty.ts` | **PASS** |
-| **INV-DIFF-02: Deterministic Mapping & Immutability** | `getEngineDifficultyConfig` | **PASS** |
-| **INV-DIFF-03: Search Depth & Movetime Bounding** | `buildDifficultySearchOptions` | **PASS** |
-| **INV-DIFF-04: Absence of Fake Elo Ratings** | Metadata validation in `difficulty.test.ts` | **PASS** |
-| **INV-DIFF-05: Local Storage Persistence & Fallback** | `useEngineDifficulty.test.ts` | **PASS** |
-| **INV-DIFF-06: NewGameModal UI Selection & Submission** | `NewGameModal.test.tsx` | **PASS** |
+| Invariant / Test Scenario                               | Implementation Target                       | Verification Result |
+| :------------------------------------------------------ | :------------------------------------------ | :-----------------: |
+| **INV-DIFF-01: Discrete 8 Difficulty Levels**           | `DIFFICULTY_PRESETS` in `difficulty.ts`     |      **PASS**       |
+| **INV-DIFF-02: Deterministic Mapping & Immutability**   | `getEngineDifficultyConfig`                 |      **PASS**       |
+| **INV-DIFF-03: Search Depth & Movetime Bounding**       | `buildDifficultySearchOptions`              |      **PASS**       |
+| **INV-DIFF-04: Absence of Fake Elo Ratings**            | Metadata validation in `difficulty.test.ts` |      **PASS**       |
+| **INV-DIFF-05: Local Storage Persistence & Fallback**   | `useEngineDifficulty.test.ts`               |      **PASS**       |
+| **INV-DIFF-06: NewGameModal UI Selection & Submission** | `NewGameModal.test.tsx`                     |      **PASS**       |
 
 ---
 
