@@ -10,19 +10,24 @@ import {
   PlayerPanel,
   NewGameModal,
   MoveHistoryPanel,
+  GameResultModal,
   calculateMaterialAdvantage,
   type ResolvedNewGameSession,
 } from "./features/game";
 import "./App.css";
 
 export const App: React.FC = () => {
-  const { sessionState, chessGame, resetGame, undoMove, resign } =
+  const { sessionState, chessGame, resetGame, undoMove, resign, agreeDraw } =
     useGameSession();
 
   const [orientation, setOrientation] = useState<BoardOrientation>("w");
   const [isNewGameModalOpen, setIsNewGameModalOpen] = useState<boolean>(false);
   const [isRestartModalOpen, setIsRestartModalOpen] = useState<boolean>(false);
   const [isResignModalOpen, setIsResignModalOpen] = useState<boolean>(false);
+  const [isDrawOfferModalOpen, setIsDrawOfferModalOpen] =
+    useState<boolean>(false);
+  const [hasDismissedResultModal, setHasDismissedResultModal] =
+    useState<boolean>(false);
   const { prefersReducedMotion, toggleReducedMotion } = useReducedMotion();
 
   const {
@@ -49,6 +54,7 @@ export const App: React.FC = () => {
   });
 
   const position = sessionState.position;
+  const isResultModalOpen = sessionState.isGameOver && !hasDismissedResultModal;
 
   const toggleOrientation = () => {
     setOrientation((prev) => {
@@ -73,6 +79,8 @@ export const App: React.FC = () => {
     handlePromotionCancel();
     clearSelection(false);
     resetLastMove();
+    setIsDrawOfferModalOpen(false);
+    setHasDismissedResultModal(false);
     setOrientation(resolved.userOrientation);
     setAnnouncement(
       `New game started: ${resolved.config.players?.w.name ?? "White"} vs ${
@@ -115,6 +123,8 @@ export const App: React.FC = () => {
     clearSelection(false);
     resetLastMove();
     setIsRestartModalOpen(false);
+    setIsDrawOfferModalOpen(false);
+    setHasDismissedResultModal(false);
     setAnnouncement("Game restarted to initial position.");
   };
 
@@ -139,6 +149,32 @@ export const App: React.FC = () => {
         `${resigningName} resigned. ${winningName} wins the game.`
       );
     }
+  };
+
+  const handleOfferDraw = () => {
+    if (sessionState.isGameOver) return;
+    setIsDrawOfferModalOpen(true);
+  };
+
+  const handleAcceptDraw = () => {
+    if (sessionState.isGameOver) return;
+    const res = agreeDraw();
+    if (res.success) {
+      handlePromotionCancel();
+      clearSelection(false);
+      setIsDrawOfferModalOpen(false);
+      setHasDismissedResultModal(false);
+      setAnnouncement("Draw agreed by mutual consent.");
+    }
+  };
+
+  const handleDeclineDraw = () => {
+    setIsDrawOfferModalOpen(false);
+    const opponentName =
+      sessionState.turn === "w"
+        ? sessionState.players.b.name
+        : sessionState.players.w.name;
+    setAnnouncement(`${opponentName} declined the draw offer.`);
   };
 
   const turnLabel = position.turn === "w" ? "White to move" : "Black to move";
@@ -178,6 +214,16 @@ export const App: React.FC = () => {
       ? sessionState.players.b.name
       : sessionState.players.w.name;
   const resigningColorLabel = sessionState.turn === "w" ? "White" : "Black";
+
+  const offeringPlayerName =
+    sessionState.turn === "w"
+      ? sessionState.players.w.name
+      : sessionState.players.b.name;
+  const targetPlayerName =
+    sessionState.turn === "w"
+      ? sessionState.players.b.name
+      : sessionState.players.w.name;
+  const offeringColorLabel = sessionState.turn === "w" ? "White" : "Black";
 
   return (
     <div className="app-container" data-testid="chessforge-app">
@@ -360,6 +406,31 @@ export const App: React.FC = () => {
             <button
               type="button"
               className="btn-control"
+              data-testid="btn-offer-draw"
+              onClick={handleOfferDraw}
+              disabled={sessionState.isGameOver}
+              title={
+                sessionState.isGameOver
+                  ? "Game already concluded"
+                  : `Offer draw to ${targetPlayerName}`
+              }
+            >
+              Offer Draw
+            </button>
+            {sessionState.isGameOver && (
+              <button
+                type="button"
+                className="btn-control btn-control--accent"
+                data-testid="btn-view-result"
+                onClick={() => setHasDismissedResultModal(false)}
+                title="View game result summary"
+              >
+                View Result
+              </button>
+            )}
+            <button
+              type="button"
+              className="btn-control"
               data-testid="btn-reset-game"
               onClick={handleOpenNewGame}
             >
@@ -454,6 +525,42 @@ export const App: React.FC = () => {
           cancelTestId="btn-cancel-resign"
           onConfirm={handleConfirmResign}
           onCancel={() => setIsResignModalOpen(false)}
+        />
+
+        <ConfirmationModal
+          isOpen={isDrawOfferModalOpen}
+          title="Draw Offered?"
+          message={`${offeringPlayerName}${
+            offeringPlayerName !== offeringColorLabel
+              ? ` (${offeringColorLabel})`
+              : ""
+          } has offered a draw. Does ${targetPlayerName} accept?`}
+          confirmLabel="Accept Draw"
+          cancelLabel="Decline Draw"
+          variant="warning"
+          dialogTestId="draw-offer-confirm-modal"
+          confirmTestId="btn-accept-draw"
+          cancelTestId="btn-decline-draw"
+          onConfirm={handleAcceptDraw}
+          onCancel={handleDeclineDraw}
+        />
+
+        <GameResultModal
+          isOpen={isResultModalOpen}
+          status={sessionState.status}
+          players={sessionState.players}
+          moveCount={sessionState.moveHistory.length}
+          onRematch={handleConfirmRestart}
+          onNewGame={() => {
+            setHasDismissedResultModal(true);
+            handleOpenNewGame();
+          }}
+          onClose={() => {
+            setHasDismissedResultModal(true);
+            setAnnouncement(
+              "Game result dismissed. You may review the final board position."
+            );
+          }}
         />
       </main>
     </div>
