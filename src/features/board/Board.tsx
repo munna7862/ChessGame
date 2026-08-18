@@ -212,6 +212,7 @@ export const Board: React.FC<BoardProps> = ({
       <div
         role="grid"
         aria-label={ariaLabel}
+        aria-disabled={disabled ? "true" : "false"}
         data-testid="chess-board"
         data-orientation={orientation}
         data-reduced-motion={reducedMotion ? "true" : undefined}

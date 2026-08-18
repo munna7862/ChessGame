@@ -4,14 +4,13 @@ import { Board } from "./features/board/Board";
 import type { BoardOrientation } from "./features/board/types";
 import { useBoardInteraction } from "./features/board/useBoardInteraction";
 import { useReducedMotion } from "./features/board/useReducedMotion";
-import { createChessAdapter } from "./domain/chess/adapters/chessJsAdapter";
+import { useGameSession } from "./features/game";
 import "./App.css";
 
 export const App: React.FC = () => {
-  const [chessAdapter] = useState(() => createChessAdapter());
-  const [, setGameVersion] = useState(0);
-  const [orientation, setOrientation] = useState<BoardOrientation>("w");
+  const { sessionState, chessGame, resetGame } = useGameSession();
 
+  const [orientation, setOrientation] = useState<BoardOrientation>("w");
   const { prefersReducedMotion, toggleReducedMotion } = useReducedMotion();
 
   const {
@@ -32,13 +31,10 @@ export const App: React.FC = () => {
     handlePromotionCancel,
     resetLastMove,
   } = useBoardInteraction({
-    game: chessAdapter,
-    onMoveExecuted: () => {
-      setGameVersion((v) => v + 1);
-    },
+    game: chessGame,
   });
 
-  const position = chessAdapter.getPosition();
+  const position = sessionState.position;
 
   const toggleOrientation = () => {
     setOrientation((prev) => {
@@ -51,11 +47,10 @@ export const App: React.FC = () => {
   };
 
   const handleResetGame = () => {
-    chessAdapter.reset();
+    resetGame();
     handlePromotionCancel();
     resetLastMove();
     setAnnouncement("New game started.");
-    setGameVersion((v) => v + 1);
   };
 
   const turnLabel = position.turn === "w" ? "White to move" : "Black to move";
