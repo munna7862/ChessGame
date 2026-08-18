@@ -28,6 +28,7 @@ export const PlayerConfigSchema = z.object({
   color: z.enum(["w", "b"]),
   type: PlayerTypeSchema,
   rating: z.number().optional(),
+  difficulty: z.number().int().min(1).max(8).optional(),
 });
 export type PlayerConfig = z.infer<typeof PlayerConfigSchema>;
 
@@ -39,6 +40,7 @@ export interface NewGameConfigOptions {
   readonly player1Rating?: number | undefined;
   readonly player2Rating?: number | undefined;
   readonly initialFen?: string | undefined;
+  readonly difficulty?: number | undefined;
 }
 
 export interface ResolvedNewGameSession {
@@ -80,6 +82,8 @@ export function resolveNewGameSession(
           color: "w",
           type: options.mode === "human_vs_engine" ? "engine" : "human",
           rating: options.player2Rating,
+          difficulty:
+            options.mode === "human_vs_engine" ? options.difficulty : undefined,
         };
 
   const blackPlayer: PlayerConfig =
@@ -97,6 +101,8 @@ export function resolveNewGameSession(
           color: "b",
           type: options.mode === "human_vs_engine" ? "engine" : "human",
           rating: options.player2Rating,
+          difficulty:
+            options.mode === "human_vs_engine" ? options.difficulty : undefined,
         };
 
   return {
