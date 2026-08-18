@@ -38,13 +38,19 @@ describe("ChessForge Bootstrap Layout & Board UI (TC-BOOT-05, TC-PIECE-23, TC-SE
     expect(screen.getByTestId("feature-list")).toBeInTheDocument();
   });
 
-  it("renders the chessboard with pieces in the initial starting position", () => {
+  it("renders the chessboard and active player panels in initial position", () => {
     render(<App />);
     expect(screen.getByTestId("chess-board")).toBeInTheDocument();
     expect(screen.getByTestId("piece-wk")).toBeInTheDocument();
     expect(screen.getByTestId("piece-bk")).toBeInTheDocument();
     expect(screen.getAllByTestId("piece-wp")).toHaveLength(8);
     expect(screen.getAllByTestId("piece-bp")).toHaveLength(8);
+
+    // Active player panels rendered
+    expect(screen.getByTestId("player-panel-w")).toBeInTheDocument();
+    expect(screen.getByTestId("player-panel-b")).toBeInTheDocument();
+    expect(screen.getByTestId("player-name-w")).toHaveTextContent("White");
+    expect(screen.getByTestId("player-name-b")).toHaveTextContent("Black");
   });
 
   it("handles piece selection, legal move indicators, move execution, and last move state", () => {
@@ -105,7 +111,7 @@ describe("ChessForge Bootstrap Layout & Board UI (TC-BOOT-05, TC-PIECE-23, TC-SE
     expect(screen.getByTestId("chess-board")).not.toHaveClass("reduced-motion");
   });
 
-  it("supports flipping board orientation and resetting game", () => {
+  it("TC-NG-01 & TC-NG-14: opens New Game dialog, configures session, and resets board", () => {
     render(<App />);
 
     const flipBtn = screen.getByTestId("btn-flip-board");
@@ -119,8 +125,14 @@ describe("ChessForge Bootstrap Layout & Board UI (TC-BOOT-05, TC-PIECE-23, TC-SE
     fireEvent.click(screen.getByTestId("board-square-e4"));
     expect(screen.getByTestId("last-move-indicator")).toBeInTheDocument();
 
+    // Open New Game modal
     const resetBtn = screen.getByTestId("btn-reset-game");
     fireEvent.click(resetBtn);
+
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+
+    // Submit new game setup
+    fireEvent.click(screen.getByTestId("btn-submit-new-game"));
 
     expect(screen.getByTestId("turn-indicator")).toHaveTextContent(
       "White to move"
@@ -204,6 +216,8 @@ describe("ChessForge Bootstrap Layout & Board UI (TC-BOOT-05, TC-PIECE-23, TC-SE
 
     // Reset game and verify new game state is completely clean
     fireEvent.click(screen.getByTestId("btn-reset-game"));
+    fireEvent.click(screen.getByTestId("btn-submit-new-game"));
+
     expect(screen.getByTestId("turn-indicator")).toHaveTextContent(
       "White to move"
     );

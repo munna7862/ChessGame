@@ -95,8 +95,9 @@ test.describe("ChessForge Move Animation & Last-Move State (Phase 04 · Sprint 0
       /is-last-move/
     );
 
-    // Reset game
+    // Reset game via New Game modal
     await page.getByTestId("btn-reset-game").click();
+    await page.getByTestId("btn-submit-new-game").click();
 
     await expect(page.getByTestId("last-move-indicator")).not.toBeVisible();
     await expect(page.getByTestId("board-square-e2")).not.toHaveClass(

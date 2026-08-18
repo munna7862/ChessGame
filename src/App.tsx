@@ -4,13 +4,19 @@ import { Board } from "./features/board/Board";
 import type { BoardOrientation } from "./features/board/types";
 import { useBoardInteraction } from "./features/board/useBoardInteraction";
 import { useReducedMotion } from "./features/board/useReducedMotion";
-import { useGameSession } from "./features/game";
+import {
+  useGameSession,
+  PlayerPanel,
+  NewGameModal,
+  type ResolvedNewGameSession,
+} from "./features/game";
 import "./App.css";
 
 export const App: React.FC = () => {
   const { sessionState, chessGame, resetGame } = useGameSession();
 
   const [orientation, setOrientation] = useState<BoardOrientation>("w");
+  const [isNewGameModalOpen, setIsNewGameModalOpen] = useState<boolean>(false);
   const { prefersReducedMotion, toggleReducedMotion } = useReducedMotion();
 
   const {
@@ -46,14 +52,41 @@ export const App: React.FC = () => {
     });
   };
 
-  const handleResetGame = () => {
-    resetGame();
+  const handleOpenNewGame = () => {
+    setIsNewGameModalOpen(true);
+  };
+
+  const handleCloseNewGame = () => {
+    setIsNewGameModalOpen(false);
+  };
+
+  const handleStartNewGame = (resolved: ResolvedNewGameSession) => {
+    resetGame(resolved.config);
     handlePromotionCancel();
     resetLastMove();
-    setAnnouncement("New game started.");
+    setOrientation(resolved.userOrientation);
+    setAnnouncement(
+      `New game started: ${resolved.config.players?.w.name ?? "White"} vs ${
+        resolved.config.players?.b.name ?? "Black"
+      }.`
+    );
   };
 
   const turnLabel = position.turn === "w" ? "White to move" : "Black to move";
+
+  const topPlayer =
+    orientation === "w" ? sessionState.players.b : sessionState.players.w;
+  const bottomPlayer =
+    orientation === "w" ? sessionState.players.w : sessionState.players.b;
+
+  const topPlayerCaptures =
+    orientation === "w"
+      ? sessionState.capturedPieces.black
+      : sessionState.capturedPieces.white;
+  const bottomPlayerCaptures =
+    orientation === "w"
+      ? sessionState.capturedPieces.white
+      : sessionState.capturedPieces.black;
 
   return (
     <div className="app-container" data-testid="chessforge-app">
@@ -109,6 +142,50 @@ export const App: React.FC = () => {
             </div>
           </div>
 
+          <PlayerPanel
+            player={topPlayer}
+            isTurn={
+              sessionState.turn === topPlayer.color && !sessionState.isGameOver
+            }
+            isCheck={
+              sessionState.isCheck && sessionState.turn === topPlayer.color
+            }
+            capturedPieces={topPlayerCaptures}
+            position="top"
+          />
+
+          <Board
+            orientation={orientation}
+            position={position}
+            selectedSquare={selectedSquare}
+            focusedSquare={focusedSquare}
+            legalDestinations={legalDestinations}
+            lastMove={lastMove}
+            checkSquare={checkSquare}
+            isCheckmate={isCheckmate}
+            pendingPromotion={pendingPromotion}
+            onPromotionSelect={handlePromotionSelect}
+            onPromotionCancel={handlePromotionCancel}
+            onClearSelection={clearSelection}
+            announcement={announcement}
+            reducedMotion={prefersReducedMotion}
+            disabled={isGameOver}
+            onSquareClick={handleSquareClick}
+          />
+
+          <PlayerPanel
+            player={bottomPlayer}
+            isTurn={
+              sessionState.turn === bottomPlayer.color &&
+              !sessionState.isGameOver
+            }
+            isCheck={
+              sessionState.isCheck && sessionState.turn === bottomPlayer.color
+            }
+            capturedPieces={bottomPlayerCaptures}
+            position="bottom"
+          />
+
           <div className="board-controls" data-testid="board-controls">
             <button
               type="button"
@@ -131,31 +208,24 @@ export const App: React.FC = () => {
               type="button"
               className="btn-control"
               data-testid="btn-reset-game"
-              onClick={handleResetGame}
+              onClick={handleOpenNewGame}
             >
               New Game
             </button>
           </div>
-
-          <Board
-            orientation={orientation}
-            position={position}
-            selectedSquare={selectedSquare}
-            focusedSquare={focusedSquare}
-            legalDestinations={legalDestinations}
-            lastMove={lastMove}
-            checkSquare={checkSquare}
-            isCheckmate={isCheckmate}
-            pendingPromotion={pendingPromotion}
-            onPromotionSelect={handlePromotionSelect}
-            onPromotionCancel={handlePromotionCancel}
-            onClearSelection={clearSelection}
-            announcement={announcement}
-            reducedMotion={prefersReducedMotion}
-            disabled={isGameOver}
-            onSquareClick={handleSquareClick}
-          />
         </div>
+
+        <NewGameModal
+          isOpen={isNewGameModalOpen}
+          onClose={handleCloseNewGame}
+          onStartGame={handleStartNewGame}
+          initialValues={{
+            mode: sessionState.mode,
+            player1Name: sessionState.players.w.name,
+            player2Name: sessionState.players.b.name,
+            player1Color: orientation,
+          }}
+        />
 
         <div className="hero-card">
           <h1 className="hero-title" data-testid="app-title">
