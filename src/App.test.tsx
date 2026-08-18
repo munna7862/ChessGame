@@ -227,4 +227,43 @@ describe("ChessForge Bootstrap Layout & Board UI (TC-BOOT-05, TC-PIECE-23, TC-SE
       "false"
     );
   });
+
+  it("TC-HIST-08 & TC-CAPT-01: renders move history and captured pieces live during multi-move playout", () => {
+    render(<App />);
+
+    // Initially move history is empty
+    expect(screen.getByTestId("move-history-empty")).toBeInTheDocument();
+
+    // 1. e4
+    fireEvent.click(screen.getByTestId("board-square-e2"));
+    fireEvent.click(screen.getByTestId("board-square-e4"));
+
+    expect(screen.queryByTestId("move-history-empty")).not.toBeInTheDocument();
+    expect(screen.getByTestId("move-row-1")).toBeInTheDocument();
+    expect(screen.getByTestId("move-cell-0")).toHaveTextContent("e4");
+    expect(screen.getByTestId("move-cell-0")).toHaveClass("move-cell--active");
+
+    // 1... d5
+    fireEvent.click(screen.getByTestId("board-square-d7"));
+    fireEvent.click(screen.getByTestId("board-square-d5"));
+
+    expect(screen.getByTestId("move-cell-1")).toHaveTextContent("d5");
+    expect(screen.getByTestId("move-cell-1")).toHaveClass("move-cell--active");
+
+    // 2. exd5 (Capture Black pawn)
+    fireEvent.click(screen.getByTestId("board-square-e4"));
+    fireEvent.click(screen.getByTestId("board-square-d5"));
+
+    expect(screen.getByTestId("move-row-2")).toBeInTheDocument();
+    expect(screen.getByTestId("move-cell-2")).toHaveTextContent("exd5");
+
+    // Verify White captured Black pawn and displays +1 advantage
+    expect(screen.getByTestId("captured-pieces-w")).toBeInTheDocument();
+    expect(screen.getByTestId("captured-tray-w-advantage")).toHaveTextContent(
+      "+1"
+    );
+    expect(
+      screen.getByTestId("history-captured-w-advantage")
+    ).toHaveTextContent("+1");
+  });
 });
