@@ -6,3 +6,5 @@ export * from "./NewGameModal";
 export * from "./MoveHistoryPanel";
 export * from "./CapturedPiecesView";
 export * from "./moveHistoryUtils";
+export * from "./gameResultUtils";
+export * from "./GameResultModal";
