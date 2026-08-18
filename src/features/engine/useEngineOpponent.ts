@@ -8,6 +8,7 @@ import {
   DEFAULT_DIFFICULTY_LEVEL,
 } from "./difficulty";
 import { parseUciMoveToInput } from "./uciProtocol";
+import { engineDiagnostics } from "./engineDiagnostics";
 import type { IGameSessionController, GameSessionState } from "../game/types";
 
 let sharedEngineService: EngineService | null = null;
@@ -43,12 +44,16 @@ export interface UseEngineOpponentReturn {
   readonly isEngineThinking: boolean;
   readonly isEngineTurn: boolean;
   readonly engineState: EngineLifecycleState;
+  readonly engineError: Error | null;
   readonly cancelThinking: () => Promise<void>;
+  readonly restartEngine: () => Promise<void>;
+  readonly continueAsTwoPlayers: () => void;
+  readonly clearError: () => void;
 }
 
 /**
  * React hook coordinating the automated engine opponent lifecycle in Human vs Computer games.
- * Adheres strictly to INV-HVC-01 through INV-HVC-09.
+ * Adheres strictly to INV-HVC-01 through INV-HVC-09 and INV-EFR-01 through INV-EFR-06.
  */
 export function useEngineOpponent({
   sessionController,
@@ -63,8 +68,9 @@ export function useEngineOpponent({
   const [engineState, setEngineState] = useState<EngineLifecycleState>(
     engineService.state
   );
+  const [engineError, setEngineError] = useState<Error | null>(null);
+  const [retryTrigger, setRetryTrigger] = useState<number>(0);
 
-  const activeRequestIdRef = useRef<number>(0);
   const isMountedRef = useRef<boolean>(true);
 
   // Subscribe to engine lifecycle state changes
@@ -73,6 +79,15 @@ export function useEngineOpponent({
     const unsubscribe = engineService.onStateChange((state) => {
       if (isMountedRef.current) {
         setEngineState(state);
+        if (state === "error") {
+          setIsSearching(false);
+          const err = new Error(
+            "The chess engine encountered an unexpected error and stopped responding."
+          );
+          setEngineError((prev) => prev ?? err);
+        } else if (state === "ready" || state === "idle") {
+          setEngineError(null);
+        }
       }
     });
 
@@ -86,15 +101,70 @@ export function useEngineOpponent({
   const isEngineTurn =
     !sessionState.isGameOver && activePlayer.type === "engine";
 
-  const isEngineThinking = isSearching && isEngineTurn;
+  const isEngineThinking =
+    isSearching && isEngineTurn && engineState !== "error";
 
   const cancelThinking = useCallback(async () => {
-    activeRequestIdRef.current += 1;
     if (isMountedRef.current) {
       setIsSearching(false);
     }
     await engineService.cancelSearch();
   }, [engineService]);
+
+  const restartEngine = useCallback(async () => {
+    if (isMountedRef.current) {
+      setEngineError(null);
+      setIsSearching(false);
+    }
+    try {
+      await engineService.reset();
+      if (isMountedRef.current) {
+        setRetryTrigger((prev) => prev + 1);
+      }
+    } catch (err) {
+      const errorObj =
+        err instanceof Error ? err : new Error("Failed to restart engine");
+      if (isMountedRef.current) {
+        setEngineError(errorObj);
+      }
+      if (onEngineError) {
+        onEngineError(errorObj);
+      }
+    }
+  }, [engineService, onEngineError]);
+
+  const continueAsTwoPlayers = useCallback(() => {
+    if (isMountedRef.current) {
+      setEngineError(null);
+      setIsSearching(false);
+    }
+    void engineService.cancelSearch();
+
+    engineDiagnostics.log(
+      "FALLBACK_2P",
+      "User opted to continue game in two-player mode after engine error",
+      { sessionId: sessionState.id }
+    );
+
+    const currentPlayers = sessionState.players;
+    const updatedW =
+      currentPlayers.w.type === "engine"
+        ? { ...currentPlayers.w, type: "human" as const }
+        : currentPlayers.w;
+    const updatedB =
+      currentPlayers.b.type === "engine"
+        ? { ...currentPlayers.b, type: "human" as const }
+        : currentPlayers.b;
+
+    sessionController.updateGameMode("human_vs_human", {
+      w: updatedW,
+      b: updatedB,
+    });
+  }, [engineService, sessionController, sessionState.id, sessionState.players]);
+
+  const clearError = useCallback(() => {
+    setEngineError(null);
+  }, []);
 
   // Main turn-triggering effect
   useEffect(() => {
@@ -102,14 +172,11 @@ export function useEngineOpponent({
       return;
     }
 
-    const currentRequestId = ++activeRequestIdRef.current;
+    let isCancelled = false;
 
     const executeEngineTurn = async () => {
       try {
-        if (
-          !isMountedRef.current ||
-          activeRequestIdRef.current !== currentRequestId
-        ) {
+        if (!isMountedRef.current || isCancelled) {
           return;
         }
 
@@ -119,10 +186,7 @@ export function useEngineOpponent({
           await engineService.init();
         }
 
-        if (
-          !isMountedRef.current ||
-          activeRequestIdRef.current !== currentRequestId
-        ) {
+        if (!isMountedRef.current || isCancelled) {
           return;
         }
 
@@ -142,10 +206,7 @@ export function useEngineOpponent({
           movetimeMs: difficultyConfig.movetimeMs,
         });
 
-        if (
-          !isMountedRef.current ||
-          activeRequestIdRef.current !== currentRequestId
-        ) {
+        if (!isMountedRef.current || isCancelled) {
           return;
         }
 
@@ -155,30 +216,23 @@ export function useEngineOpponent({
           sessionController.makeMove(moveInput);
         }
 
-        if (
-          isMountedRef.current &&
-          activeRequestIdRef.current === currentRequestId
-        ) {
+        if (isMountedRef.current && !isCancelled) {
           setIsSearching(false);
         }
       } catch (err) {
         if (err instanceof EngineSearchCancelledError) {
-          if (
-            isMountedRef.current &&
-            activeRequestIdRef.current === currentRequestId
-          ) {
+          if (isMountedRef.current && !isCancelled) {
             setIsSearching(false);
           }
           return;
         }
 
-        if (
-          isMountedRef.current &&
-          activeRequestIdRef.current === currentRequestId
-        ) {
+        if (isMountedRef.current && !isCancelled) {
           setIsSearching(false);
-          if (onEngineError && err instanceof Error) {
-            onEngineError(err);
+          const errorObj = err instanceof Error ? err : new Error(String(err));
+          setEngineError(errorObj);
+          if (onEngineError) {
+            onEngineError(errorObj);
           }
         }
       }
@@ -187,7 +241,7 @@ export function useEngineOpponent({
     void executeEngineTurn();
 
     return () => {
-      activeRequestIdRef.current += 1;
+      isCancelled = true;
     };
   }, [
     enabled,
@@ -196,6 +250,7 @@ export function useEngineOpponent({
     sessionState.position.fen,
     sessionState.turn,
     activePlayer.difficulty,
+    retryTrigger,
     engineService,
     sessionController,
     onEngineError,
@@ -205,6 +260,10 @@ export function useEngineOpponent({
     isEngineThinking,
     isEngineTurn,
     engineState,
+    engineError,
     cancelThinking,
+    restartEngine,
+    continueAsTwoPlayers,
+    clearError,
   };
 }

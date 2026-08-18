@@ -13,6 +13,7 @@ import {
   EngineDisposedError,
 } from "./types";
 import type { EngineWorkerBridge } from "./workerBridge";
+import { engineDiagnostics } from "./engineDiagnostics";
 
 export type WorkerBridgeFactory = () => EngineWorkerBridge;
 
@@ -226,6 +227,14 @@ export class EngineServiceImpl implements EngineService {
   }
 
   public async reset(config?: Partial<EngineConfig>): Promise<void> {
+    if (this._state === "disposed") {
+      throw new EngineDisposedError();
+    }
+
+    engineDiagnostics.log("RESTART_ATTEMPT", "Attempting engine restart", {
+      previousState: this._state,
+    });
+
     if (this.activeSearch) {
       const { reject, token } = this.activeSearch;
       this.activeSearch = null;
@@ -233,9 +242,35 @@ export class EngineServiceImpl implements EngineService {
       reject(new EngineSearchCancelledError(token));
     }
 
+    if (this.pendingInit) {
+      const { reject } = this.pendingInit;
+      this.pendingInit = null;
+      reject(new EngineSearchCancelledError("init cancelled by reset"));
+    }
+
+    if (this.bridge) {
+      try {
+        this.bridge.postMessage({ type: "TERMINATE" });
+        this.bridge.terminate();
+      } catch {
+        // Bridge may already be terminated or corrupted
+      }
+    }
+
     this.cleanupBridge();
     this.setState("idle");
-    await this.init(config);
+    try {
+      await this.init(config);
+      engineDiagnostics.log(
+        "RESTART_SUCCESS",
+        "Engine successfully restarted to ready state"
+      );
+    } catch (err) {
+      engineDiagnostics.log("RESTART_FAILED", "Engine restart failed", {
+        error: err instanceof Error ? err.message : String(err),
+      });
+      throw err;
+    }
   }
 
   public dispose(): void {
@@ -399,6 +434,12 @@ export class EngineServiceImpl implements EngineService {
   }
 
   private handleWorkerError(message: string, fatal = true): void {
+    engineDiagnostics.log(fatal ? "WORKER_CRASH" : "WORKER_ERROR", message, {
+      fatal,
+      currentState: this._state,
+      searchToken: this.currentSearchToken,
+    });
+
     if (fatal) {
       this.setState("error");
 
@@ -421,7 +462,13 @@ export class EngineServiceImpl implements EngineService {
     if (this._state === newState) {
       return;
     }
+    const oldState = this._state;
     this._state = newState;
+    engineDiagnostics.log(
+      "STATE_CHANGE",
+      `Engine transitioned from ${oldState} to ${newState}`,
+      { oldState, newState }
+    );
     for (const listener of this.stateListeners) {
       listener(newState);
     }

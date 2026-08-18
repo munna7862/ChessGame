@@ -8,3 +8,5 @@ export * from "./uciProtocol";
 export * from "./difficulty";
 export * from "./useEngineDifficulty";
 export * from "./useEngineOpponent";
+export * from "./engineDiagnostics";
+export * from "./EngineErrorBanner";

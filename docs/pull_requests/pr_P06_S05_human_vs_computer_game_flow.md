@@ -4,7 +4,7 @@
 **Branch:** `feature/p06-s05-human-vs-computer-game-flow`  
 **Author:** DevOps Engineer / Dev Architect  
 **Reviewers:** Scrum Master, Chess Domain Architect, SDET Architect, Security Officer, Product Owner  
-**Status:** Approved for Merge  
+**Status:** Approved for Merge
 
 ---
 
@@ -13,6 +13,7 @@
 This sprint implements the complete, end-to-end **Human vs Computer Game Flow** for ChessForge v1. Building on top of our isolated Stockfish WebWorker bridge and discrete difficulty tier engine, this sprint connects the chess game session directly with Stockfish via the `useEngineOpponent` coordinator hook.
 
 ### Key Deliverables:
+
 - **`src/features/engine/useEngineOpponent.ts`**: Autonomous coordinator hook that observes the `gameSession` turn and mode (`mode === "vs-computer"`), automatically submits search requests when it is the engine's turn, executes returned best moves onto the authoritative game session, and manages search tokens to cancel inflight searches on undo/restart/resign.
 - **`src/features/engine/uciProtocol.ts`**: Added `parseUciMoveToInput` helper to reliably convert UCI format strings (`e2e4`, `e7e8q`) into domain `MoveInput` objects (`{ from, to, promotion }`). Fixed UCI command serialization for clean Emscripten communication.
 - **`src/features/engine/StockfishWorkerBridge.ts`**: Switched default worker target to `/vendor/stockfish/stockfish.js`, guarded single-threaded `Threads` option configuration, and ensured trimmed UCI message streaming.
@@ -27,17 +28,17 @@ This sprint implements the complete, end-to-end **Human vs Computer Game Flow** 
 
 ## 2. Invariants & Verification Matrix
 
-| Invariant / Test Scenario | Implementation Target | Verification Result |
-| :--- | :--- | :---: |
-| **INV-HVC-01: Engine Autonomous Turn Execution** | `useEngineOpponent.ts` | **PASS** |
-| **INV-HVC-02: UCI Move Translation** | `parseUciMoveToInput` in `uciProtocol.ts` | **PASS** |
-| **INV-HVC-03: Single Source of Truth Authority** | `gameSession.makeMove` via `useGameSession` | **PASS** |
-| **INV-HVC-04: Thinking State & Board Interactivity Lock** | `PlayerPanel.tsx`, `App.tsx` | **PASS** |
-| **INV-HVC-05: Automatic Computer Opening as White** | `useEngineOpponent.ts` (`playerColor === 'b'`) | **PASS** |
-| **INV-HVC-06: Inflight Search Cancellation on Game Actions** | `engineService.stop()` & token invalidation | **PASS** |
-| **INV-HVC-07: Terminal State Search Suppression** | Checkmate/Stalemate/Draw guards in coordinator | **PASS** |
-| **INV-HVC-08: Reversibility & Clean State Recovery** | Undo / Restart / Resign handlers | **PASS** |
-| **INV-HVC-09: WebWorker Sandboxing & Non-Blocking UI** | asm.js / WebWorker UCI bridge | **PASS** |
+| Invariant / Test Scenario                                    | Implementation Target                          | Verification Result |
+| :----------------------------------------------------------- | :--------------------------------------------- | :-----------------: |
+| **INV-HVC-01: Engine Autonomous Turn Execution**             | `useEngineOpponent.ts`                         |      **PASS**       |
+| **INV-HVC-02: UCI Move Translation**                         | `parseUciMoveToInput` in `uciProtocol.ts`      |      **PASS**       |
+| **INV-HVC-03: Single Source of Truth Authority**             | `gameSession.makeMove` via `useGameSession`    |      **PASS**       |
+| **INV-HVC-04: Thinking State & Board Interactivity Lock**    | `PlayerPanel.tsx`, `App.tsx`                   |      **PASS**       |
+| **INV-HVC-05: Automatic Computer Opening as White**          | `useEngineOpponent.ts` (`playerColor === 'b'`) |      **PASS**       |
+| **INV-HVC-06: Inflight Search Cancellation on Game Actions** | `engineService.stop()` & token invalidation    |      **PASS**       |
+| **INV-HVC-07: Terminal State Search Suppression**            | Checkmate/Stalemate/Draw guards in coordinator |      **PASS**       |
+| **INV-HVC-08: Reversibility & Clean State Recovery**         | Undo / Restart / Resign handlers               |      **PASS**       |
+| **INV-HVC-09: WebWorker Sandboxing & Non-Blocking UI**       | asm.js / WebWorker UCI bridge                  |      **PASS**       |
 
 ---
 

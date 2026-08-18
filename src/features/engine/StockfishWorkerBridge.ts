@@ -72,6 +72,7 @@ export class StockfishWorkerBridge implements EngineWorkerBridge {
 
   private readonly boundOnMessage: (e: MessageEvent | ErrorEvent) => void;
   private readonly boundOnError: (e: MessageEvent | ErrorEvent) => void;
+  private readonly boundOnMessageError: (e: MessageEvent | ErrorEvent) => void;
 
   constructor(workerOrFactory?: IWorkerLike | (() => IWorkerLike)) {
     if (typeof workerOrFactory === "function") {
@@ -84,6 +85,7 @@ export class StockfishWorkerBridge implements EngineWorkerBridge {
 
     this.boundOnMessage = (e) => this.handleWorkerMessage(e as MessageEvent);
     this.boundOnError = (e) => this.handleWorkerError(e as ErrorEvent);
+    this.boundOnMessageError = (e) => this.handleWorkerError(e as ErrorEvent);
   }
 
   public postMessage(request: EngineWorkerRequest): void {
@@ -177,6 +179,7 @@ export class StockfishWorkerBridge implements EngineWorkerBridge {
       }
       this.worker.removeEventListener("message", this.boundOnMessage);
       this.worker.removeEventListener("error", this.boundOnError);
+      this.worker.removeEventListener("messageerror", this.boundOnMessageError);
       this.worker.terminate();
       this.worker = null;
     }
@@ -194,6 +197,7 @@ export class StockfishWorkerBridge implements EngineWorkerBridge {
       this.worker = this.workerFactory();
       this.worker.addEventListener("message", this.boundOnMessage);
       this.worker.addEventListener("error", this.boundOnError);
+      this.worker.addEventListener("messageerror", this.boundOnMessageError);
     }
   }
 
