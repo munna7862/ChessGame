@@ -275,3 +275,58 @@ export interface EngineService {
    */
   onEvaluationInfo(listener: (info: EngineSearchInfo) => void): () => void;
 }
+
+// ---------------------------------------------------------------------------
+// Engine Position Synchronization Types & Interface
+// ---------------------------------------------------------------------------
+
+export type EngineSyncStatus =
+  "idle" | "syncing" | "analyzing" | "cancelled" | "error";
+
+export interface PositionSyncOptions {
+  readonly depth?: number | undefined;
+  readonly movetimeMs?: number | undefined;
+  readonly skillLevel?: number | undefined;
+  readonly autoAnalyze?: boolean | undefined;
+  readonly fen?: string | undefined;
+  readonly sessionId?: string | undefined;
+}
+
+export interface SynchronizedEvalInfo {
+  readonly sessionId: string;
+  readonly epoch: number;
+  readonly fen: string;
+  readonly searchToken: string;
+  readonly depth: number;
+  readonly scoreCp?: number | undefined;
+  readonly mate?: number | undefined;
+  readonly nodes?: number | undefined;
+  readonly nps?: number | undefined;
+  readonly timeMs?: number | undefined;
+  readonly pv?: readonly string[] | undefined;
+  readonly bestMoveUci?: string | undefined;
+}
+
+export interface IEnginePositionSynchronizer {
+  readonly status: EngineSyncStatus;
+  readonly currentSessionId: string | null;
+  readonly currentEpoch: number;
+  readonly currentFen: string | null;
+
+  getStatus(): EngineSyncStatus;
+  syncPosition(
+    options?: PositionSyncOptions
+  ): Promise<EngineEvaluationResult | null>;
+  cancelActiveSync(): Promise<void>;
+  notifyNewGame(sessionId?: string): Promise<void>;
+  reset(sessionId?: string, config?: Partial<EngineConfig>): Promise<void>;
+  dispose(): void;
+
+  onStatusChange(listener: (status: EngineSyncStatus) => void): () => void;
+  onSynchronizedEval(
+    listener: (info: SynchronizedEvalInfo) => void
+  ): () => void;
+  onSynchronizedBestMove(
+    listener: (result: EngineEvaluationResult) => void
+  ): () => void;
+}
