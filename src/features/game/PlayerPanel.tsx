@@ -1,6 +1,7 @@
 import React from "react";
 import type { PieceType } from "../../domain/chess/types";
 import type { PlayerConfig } from "./types";
+import { CapturedPiecesView } from "./CapturedPiecesView";
 import "./PlayerPanel.css";
 
 export interface PlayerPanelProps {
@@ -8,34 +9,17 @@ export interface PlayerPanelProps {
   readonly isTurn: boolean;
   readonly isCheck?: boolean | undefined;
   readonly capturedPieces?: readonly PieceType[] | undefined;
+  readonly materialAdvantage?: number | undefined;
   readonly position?: "top" | "bottom" | undefined;
   readonly className?: string | undefined;
 }
-
-const PIECE_UNICODE: Record<"w" | "b", Record<PieceType, string>> = {
-  w: {
-    p: "♙",
-    n: "♘",
-    b: "♗",
-    r: "♖",
-    q: "♕",
-    k: "♔",
-  },
-  b: {
-    p: "♟",
-    n: "♞",
-    b: "♝",
-    r: "♜",
-    q: "♛",
-    k: "♚",
-  },
-};
 
 export const PlayerPanel: React.FC<PlayerPanelProps> = ({
   player,
   isTurn,
   isCheck = false,
   capturedPieces = [],
+  materialAdvantage,
   position = "bottom",
   className = "",
 }) => {
@@ -43,7 +27,6 @@ export const PlayerPanel: React.FC<PlayerPanelProps> = ({
   const avatarClass = isWhite
     ? "player-panel__avatar--white"
     : "player-panel__avatar--black";
-  const capturedColor = isWhite ? "b" : "w";
 
   return (
     <section
@@ -96,15 +79,12 @@ export const PlayerPanel: React.FC<PlayerPanelProps> = ({
             data-testid={`captured-pieces-${player.color}`}
             aria-label={`Captured pieces: ${capturedPieces.join(", ")}`}
           >
-            {capturedPieces.map((piece, idx) => (
-              <span
-                key={`${piece}-${idx}`}
-                className="player-panel__captured-piece"
-                title={`Captured ${piece.toUpperCase()}`}
-              >
-                {PIECE_UNICODE[capturedColor][piece]}
-              </span>
-            ))}
+            <CapturedPiecesView
+              capturedPieces={capturedPieces}
+              capturingColor={player.color}
+              materialAdvantage={materialAdvantage}
+              testId={`captured-tray-${player.color}`}
+            />
           </div>
         )}
 
