@@ -161,6 +161,10 @@ export interface IGameSessionController {
   makeMove(move: MoveInput): Result<Move, ChessDomainError>;
   undo(): Result<Move, ChessDomainError>;
   reset(config?: Partial<GameSessionConfig>): void;
+  updateGameMode(
+    mode: GameMode,
+    players?: { w?: PlayerConfig; b?: PlayerConfig }
+  ): void;
   resign(player: Color): Result<GameStatus, ChessDomainError>;
   timeout(player: Color): Result<GameStatus, ChessDomainError>;
   agreeDraw(): Result<GameStatus, ChessDomainError>;

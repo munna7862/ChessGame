@@ -229,6 +229,23 @@ export class GameSessionController implements IGameSessionController {
   }
 
   /**
+   * Updates game mode and player types in-place without resetting board position or history.
+   */
+  public updateGameMode(
+    mode: GameMode,
+    players?: { w?: PlayerConfig; b?: PlayerConfig }
+  ): void {
+    this.mode = mode;
+    if (players?.w) {
+      this.players.w = { ...players.w };
+    }
+    if (players?.b) {
+      this.players.b = { ...players.b };
+    }
+    this.notifyListeners();
+  }
+
+  /**
    * Player resignation.
    */
   public resign(player: Color): Result<GameStatus, ChessDomainError> {

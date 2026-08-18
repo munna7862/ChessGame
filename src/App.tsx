@@ -5,7 +5,7 @@ import { Board } from "./features/board/Board";
 import type { BoardOrientation } from "./features/board/types";
 import { useBoardInteraction } from "./features/board/useBoardInteraction";
 import { useReducedMotion } from "./features/board/useReducedMotion";
-import { useEngineOpponent } from "./features/engine";
+import { useEngineOpponent, EngineErrorBanner } from "./features/engine";
 import {
   useGameSession,
   PlayerPanel,
@@ -28,7 +28,15 @@ export const App: React.FC = () => {
     agreeDraw,
   } = useGameSession();
 
-  const { isEngineThinking, isEngineTurn, cancelThinking } = useEngineOpponent({
+  const {
+    isEngineThinking,
+    isEngineTurn,
+    cancelThinking,
+    engineError,
+    restartEngine,
+    continueAsTwoPlayers,
+    clearError,
+  } = useEngineOpponent({
     sessionController,
     sessionState,
   });
@@ -281,6 +289,15 @@ export const App: React.FC = () => {
       <Header />
       <main className="main-content">
         <div className="board-section" data-testid="board-section">
+          {engineError && (
+            <EngineErrorBanner
+              error={engineError}
+              onRestart={restartEngine}
+              onFallback2P={continueAsTwoPlayers}
+              onDismiss={clearError}
+            />
+          )}
+
           <div className="board-status-bar" data-testid="board-status-bar">
             <div className="status-group">
               <span

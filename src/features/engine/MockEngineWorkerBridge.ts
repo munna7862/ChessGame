@@ -48,6 +48,10 @@ export class MockEngineWorkerBridge implements EngineWorkerBridge {
   }
 
   public postMessage(request: EngineWorkerRequest): void {
+    if (request.type === "INIT") {
+      this.terminated = false;
+    }
+
     if (this.terminated) {
       return;
     }
