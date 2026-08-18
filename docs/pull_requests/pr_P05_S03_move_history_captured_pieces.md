@@ -28,14 +28,14 @@ This pull request implements the **Move History and Captured Pieces** subsystem 
 
 ## 2. Test Execution & Quality Gates Report
 
-| Quality Gate | Tool / Command | Target | Status |
-| :--- | :--- | :--- | :--- |
-| **Typecheck** | `npm run typecheck` (`tsc --noEmit`) | TypeScript strict mode | **PASS (0 errors)** |
-| **Linter** | `npm run lint` (`eslint .`) | TypeScript ESLint rules | **PASS (0 errors, 0 warnings)** |
-| **Code Style** | `npm run format:check` (`prettier --check .`) | Codebase formatting | **PASS (All files match)** |
-| **Unit & Property Tests** | `npm test` (`vitest run`) | 43 test suites, 404 tests | **PASS (404/404, 0 skips)** |
-| **E2E UI Automation** | `npm run test:e2e` (`playwright test`) | 27 browser scenarios | **PASS (27/27 green)** |
-| **Production Build** | `npm run build` (`vite build`) | Vite bundle & packaging | **PASS (1.45s, 0 errors)** |
+| Quality Gate              | Tool / Command                                | Target                    | Status                          |
+| :------------------------ | :-------------------------------------------- | :------------------------ | :------------------------------ |
+| **Typecheck**             | `npm run typecheck` (`tsc --noEmit`)          | TypeScript strict mode    | **PASS (0 errors)**             |
+| **Linter**                | `npm run lint` (`eslint .`)                   | TypeScript ESLint rules   | **PASS (0 errors, 0 warnings)** |
+| **Code Style**            | `npm run format:check` (`prettier --check .`) | Codebase formatting       | **PASS (All files match)**      |
+| **Unit & Property Tests** | `npm test` (`vitest run`)                     | 43 test suites, 404 tests | **PASS (404/404, 0 skips)**     |
+| **E2E UI Automation**     | `npm run test:e2e` (`playwright test`)        | 27 browser scenarios      | **PASS (27/27 green)**          |
+| **Production Build**      | `npm run build` (`vite build`)                | Vite bundle & packaging   | **PASS (1.45s, 0 errors)**      |
 
 ---
 

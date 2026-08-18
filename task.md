@@ -2,24 +2,24 @@
 
 ## Active Sprint
 
-**Phase 05 · Sprint 03: Move History and Captured Pieces**
-Branch: `feature/p05-s03-move-history-captured-pieces`
+**Phase 05 · Sprint 04: Undo Restart and Resign**
+Branch: `feature/p05-s04-undo-restart-and-resign`
 
 ---
 
 ## Sprint Tasks Breakdown
 
-- [x] **SM-5301**: [Scrum Master] Initialize Sprint 03 plan, task breakdown, dependency verification, and lifecycle tracking in `task.md`.
-- [x] **CDA-5301**: [Chess Domain Architect] Formalize move history SAN pairing, ply grouping, captured piece derivation, and material balance invariants in `docs/chess/move_history_captured_pieces_invariants.md`.
-- [x] **SDET-5301**: [SDET Architect] Author Sprint 03 Test Cases Catalog (`docs/testing/test_cases_catalog_P05_S03.md`) covering move history SAN rendering, ply grouping, current move highlight, captured pieces display, material advantage calculations, auto-scrolling, state reset, and property-based fuzzing.
-- [x] **DEV-5301**: [Dev Architect / Senior SDE] Implement `MoveHistoryPanel` component with grouped SAN move pairs, active/latest move highlighting, empty state, and auto-scrolling container.
-- [x] **DEV-5302**: [Dev Architect / Senior SDE] Implement captured pieces display and material advantage differential calculation (P=1, N=3, B=3, R=5, Q=9) integrated into the game review UI and player panels.
-- [x] **DEV-5303**: [Dev Architect / Senior SDE] Integrate `MoveHistoryPanel` with `App.tsx` layout alongside board, player panels, and session controller.
-- [x] **DEV-5304**: [Dev Architect / Senior SDE] Conduct Dev Technical Code Acceptance Review.
-- [x] **SEC-5301**: [Security Officer] Conduct Desktop & Move History Security Audit (DOM sanitization, bounded rendering memory, zero IPC leakage).
-- [x] **SDET-5302**: [SDET Architect] Author and execute comprehensive test suites (`MoveHistoryPanel.test.tsx`, `moveHistoryInvariants.test.ts`, Playwright E2E game playout and history review), verify quality gates (typecheck, lint, formatting, tests, build).
-- [x] **PO-5301**: [Product Owner] Conduct Product & UX Acceptance Criteria Review.
-- [x] **DO-5301**: [DevOps Engineer] Author PR documentation (`docs/pull_requests/pr_P05_S03_move_history_captured_pieces.md`), commit atomic changes, push to origin, create GitHub PR, and merge to `main`.
+- [x] **SM-5401**: [Scrum Master] Initialize Sprint 04 plan, task breakdown, dependency verification, and lifecycle tracking in `task.md`.
+- [x] **CDA-5401**: [Chess Domain Architect] Formalize Undo, Restart, and Resignation state transition semantics, move history reversion, captured piece restoration, and game-over invariants in `docs/chess/undo_restart_resign_invariants.md`.
+- [x] **SDET-5401**: [SDET Architect] Author Sprint 04 Test Cases Catalog (`docs/testing/test_cases_catalog_P05_S04.md`) covering Undo move restoration, last-move state update, Restart confirmation flow and transient state reset, Resign confirmation flow and game termination, and property-based fuzzing.
+- [x] **DEV-5401**: [Dev Architect / Senior SDE] Implement reusable `ConfirmationModal` component with focus trapping, keyboard handling (Escape/Enter), accessible ARIA roles, and distinctive warning/danger visual styles.
+- [x] **DEV-5402**: [Dev Architect / Senior SDE] Implement Undo move handler in board and game controls, updating lastMove, selectedSquare, pendingPromotion, move history, captured pieces, and live ARIA announcements.
+- [x] **DEV-5403**: [Dev Architect / Senior SDE] Implement Restart and Resign confirmation modal workflows and UI controls in `App.tsx`, integrating domain resignation, game-over non-interactive board state, and full transient state cleanup.
+- [x] **DEV-5404**: [Dev Architect / Senior SDE] Conduct Dev Technical Code Acceptance Review.
+- [x] **SEC-5401**: [Security Officer] Conduct Desktop & Game Controls Security Audit (modal focus safety, zero IPC capability elevation, memory bounds).
+- [x] **SDET-5402**: [SDET Architect] Author and execute comprehensive test suites (`ConfirmationModal.test.tsx`, `undoRestartResign.test.tsx`, Playwright E2E game controls playout), verify quality gates (typecheck, lint, formatting, tests, build).
+- [x] **PO-5401**: [Product Owner] Conduct Product & UX Acceptance Criteria Review.
+- [x] **DO-5401**: [DevOps Engineer] Author PR documentation (`docs/pull_requests/pr_P05_S04_undo_restart_resign.md`), commit atomic changes, push to origin, create GitHub PR, and merge to `main`.
 
 ---
 
@@ -33,12 +33,11 @@ Branch: `feature/p05-s03-move-history-captured-pieces`
 
 ## Sprint Review Comments & Refinement Loop
 
-- `[SCRUM_MASTER] -> [CHESS_DOMAIN_ARCHITECT]`: Phase 05 · Sprint 03 initialized on feature branch `feature/p05-s03-move-history-captured-pieces`. Verified prerequisites: Phase 05 · Sprint 02 (New Game and Player Configuration) is merged to `main`. Baseline test suite passes (41 files, 391 tests green). Handing off to Chess Domain Architect to formalize move history SAN pairing, move numbering, captured piece derivation, material count/advantage calculations, and session sync invariants in `docs/chess/move_history_captured_pieces_invariants.md`. Status: **APPROVED**.
-- `[CHESS_DOMAIN_ARCHITECT] -> [SDET_ARCHITECT]`: Authored `docs/chess/move_history_captured_pieces_invariants.md` detailing move history domain architecture, half-move (ply) indexing, monotonic row grouping, captured piece attribution, FIDE piece values, and net material differential calculations ($\Delta = \text{Score}_{\text{white}} - \text{Score}_{\text{black}}$). Handing off to SDET Architect for Test Cases Catalog authoring. Status: **APPROVED**.
-- `[SDET_ARCHITECT] -> [DEV_ARCHITECT]`: Authored `docs/testing/test_cases_catalog_P05_S03.md` detailing TC-HIST-01 through TC-HIST-11, TC-CAPT-01 through TC-CAPT-07, and TC-E2E-01 covering move history rendering, active move highlight, auto-scrolling, captured piece trays, material balance score, en passant attribution, undo restoration, and fast-check property fuzzing. Handing off to Dev Architect / Senior SDE for production implementation. Status: **APPROVED**.
-- `[DEV_ARCHITECT] -> [SECURITY_OFFICER]`: Implemented `moveHistoryUtils.ts` (scoring and grouping utilities), `CapturedPiecesView.tsx` & `.css`, `MoveHistoryPanel.tsx` & `.css`, updated `PlayerPanel.tsx` and `App.tsx`/`App.css` for two-column desktop review layout. Verified clean Prettier formatting, zero lint/type errors, and clean production build. Handing off to Security Officer for Desktop & Move History Security Audit. Status: **APPROVED**.
-- `[SECURITY_OFFICER] -> [SDET_ARCHITECT]`: Audited Move History and Captured Pieces implementation: SAN strings and piece objects are supplied directly from the validated domain adapter without unsanitized HTML injection; DOM rendering is lightweight and bounded; auto-scrolling is safe; no elevated native IPC capabilities were added. Handing off to SDET Architect for full quality gate execution. Status: **APPROVED**.
-- `[SDET_ARCHITECT] -> [PRODUCT_OWNER]`: Executed full quality gate suite: 404/404 Vitest unit/property tests passing across 43 test files; 27/27 Playwright E2E tests passing; `npm run typecheck`, `npm run lint`, and `npm run format:check` pass with 0 errors/warnings; production build succeeded in 1.45s. Handing off to Product Owner for acceptance review. Status: **APPROVED**.
-- `[PRODUCT_OWNER] -> [DEVOPS_ENGINEER]`: Acceptance Criteria for Sprint Stories fully satisfied. Functional, visual, and test execution reports validated (accurate move history, active move highlight, grouped move rows, captured piece trays, material advantage badges, auto-scroll). DevOps Engineer, you are cleared to author PR documentation, push feature branch, submit Pull Request, and auto-merge to main. Status: **APPROVED**.
-- `[DEVOPS_ENGINEER] -> [SCRUM_MASTER]`: Authored PR documentation (`docs/pull_requests/pr_P05_S03_move_history_captured_pieces.md`), committing changes on branch `feature/p05-s03-move-history-captured-pieces`, pushing to origin, creating GitHub PR, and merging to `main`. Status: **APPROVED**.
-
+- `[SCRUM_MASTER] -> [CHESS_DOMAIN_ARCHITECT]`: Phase 05 · Sprint 04 initialized on feature branch `feature/p05-s04-undo-restart-and-resign`. Prerequisites verified: Phase 05 · Sprint 03 (Move History and Captured Pieces) is merged to `main`. Baseline test suite passing (43 files, 404 tests green). Handing off to Chess Domain Architect to formalize domain invariants for move undo, position/last-move reconstruction, restart reset, resignation termination, and game-over state immutability in `docs/chess/undo_restart_resign_invariants.md`. Status: **APPROVED**.
+- `[CHESS_DOMAIN_ARCHITECT] -> [SDET_ARCHITECT]`: Authored `docs/chess/undo_restart_resign_invariants.md` detailing move undo reversibility ($P_N \xrightarrow{\text{undo}} P_{N-1}$), captured piece and material restoration, full transient state cleanup on restart, terminal resignation state transitions, and confirmation dialog guardrails. Handing off to SDET Architect for Test Cases Catalog authoring. Status: **APPROVED**.
+- `[SDET_ARCHITECT] -> [DEV_ARCHITECT]`: Authored `docs/testing/test_cases_catalog_P05_S04.md` detailing TC-CTRL-01 through TC-CTRL-16 and TC-E2E-01 covering move undo, last-move state reconstruction, Restart modal flow, Resign modal flow, game-over board non-interactivity, modal accessibility, and fast-check generative fuzzing. Handing off to Dev Architect / Senior SDE for production implementation. Status: **APPROVED**.
+- `[DEV_ARCHITECT] -> [SECURITY_OFFICER]`: Implemented `ConfirmationModal.tsx` & `.css`, integrated Undo, Restart, and Resign controls into `App.tsx` & `App.css`, updated `useBoardInteraction.ts` with disabled board enforcement, and fixed type signatures. Handing off to Security Officer for Desktop & Game Controls Security Audit. Status: **APPROVED**.
+- `[SECURITY_OFFICER] -> [SDET_ARCHITECT]`: Audited game controls and confirmation modals: text interpolation is sanitized, keyboard focus trap is leak-free and contained, no elevated native IPC capabilities or OS permissions added. Handing off to SDET Architect for full quality gate execution. Status: **APPROVED**.
+- `[SDET_ARCHITECT] -> [PRODUCT_OWNER]`: Executed full quality gate suite: 415/415 Vitest unit/property tests passing across 45 test files; 30/30 Playwright E2E tests passing; `npm run typecheck`, `npm run lint`, and `npm run format:check` pass with 0 errors/warnings; production build succeeded in 1.63s. Handing off to Product Owner for acceptance review. Status: **APPROVED**.
+- `[PRODUCT_OWNER] -> [DEVOPS_ENGINEER]`: Acceptance Criteria for Sprint Stories fully satisfied. Functional, visual, and test execution reports validated (accurate move undo, last-move indicator update, restart confirmation & cleanup, resignation confirmation, banner, and non-interactive board state). DevOps Engineer, you are cleared to author PR documentation, push feature branch, submit Pull Request, and auto-merge to main. Status: **APPROVED**.
+- `[DEVOPS_ENGINEER] -> [SCRUM_MASTER]`: Authored PR documentation (`docs/pull_requests/pr_P05_S04_undo_restart_resign.md`), committing changes on branch `feature/p05-s04-undo-restart-and-resign`, pushing to origin, creating GitHub PR, and merging to `main`. Status: **APPROVED**.

@@ -44,7 +44,7 @@ export interface BoardInteractionState {
   readonly handleSquareClick: (square: Square) => void;
   readonly handlePromotionSelect: (pieceType: PromotionPieceType) => void;
   readonly handlePromotionCancel: () => void;
-  readonly clearSelection: () => void;
+  readonly clearSelection: (announce?: boolean) => void;
   readonly selectSquare: (square: Square) => void;
   readonly setFocusedSquare: (square: Square | null) => void;
   readonly setAnnouncement: (announcement: string | null) => void;

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Header } from "./components/Header";
+import { ConfirmationModal } from "./components/ConfirmationModal";
 import { Board } from "./features/board/Board";
 import type { BoardOrientation } from "./features/board/types";
 import { useBoardInteraction } from "./features/board/useBoardInteraction";
@@ -15,10 +16,13 @@ import {
 import "./App.css";
 
 export const App: React.FC = () => {
-  const { sessionState, chessGame, resetGame } = useGameSession();
+  const { sessionState, chessGame, resetGame, undoMove, resign } =
+    useGameSession();
 
   const [orientation, setOrientation] = useState<BoardOrientation>("w");
   const [isNewGameModalOpen, setIsNewGameModalOpen] = useState<boolean>(false);
+  const [isRestartModalOpen, setIsRestartModalOpen] = useState<boolean>(false);
+  const [isResignModalOpen, setIsResignModalOpen] = useState<boolean>(false);
   const { prefersReducedMotion, toggleReducedMotion } = useReducedMotion();
 
   const {
@@ -37,9 +41,11 @@ export const App: React.FC = () => {
     handleSquareClick,
     handlePromotionSelect,
     handlePromotionCancel,
+    setLastMove,
     resetLastMove,
   } = useBoardInteraction({
     game: chessGame,
+    disabled: sessionState.isGameOver,
   });
 
   const position = sessionState.position;
@@ -65,6 +71,7 @@ export const App: React.FC = () => {
   const handleStartNewGame = (resolved: ResolvedNewGameSession) => {
     resetGame(resolved.config);
     handlePromotionCancel();
+    clearSelection(false);
     resetLastMove();
     setOrientation(resolved.userOrientation);
     setAnnouncement(
@@ -72,6 +79,66 @@ export const App: React.FC = () => {
         resolved.config.players?.b.name ?? "Black"
       }.`
     );
+  };
+
+  const handleUndo = () => {
+    if (sessionState.moveHistory.length === 0 || sessionState.isGameOver) {
+      return;
+    }
+
+    const res = undoMove();
+    if (res.success) {
+      handlePromotionCancel();
+      clearSelection(false);
+      const remainingHistory = chessGame.getHistory();
+      const last = remainingHistory[remainingHistory.length - 1];
+      if (last) {
+        setLastMove({
+          from: last.from,
+          to: last.to,
+          isCapture: Boolean(last.captured || last.isEnPassant),
+          san: last.san,
+        });
+      } else {
+        resetLastMove();
+      }
+      setAnnouncement("Move undone. Position restored.");
+    }
+  };
+
+  const handleConfirmRestart = () => {
+    resetGame({
+      mode: sessionState.mode,
+      players: sessionState.players,
+    });
+    handlePromotionCancel();
+    clearSelection(false);
+    resetLastMove();
+    setIsRestartModalOpen(false);
+    setAnnouncement("Game restarted to initial position.");
+  };
+
+  const handleConfirmResign = () => {
+    if (sessionState.isGameOver) return;
+
+    const resigningColor = sessionState.turn;
+    const res = resign(resigningColor);
+    if (res.success) {
+      handlePromotionCancel();
+      clearSelection(false);
+      setIsResignModalOpen(false);
+      const resigningName =
+        resigningColor === "w"
+          ? sessionState.players.w.name
+          : sessionState.players.b.name;
+      const winningName =
+        resigningColor === "w"
+          ? sessionState.players.b.name
+          : sessionState.players.w.name;
+      setAnnouncement(
+        `${resigningName} resigned. ${winningName} wins the game.`
+      );
+    }
   };
 
   const turnLabel = position.turn === "w" ? "White to move" : "Black to move";
@@ -102,6 +169,16 @@ export const App: React.FC = () => {
       ? materialBalance.diff
       : undefined;
 
+  const activeResigningPlayer =
+    sessionState.turn === "w"
+      ? sessionState.players.w.name
+      : sessionState.players.b.name;
+  const activeWinningPlayer =
+    sessionState.turn === "w"
+      ? sessionState.players.b.name
+      : sessionState.players.w.name;
+  const resigningColorLabel = sessionState.turn === "w" ? "White" : "Black";
+
   return (
     <div className="app-container" data-testid="chessforge-app">
       <Header />
@@ -116,15 +193,32 @@ export const App: React.FC = () => {
               >
                 {turnLabel}
               </span>
-              {gameStatus.isCheck && gameStatus.state !== "checkmate" && (
-                <span className="check-badge" data-testid="check-indicator">
-                  Check!
-                </span>
-              )}
+              {gameStatus.isCheck &&
+                gameStatus.state !== "checkmate" &&
+                !gameStatus.isOver && (
+                  <span className="check-badge" data-testid="check-indicator">
+                    Check!
+                  </span>
+                )}
               {gameStatus.state === "checkmate" && (
                 <span className="check-badge" data-testid="checkmate-indicator">
                   Checkmate! {gameStatus.winner === "w" ? "White" : "Black"}{" "}
                   wins
+                </span>
+              )}
+              {gameStatus.state === "resigned" && (
+                <span
+                  className="check-badge"
+                  data-testid="resignation-indicator"
+                >
+                  {gameStatus.winner === "w"
+                    ? sessionState.players.b.name
+                    : sessionState.players.w.name}{" "}
+                  Resigned ·{" "}
+                  {gameStatus.winner === "w"
+                    ? sessionState.players.w.name
+                    : sessionState.players.b.name}{" "}
+                  Wins
                 </span>
               )}
               {gameStatus.inDraw && (
@@ -162,7 +256,9 @@ export const App: React.FC = () => {
               sessionState.turn === topPlayer.color && !sessionState.isGameOver
             }
             isCheck={
-              sessionState.isCheck && sessionState.turn === topPlayer.color
+              sessionState.isCheck &&
+              sessionState.turn === topPlayer.color &&
+              !sessionState.isGameOver
             }
             capturedPieces={topPlayerCaptures}
             materialAdvantage={topMaterialAdvantage}
@@ -184,7 +280,7 @@ export const App: React.FC = () => {
             onClearSelection={clearSelection}
             announcement={announcement}
             reducedMotion={prefersReducedMotion}
-            disabled={isGameOver}
+            disabled={isGameOver || sessionState.isGameOver}
             onSquareClick={handleSquareClick}
           />
 
@@ -195,7 +291,9 @@ export const App: React.FC = () => {
               !sessionState.isGameOver
             }
             isCheck={
-              sessionState.isCheck && sessionState.turn === bottomPlayer.color
+              sessionState.isCheck &&
+              sessionState.turn === bottomPlayer.color &&
+              !sessionState.isGameOver
             }
             capturedPieces={bottomPlayerCaptures}
             materialAdvantage={bottomMaterialAdvantage}
@@ -219,6 +317,45 @@ export const App: React.FC = () => {
               aria-pressed={prefersReducedMotion}
             >
               Motion: {prefersReducedMotion ? "Reduced" : "Standard"}
+            </button>
+            <button
+              type="button"
+              className="btn-control"
+              data-testid="btn-undo-move"
+              onClick={handleUndo}
+              disabled={
+                sessionState.moveHistory.length === 0 || sessionState.isGameOver
+              }
+              title={
+                sessionState.isGameOver
+                  ? "Cannot undo: game has concluded"
+                  : "Undo last move"
+              }
+            >
+              Undo
+            </button>
+            <button
+              type="button"
+              className="btn-control btn-control--warning"
+              data-testid="btn-restart-game"
+              onClick={() => setIsRestartModalOpen(true)}
+              title="Restart game to initial position"
+            >
+              Restart
+            </button>
+            <button
+              type="button"
+              className="btn-control btn-control--danger"
+              data-testid="btn-resign-game"
+              onClick={() => setIsResignModalOpen(true)}
+              disabled={sessionState.isGameOver}
+              title={
+                sessionState.isGameOver
+                  ? "Game already concluded"
+                  : `Resign as ${activeResigningPlayer}`
+              }
+            >
+              Resign
             </button>
             <button
               type="button"
@@ -289,6 +426,34 @@ export const App: React.FC = () => {
             player2Name: sessionState.players.b.name,
             player1Color: orientation,
           }}
+        />
+
+        <ConfirmationModal
+          isOpen={isRestartModalOpen}
+          title="Restart Game?"
+          message="Are you sure you want to restart the current game? All move history and captured pieces will be reset to the starting position."
+          confirmLabel="Restart Game"
+          cancelLabel="Cancel"
+          variant="warning"
+          dialogTestId="restart-confirm-modal"
+          confirmTestId="btn-confirm-restart"
+          cancelTestId="btn-cancel-restart"
+          onConfirm={handleConfirmRestart}
+          onCancel={() => setIsRestartModalOpen(false)}
+        />
+
+        <ConfirmationModal
+          isOpen={isResignModalOpen}
+          title="Resign Game?"
+          message={`Are you sure ${activeResigningPlayer} (${resigningColorLabel}) wants to resign? This will conclude the game immediately and declare ${activeWinningPlayer} the winner.`}
+          confirmLabel="Resign"
+          cancelLabel="Cancel"
+          variant="danger"
+          dialogTestId="resign-confirm-modal"
+          confirmTestId="btn-confirm-resign"
+          cancelTestId="btn-cancel-resign"
+          onConfirm={handleConfirmResign}
+          onCancel={() => setIsResignModalOpen(false)}
         />
       </main>
     </div>
