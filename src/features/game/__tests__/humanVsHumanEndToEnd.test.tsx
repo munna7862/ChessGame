@@ -263,9 +263,7 @@ describe("Phase 05 · Sprint 06: Human vs Human End-to-End Suite (TC-HVH-01 to T
 
       // Click Review Board
       fireEvent.click(screen.getByTestId("btn-review-board"));
-      expect(
-        screen.queryByTestId("game-result-modal")
-      ).not.toBeInTheDocument();
+      expect(screen.queryByTestId("game-result-modal")).not.toBeInTheDocument();
 
       // View Result button should be visible in controls
       const viewResultBtn = screen.getByTestId("btn-view-result");
@@ -295,9 +293,7 @@ describe("Phase 05 · Sprint 06: Human vs Human End-to-End Suite (TC-HVH-01 to T
       // Click Rematch
       fireEvent.click(screen.getByTestId("btn-rematch"));
 
-      expect(
-        screen.queryByTestId("game-result-modal")
-      ).not.toBeInTheDocument();
+      expect(screen.queryByTestId("game-result-modal")).not.toBeInTheDocument();
       expect(screen.getByTestId("turn-indicator")).toHaveTextContent(
         "White to move"
       );
