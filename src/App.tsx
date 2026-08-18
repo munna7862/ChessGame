@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Header } from "./components/Header";
 import { ConfirmationModal } from "./components/ConfirmationModal";
 import { Board } from "./features/board/Board";
 import type { BoardOrientation } from "./features/board/types";
 import { useBoardInteraction } from "./features/board/useBoardInteraction";
 import { useReducedMotion } from "./features/board/useReducedMotion";
+import { useEngineOpponent } from "./features/engine";
 import {
   useGameSession,
   PlayerPanel,
@@ -17,8 +18,20 @@ import {
 import "./App.css";
 
 export const App: React.FC = () => {
-  const { sessionState, chessGame, resetGame, undoMove, resign, agreeDraw } =
-    useGameSession();
+  const {
+    sessionState,
+    sessionController,
+    chessGame,
+    resetGame,
+    undoMove,
+    resign,
+    agreeDraw,
+  } = useGameSession();
+
+  const { isEngineThinking, isEngineTurn, cancelThinking } = useEngineOpponent({
+    sessionController,
+    sessionState,
+  });
 
   const [orientation, setOrientation] = useState<BoardOrientation>("w");
   const [isNewGameModalOpen, setIsNewGameModalOpen] = useState<boolean>(false);
@@ -29,6 +42,9 @@ export const App: React.FC = () => {
   const [hasDismissedResultModal, setHasDismissedResultModal] =
     useState<boolean>(false);
   const { prefersReducedMotion, toggleReducedMotion } = useReducedMotion();
+
+  const isInputDisabled =
+    sessionState.isGameOver || isEngineThinking || isEngineTurn;
 
   const {
     selectedSquare,
@@ -50,8 +66,24 @@ export const App: React.FC = () => {
     resetLastMove,
   } = useBoardInteraction({
     game: chessGame,
-    disabled: sessionState.isGameOver,
+    disabled: isInputDisabled,
   });
+
+  // Automatically keep lastMove in sync with authoritative session move history
+  useEffect(() => {
+    const history = sessionState.moveHistory;
+    const last = history[history.length - 1];
+    if (last) {
+      setLastMove({
+        from: last.from,
+        to: last.to,
+        isCapture: Boolean(last.captured || last.isEnPassant),
+        san: last.san,
+      });
+    } else {
+      resetLastMove();
+    }
+  }, [sessionState.moveHistory, setLastMove, resetLastMove]);
 
   const position = sessionState.position;
   const isResultModalOpen = sessionState.isGameOver && !hasDismissedResultModal;
@@ -75,6 +107,7 @@ export const App: React.FC = () => {
   };
 
   const handleStartNewGame = (resolved: ResolvedNewGameSession) => {
+    void cancelThinking();
     resetGame(resolved.config);
     handlePromotionCancel();
     clearSelection(false);
@@ -94,27 +127,41 @@ export const App: React.FC = () => {
       return;
     }
 
-    const res = undoMove();
-    if (res.success) {
-      handlePromotionCancel();
-      clearSelection(false);
-      const remainingHistory = chessGame.getHistory();
-      const last = remainingHistory[remainingHistory.length - 1];
-      if (last) {
-        setLastMove({
-          from: last.from,
-          to: last.to,
-          isCapture: Boolean(last.captured || last.isEnPassant),
-          san: last.san,
-        });
-      } else {
-        resetLastMove();
+    if (isEngineThinking) {
+      void cancelThinking();
+      const res = undoMove();
+      if (res.success) {
+        handlePromotionCancel();
+        clearSelection(false);
+        setAnnouncement("Move undone. Position restored.");
       }
-      setAnnouncement("Move undone. Position restored.");
+      return;
+    }
+
+    if (
+      sessionState.mode === "human_vs_engine" &&
+      sessionState.moveHistory.length >= 2
+    ) {
+      // Undo both the computer's response and the human's move
+      undoMove();
+      const res = undoMove();
+      if (res.success) {
+        handlePromotionCancel();
+        clearSelection(false);
+        setAnnouncement("Move undone. Position restored.");
+      }
+    } else {
+      const res = undoMove();
+      if (res.success) {
+        handlePromotionCancel();
+        clearSelection(false);
+        setAnnouncement("Move undone. Position restored.");
+      }
     }
   };
 
   const handleConfirmRestart = () => {
+    void cancelThinking();
     resetGame({
       mode: sessionState.mode,
       players: sessionState.players,
@@ -130,7 +177,7 @@ export const App: React.FC = () => {
 
   const handleConfirmResign = () => {
     if (sessionState.isGameOver) return;
-
+    void cancelThinking();
     const resigningColor = sessionState.turn;
     const res = resign(resigningColor);
     if (res.success) {
@@ -177,7 +224,11 @@ export const App: React.FC = () => {
     setAnnouncement(`${opponentName} declined the draw offer.`);
   };
 
-  const turnLabel = position.turn === "w" ? "White to move" : "Black to move";
+  const turnLabel = isEngineThinking
+    ? `${sessionState.players[position.turn].name} is thinking...`
+    : position.turn === "w"
+      ? "White to move"
+      : "Black to move";
 
   const topPlayer =
     orientation === "w" ? sessionState.players.b : sessionState.players.w;
@@ -301,6 +352,11 @@ export const App: React.FC = () => {
             isTurn={
               sessionState.turn === topPlayer.color && !sessionState.isGameOver
             }
+            isThinking={
+              isEngineThinking &&
+              sessionState.turn === topPlayer.color &&
+              !sessionState.isGameOver
+            }
             isCheck={
               sessionState.isCheck &&
               sessionState.turn === topPlayer.color &&
@@ -326,13 +382,18 @@ export const App: React.FC = () => {
             onClearSelection={clearSelection}
             announcement={announcement}
             reducedMotion={prefersReducedMotion}
-            disabled={isGameOver || sessionState.isGameOver}
+            disabled={isGameOver || isInputDisabled}
             onSquareClick={handleSquareClick}
           />
 
           <PlayerPanel
             player={bottomPlayer}
             isTurn={
+              sessionState.turn === bottomPlayer.color &&
+              !sessionState.isGameOver
+            }
+            isThinking={
+              isEngineThinking &&
               sessionState.turn === bottomPlayer.color &&
               !sessionState.isGameOver
             }

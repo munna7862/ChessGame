@@ -1,3 +1,10 @@
+import type {
+  MoveInput,
+  Square,
+  PromotionPieceType,
+} from "../../domain/chess/types";
+import { SQUARES } from "../../domain/chess/types";
+
 /**
  * Universal Chess Interface (UCI) protocol serializer and parser.
  * Encapsulates all raw string formatting and regex parsing for Stockfish.
@@ -8,29 +15,29 @@
 // ---------------------------------------------------------------------------
 
 export function formatUci(): string {
-  return "uci\n";
+  return "uci";
 }
 
 export function formatIsReady(): string {
-  return "isready\n";
+  return "isready";
 }
 
 export function formatUciNewGame(): string {
-  return "ucinewgame\n";
+  return "ucinewgame";
 }
 
 export function formatSetOption(
   name: string,
   value: string | number | boolean
 ): string {
-  return `setoption name ${name} value ${value}\n`;
+  return `setoption name ${name} value ${value}`;
 }
 
 export function formatPosition(fen: string, moves?: readonly string[]): string {
   if (moves && moves.length > 0) {
-    return `position fen ${fen} moves ${moves.join(" ")}\n`;
+    return `position fen ${fen} moves ${moves.join(" ")}`;
   }
-  return `position fen ${fen}\n`;
+  return `position fen ${fen}`;
 }
 
 export interface GoOptions {
@@ -42,34 +49,34 @@ export interface GoOptions {
 
 export function formatGo(options?: GoOptions): string {
   if (!options) {
-    return "go depth 12\n";
+    return "go depth 12";
   }
 
   if (options.movetimeMs !== undefined && options.movetimeMs > 0) {
-    return `go movetime ${options.movetimeMs}\n`;
+    return `go movetime ${options.movetimeMs}`;
   }
 
   if (options.depth !== undefined && options.depth > 0) {
-    return `go depth ${options.depth}\n`;
+    return `go depth ${options.depth}`;
   }
 
   if (options.nodes !== undefined && options.nodes > 0) {
-    return `go nodes ${options.nodes}\n`;
+    return `go nodes ${options.nodes}`;
   }
 
   if (options.infinite) {
-    return "go infinite\n";
+    return "go infinite";
   }
 
-  return "go depth 12\n";
+  return "go depth 12";
 }
 
 export function formatStop(): string {
-  return "stop\n";
+  return "stop";
 }
 
 export function formatQuit(): string {
-  return "quit\n";
+  return "quit";
 }
 
 // ---------------------------------------------------------------------------
@@ -220,4 +227,44 @@ function parseInfoLine(line: string): UciInfoMessage {
   }
 
   return result;
+}
+
+/**
+ * Parses a UCI bestmove string (e.g. "e2e4", "e7e8q") into a domain MoveInput.
+ * Returns null if the move format or squares are invalid.
+ */
+export function parseUciMoveToInput(uciMove: string): MoveInput | null {
+  if (!uciMove || typeof uciMove !== "string") return null;
+  const trimmed = uciMove.trim().toLowerCase();
+  if (
+    trimmed === "(none)" ||
+    trimmed === "0000" ||
+    trimmed.length < 4 ||
+    trimmed.length > 5
+  ) {
+    return null;
+  }
+
+  const from = trimmed.slice(0, 2) as Square;
+  const to = trimmed.slice(2, 4) as Square;
+
+  if (!SQUARES.includes(from) || !SQUARES.includes(to)) {
+    return null;
+  }
+
+  let promotion: PromotionPieceType | undefined;
+  if (trimmed.length === 5) {
+    const promoChar = trimmed.charAt(4);
+    if (["q", "r", "b", "n"].includes(promoChar)) {
+      promotion = promoChar as PromotionPieceType;
+    } else {
+      return null;
+    }
+  }
+
+  return {
+    from,
+    to,
+    ...(promotion ? { promotion } : {}),
+  };
 }
