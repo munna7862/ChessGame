@@ -207,10 +207,7 @@ export class EngineDisposedError extends EngineError {
 
 export class EngineTimeoutError extends EngineError {
   constructor(timeoutMs: number) {
-    super(
-      `Engine operation timed out after ${timeoutMs}ms`,
-      "ENGINE_TIMEOUT"
-    );
+    super(`Engine operation timed out after ${timeoutMs}ms`, "ENGINE_TIMEOUT");
     this.name = "EngineTimeoutError";
     Object.setPrototypeOf(this, EngineTimeoutError.prototype);
   }

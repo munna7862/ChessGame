@@ -13,10 +13,7 @@ import type {
 export interface MockEngineOptions {
   readonly autoRespondReady?: boolean | undefined;
   readonly autoRespondBestMove?:
-    | boolean
-    | string
-    | ((req: EngineWorkerRequest) => string)
-    | undefined;
+    boolean | string | ((req: EngineWorkerRequest) => string) | undefined;
   readonly defaultBestMove?: string | undefined;
   readonly defaultPonderMove?: string | undefined;
   readonly defaultThinkingDelayMs?: number | undefined;
@@ -33,9 +30,7 @@ export class MockEngineWorkerBridge implements EngineWorkerBridge {
   private readonly postedRequests: EngineWorkerRequest[] = [];
   private autoRespondReady: boolean;
   private autoRespondBestMove:
-    | boolean
-    | string
-    | ((req: EngineWorkerRequest) => string);
+    boolean | string | ((req: EngineWorkerRequest) => string);
   private defaultBestMove: string;
   private defaultPonderMove?: string | undefined;
   private defaultThinkingDelayMs: number;
