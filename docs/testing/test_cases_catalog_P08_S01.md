@@ -1,0 +1,28 @@
+# Test Cases Catalog: Phase 08 · Sprint 01 - Persistence Abstraction and Versioned State
+
+## 1. Scope & Verification Strategy
+
+This catalog specifies unit, integration, and property-based test cases for the Persistence Abstraction and Versioned State framework (`src/domain/persistence/`). The goal is to ensure 100% crash resilience, strict Zod schema validation, flawless round-trip serialization, and robust version migration.
+
+---
+
+## 2. Test Cases Matrix
+
+| Test ID             | Test Category        | Target Component                      | Description / Scenario                                                                 | Expected Outcome                                                                                               |
+| :------------------ | :------------------- | :------------------------------------ | :------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------- |
+| **`TC-PERSIST-01`** | Positive Unit        | `InMemoryPersistenceAdapter`          | Basic CRUD operations: `setItem`, `getItem`, `removeItem`, `clear`, `keys`.            | All operations succeed; returns stored strings, `null` for missing keys, and empty array after `clear`.        |
+| **`TC-PERSIST-02`** | Positive Unit        | `LocalStoragePersistenceAdapter`      | Real / mock `Storage` interactions for `setItem`, `getItem`, `removeItem`, `clear`.    | Data correctly written and read from `localStorage`; `getItem` returns `null` for non-existent keys.           |
+| **`TC-PERSIST-03`** | Negative Unit        | `LocalStoragePersistenceAdapter`      | `localStorage` throws exception (QuotaExceededError, SecurityError, disabled storage). | Returns structured `STORAGE_UNAVAILABLE` or `WRITE_FAILED` error Result without throwing unhandled exceptions. |
+| **`TC-PERSIST-04`** | Positive Unit        | `PersistedStateSchemaV1`              | Valid `PersistedState` v1 object parsed via Zod schema.                                | Parse succeeds and returns typed object matching `PersistedStateV1`.                                           |
+| **`TC-PERSIST-05`** | Negative Unit        | `PersistedStateSchemaV1`              | Missing `version`, negative version, invalid types, or invalid enum values.            | Zod validation fails with `ZodError` containing specific field path violations.                                |
+| **`TC-PERSIST-06`** | Positive Unit        | `PersistenceService.save`             | Save valid `PersistedState` to storage adapter.                                        | Serialized to valid JSON with `version: 1`, updated timestamp, and returns `ok(void)`.                         |
+| **`TC-PERSIST-07`** | Positive Integration | `PersistenceService.load`             | Load previously saved valid state from storage.                                        | Successfully deserialized and validated; fields match saved state exactly.                                     |
+| **`TC-PERSIST-08`** | Boundary Unit        | `PersistenceService.load`             | Key does not exist in storage adapter.                                                 | Returns `ok(null)` indicating no stored state.                                                                 |
+| **`TC-PERSIST-09`** | Negative Unit        | `PersistenceService.load`             | Raw data in storage is corrupt / non-JSON string (`"{malformed json..."`).             | Returns `err(PersistenceError)` with code `PARSE_ERROR`. Application does not throw or crash.                  |
+| **`TC-PERSIST-10`** | Negative Unit        | `PersistenceService.load`             | Raw data in storage is valid JSON but violates schema structure.                       | Returns `err(PersistenceError)` with code `VALIDATION_FAILED`.                                                 |
+| **`TC-PERSIST-11`** | Positive Unit        | `PersistenceService.loadWithFallback` | Loading state when missing, corrupt JSON, or invalid schema.                           | Safely returns provided default state in all failure cases with zero crashes.                                  |
+| **`TC-PERSIST-12`** | Positive Unit        | `MigrationEngine`                     | Single-step migration ($v1 \to v2$) registered and executed.                           | Payload migrated to $v2$, version field incremented to $2$, transformation applied.                            |
+| **`TC-PERSIST-13`** | Positive Unit        | `MigrationEngine`                     | Multi-step sequential migration ($v1 \to v2 \to v3$).                                  | Transformations applied in strict ascending order, yielding valid $v3$ object.                                 |
+| **`TC-PERSIST-14`** | Negative Unit        | `MigrationEngine`                     | A registered migration step throws or returns invalid state.                           | Returns `err(PersistenceError)` with code `MIGRATION_FAILED`.                                                  |
+| **`TC-PERSIST-15`** | Negative Unit        | `MigrationEngine`                     | Input data has version greater than target schema version ($v99 > v1$).                | Returns `err(PersistenceError)` with code `UNSUPPORTED_VERSION`.                                               |
+| **`TC-PERSIST-16`** | Property Fuzzing     | `PersistenceService` (fast-check)     | Round-trip serialization/deserialization across randomized valid state objects.        | 100% data preservation and invariant consistency across generative fuzzing runs.                               |
