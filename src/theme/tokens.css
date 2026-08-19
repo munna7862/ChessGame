@@ -243,3 +243,50 @@
   --square-dark-bg: #334155;
   --square-dark-text: #cbd5e1;
 }
+
+/* ---------------------------------------------------------------------------
+ * 8. Universal Accessible Focus & High Contrast Overrides
+ * --------------------------------------------------------------------------- */
+
+/* Universal visible focus ring for keyboard navigation */
+:focus-visible {
+  outline: 2px solid var(--accent-primary, #38bdf8) !important;
+  outline-offset: 2px !important;
+}
+
+/* High Contrast mode enhancements */
+@media (forced-colors: active), (prefers-contrast: more) {
+  :root {
+    --border-color: #ffffff;
+    --border-subtle: #ffffff;
+    --text-primary: #ffffff;
+    --text-secondary: #ffffff;
+    --text-muted: #e2e8f0;
+    --focus-ring: 3px solid #ffffff;
+  }
+
+  button,
+  input,
+  select,
+  textarea,
+  [role="gridcell"] {
+    border-color: currentColor !important;
+  }
+
+  :focus-visible {
+    outline: 3px solid Highlight !important;
+    outline-offset: 2px !important;
+  }
+}
+
+/* Reduced Motion global enforcement */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

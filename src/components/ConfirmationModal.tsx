@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
+import { useFocusTrap } from "../hooks/useFocusTrap";
 import "./ConfirmationModal.css";
 
 export interface ConfirmationModalProps {
@@ -33,58 +34,14 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   cancelTestId = "btn-cancel-action",
 }) => {
   const dialogRef = useRef<HTMLDivElement>(null);
-  const previouslyFocusedElementRef = useRef<HTMLElement | null>(null);
   const confirmButtonRef = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => {
-    if (!isOpen) return;
-
-    previouslyFocusedElementRef.current =
-      document.activeElement as HTMLElement | null;
-
-    const timer = setTimeout(() => {
-      confirmButtonRef.current?.focus();
-    }, 50);
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        onCancel();
-        return;
-      }
-
-      if (e.key === "Tab" && dialogRef.current) {
-        const focusableElements =
-          dialogRef.current.querySelectorAll<HTMLElement>(
-            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-          );
-        if (focusableElements.length === 0) return;
-
-        const firstElement = focusableElements[0];
-        const lastElement = focusableElements[focusableElements.length - 1];
-
-        if (e.shiftKey) {
-          if (document.activeElement === firstElement) {
-            e.preventDefault();
-            lastElement?.focus();
-          }
-        } else {
-          if (document.activeElement === lastElement) {
-            e.preventDefault();
-            firstElement?.focus();
-          }
-        }
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      clearTimeout(timer);
-      window.removeEventListener("keydown", handleKeyDown);
-      previouslyFocusedElementRef.current?.focus();
-    };
-  }, [isOpen, onCancel]);
+  useFocusTrap({
+    isOpen,
+    containerRef: dialogRef,
+    initialFocusRef: confirmButtonRef,
+    onEscape: onCancel,
+  });
 
   if (!isOpen) return null;
 
@@ -164,3 +121,5 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     </div>
   );
 };
+
+export default ConfirmationModal;

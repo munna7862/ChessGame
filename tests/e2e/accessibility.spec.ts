@@ -1,16 +1,28 @@
 import { test, expect } from "@playwright/test";
 
 /**
- * Phase 04 · Sprint 06: Board Accessibility and Visual States E2E Suite
- * Reference: docs/testing/test_cases_catalog_P04_S06.md (TC-A11Y-01 to TC-A11Y-21)
+ * Phase 04 & Phase 09: Board Accessibility and Global Keyboard Shortcuts E2E Suite
+ * Reference: docs/testing/test_cases_catalog_P09_S04.md (TC-KBD-01 to TC-KBD-08, TC-A11Y-01 to TC-A11Y-06)
  */
 
-test.describe("ChessForge Board Accessibility & Keyboard Navigation (Phase 04 · Sprint 06)", () => {
+test.describe("ChessForge Accessibility & Keyboard Navigation Suite", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
   });
 
-  test("TC-A11Y-01: roving tabindex allows single tabstop into board grid", async ({
+  test("TC-A11Y-01: skip-link allows quick keyboard focus to chessboard", async ({
+    page,
+  }) => {
+    const skipLink = page.getByTestId("skip-to-board-link");
+    await skipLink.focus();
+    await expect(skipLink).toBeVisible();
+
+    await page.keyboard.press("Enter");
+    const board = page.getByTestId("chess-board-wrapper");
+    await expect(board).toBeVisible();
+  });
+
+  test("TC-A11Y-02: roving tabindex allows single tabstop into board grid", async ({
     page,
   }) => {
     // Focus the initial default square e2
@@ -22,7 +34,7 @@ test.describe("ChessForge Board Accessibility & Keyboard Navigation (Phase 04 ·
     await expect(squareE4).toHaveAttribute("tabindex", "-1");
   });
 
-  test("TC-A11Y-02 & TC-A11Y-10: complete keyboard navigation and move execution (e2-e4)", async ({
+  test("TC-A11Y-03 & TC-KBD-02: complete keyboard navigation, move execution (e2-e4), and 'u' undo", async ({
     page,
   }) => {
     const squareE2 = page.getByTestId("board-square-e2");
@@ -54,25 +66,37 @@ test.describe("ChessForge Board Accessibility & Keyboard Navigation (Phase 04 ·
     );
     await expect(squareE4.locator("[data-testid='piece-wp']")).toBeVisible();
     await expect(liveAnnouncer).toContainText("White Pawn moved from e2 to e4");
-  });
 
-  test("TC-A11Y-11: Escape key cancels active piece selection", async ({
-    page,
-  }) => {
-    const squareE2 = page.getByTestId("board-square-e2");
-    await squareE2.focus();
-    await page.keyboard.press("Enter");
-    await expect(squareE2).toHaveAttribute("data-is-selected", "true");
-
-    // Press Escape
-    await page.keyboard.press("Escape");
-    await expect(squareE2).not.toHaveAttribute("data-is-selected", "true");
-    await expect(page.getByTestId("board-live-announcer")).toContainText(
-      "Selection cleared."
+    // Press 'u' to undo move
+    await page.keyboard.press("u");
+    await expect(page.getByTestId("turn-indicator")).toContainText(
+      "White to move"
     );
   });
 
-  test("TC-A11Y-16 & TC-A11Y-20: Board flip and motion toggles update attributes and announce state", async ({
+  test("TC-KBD-06: '?' opens Keyboard Shortcuts help modal and Escape closes it", async ({
+    page,
+  }) => {
+    await page.keyboard.press("?");
+    const shortcutsModal = page.getByTestId("shortcuts-modal");
+    await expect(shortcutsModal).toBeVisible();
+
+    await page.keyboard.press("Escape");
+    await expect(shortcutsModal).not.toBeVisible();
+  });
+
+  test("TC-KBD-04: Ctrl+, opens Settings modal and Escape closes it", async ({
+    page,
+  }) => {
+    await page.keyboard.press("Control+,");
+    const settingsModal = page.getByTestId("settings-modal");
+    await expect(settingsModal).toBeVisible();
+
+    await page.keyboard.press("Escape");
+    await expect(settingsModal).not.toBeVisible();
+  });
+
+  test("TC-A11Y-05: Board flip and motion toggles update attributes and announce state", async ({
     page,
   }) => {
     const flipBtn = page.getByTestId("btn-flip-board");

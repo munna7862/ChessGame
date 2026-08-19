@@ -1,10 +1,5 @@
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-  useMemo,
-} from "react";
+import React, { useState, useRef, useCallback, useMemo } from "react";
+import { useFocusTrap } from "../../hooks/useFocusTrap";
 import type { PgnTags } from "../../domain/chess/pgn";
 import { PgnFileService } from "../../domain/persistence/PgnFileService";
 import type { PlayerConfig } from "./types";
@@ -63,20 +58,13 @@ export const PgnExportModal: React.FC<PgnExportModalProps> = ({
     return onExportPgn(tags);
   }, [isOpen, eventName, siteName, roundNumber, players, onExportPgn]);
 
-  // Keyboard accessibility: Escape to close
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        onClose();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
+  // Focus trap & Escape to close
+  useFocusTrap({
+    isOpen,
+    containerRef: modalRef,
+    initialFocusRef: textareaRef,
+    onEscape: onClose,
+  });
 
   const handleCopyClipboard = useCallback(async () => {
     const success = await fileService.copyToClipboard(formattedPgn);
