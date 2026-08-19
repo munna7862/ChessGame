@@ -9,7 +9,7 @@
   pointer-events: none;
   position: relative;
   z-index: 2;
-  transition: transform 0.1s ease-in-out;
+  transition: transform 0.12s cubic-bezier(0.2, 0, 0.2, 1);
 }
 
 .chess-piece.is-draggable {
@@ -17,8 +17,13 @@
   cursor: grab;
 }
 
+.chess-piece.is-draggable:hover {
+  transform: scale(1.05);
+}
+
 .chess-piece.is-draggable:active {
   cursor: grabbing;
+  transform: scale(1.08);
 }
 
 .chess-piece-svg {
@@ -58,4 +63,20 @@
 .piece-color-b.chess-piece-fallback {
   color: #1a1a1a;
   text-shadow: 0 1px 3px rgba(255, 255, 255, 0.4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chess-piece,
+  .chess-piece.is-draggable:hover,
+  .chess-piece.is-draggable:active {
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+.reduced-motion .chess-piece,
+.reduced-motion .chess-piece.is-draggable:hover,
+.reduced-motion .chess-piece.is-draggable:active {
+  transform: none !important;
+  transition: none !important;
 }

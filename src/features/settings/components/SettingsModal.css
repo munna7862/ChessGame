@@ -371,6 +371,59 @@
   cursor: not-allowed;
 }
 
+/* Sound Audition Controls */
+.settings-audition-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.9rem 1rem;
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 8px;
+}
+
+.sound-audition-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 0.5rem;
+}
+
+.sound-audition-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.6rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sound-audition-btn:hover:not(:disabled) {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: #38bdf8;
+  color: #38bdf8;
+  transform: translateY(-1px);
+}
+
+.sound-audition-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.sound-audition-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.audition-icon {
+  font-size: 0.9rem;
+}
+
 /* Engine Difficulty Controls */
 .difficulty-slider-container {
   display: flex;

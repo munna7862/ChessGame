@@ -1,6 +1,7 @@
 import React, {
   useMemo,
   useCallback,
+  useEffect,
   useSyncExternalStore,
   type ReactNode,
 } from "react";
@@ -12,6 +13,7 @@ import type {
   PersistenceService,
 } from "../../domain/persistence";
 import { SettingsService } from "../../domain/persistence/settings/SettingsService";
+import { soundService } from "../../services/sound";
 import {
   SettingsContext,
   type SettingsContextValue,
@@ -53,6 +55,11 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({
   }, [settingsService]);
 
   const settings = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+
+  useEffect(() => {
+    soundService.setSoundEnabled(settings.soundEnabled);
+    soundService.setVolume(settings.volume);
+  }, [settings.soundEnabled, settings.volume]);
 
   const updateSettings = useCallback(
     (patch: PartialPersistedSettings) => {
