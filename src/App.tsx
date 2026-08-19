@@ -25,7 +25,11 @@ import {
   type ResolvedNewGameSession,
   type NewGameConfigOptions,
 } from "./features/game";
-import { SettingsProvider, useSettings } from "./features/settings";
+import {
+  SettingsProvider,
+  useSettings,
+  SettingsModal,
+} from "./features/settings";
 import type { SettingsService } from "./domain/persistence/settings";
 import "./App.css";
 
@@ -73,6 +77,8 @@ const AppContent: React.FC<AppContentProps> = ({
   const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState<boolean>(false);
   const [isFenModalOpen, setIsFenModalOpen] = useState<boolean>(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] =
+    useState<boolean>(false);
   const [hasDismissedResultModal, setHasDismissedResultModal] =
     useState<boolean>(false);
   const { prefersReducedMotion, toggleReducedMotion } = useReducedMotion();
@@ -518,7 +524,7 @@ const AppContent: React.FC<AppContentProps> = ({
 
   return (
     <div className="app-container" data-testid="chessforge-app">
-      <Header />
+      <Header onOpenSettings={() => setIsSettingsModalOpen(true)} />
       <main className="main-content">
         <div className="board-section" data-testid="board-section">
           {engineError && (
@@ -642,6 +648,11 @@ const AppContent: React.FC<AppContentProps> = ({
             onPromotionCancel={handlePromotionCancel}
             onClearSelection={clearSelection}
             announcement={announcement}
+            theme={settings.boardTheme}
+            pieceSet={settings.pieceSet}
+            showCoordinates={settings.showCoordinates}
+            showLegalMoves={settings.showLegalMoves}
+            showLastMove={settings.showLastMove}
             reducedMotion={settings.reducedMotion || prefersReducedMotion}
             disabled={isGameOver || isInputDisabled}
             onSquareClick={handleSquareClick}
@@ -965,6 +976,11 @@ const AppContent: React.FC<AppContentProps> = ({
           currentFen={exportFen()}
           onLoadFen={handleLoadFen}
           onStartGameFromFen={handleStartGameFromFen}
+        />
+
+        <SettingsModal
+          isOpen={isSettingsModalOpen}
+          onClose={() => setIsSettingsModalOpen(false)}
         />
       </main>
     </div>

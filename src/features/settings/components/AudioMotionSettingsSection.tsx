@@ -1,0 +1,98 @@
+import React from "react";
+import { useSettings } from "../useSettings";
+
+export const AudioMotionSettingsSection: React.FC = () => {
+  const { settings, setSoundEnabled, setVolume, setReducedMotion } =
+    useSettings();
+
+  return (
+    <div
+      className="settings-section"
+      data-testid="settings-section-audio-motion"
+    >
+      <div className="settings-toggle-list">
+        <div className="settings-toggle-item">
+          <div className="settings-toggle-text">
+            <label htmlFor="switch-sound" className="settings-toggle-label">
+              Sound Effects
+            </label>
+            <span className="settings-toggle-desc">
+              Play auditory feedback for moves, captures, checks, and game
+              terminations
+            </span>
+          </div>
+          <button
+            id="switch-sound"
+            type="button"
+            role="switch"
+            aria-checked={settings.soundEnabled}
+            className={`toggle-switch ${settings.soundEnabled ? "toggle-switch--on" : ""}`}
+            data-testid="switch-sound"
+            onClick={() => setSoundEnabled(!settings.soundEnabled)}
+          >
+            <span className="toggle-handle" />
+          </button>
+        </div>
+
+        <div className="settings-slider-item">
+          <div className="settings-slider-header">
+            <label htmlFor="range-volume" className="settings-toggle-label">
+              Master Audio Volume
+            </label>
+            <span
+              className="settings-value-badge"
+              data-testid="volume-value-badge"
+            >
+              {settings.soundEnabled ? `${settings.volume}%` : "Muted"}
+            </span>
+          </div>
+          <div className="settings-slider-control">
+            <input
+              id="range-volume"
+              type="range"
+              min="0"
+              max="100"
+              step="1"
+              value={settings.volume}
+              disabled={!settings.soundEnabled}
+              className="range-slider"
+              data-testid="slider-volume"
+              aria-label="Master volume percentage"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={settings.volume}
+              aria-valuetext={`${settings.volume} percent`}
+              onChange={(e) => setVolume(Number(e.target.value))}
+            />
+          </div>
+        </div>
+
+        <div className="settings-toggle-item">
+          <div className="settings-toggle-text">
+            <label
+              htmlFor="switch-reduced-motion"
+              className="settings-toggle-label"
+            >
+              Reduced Motion
+            </label>
+            <span className="settings-toggle-desc">
+              Disable piece sliding, capture bursts, check pulsing, and UI
+              transitions
+            </span>
+          </div>
+          <button
+            id="switch-reduced-motion"
+            type="button"
+            role="switch"
+            aria-checked={settings.reducedMotion}
+            className={`toggle-switch ${settings.reducedMotion ? "toggle-switch--on" : ""}`}
+            data-testid="switch-reduced-motion"
+            onClick={() => setReducedMotion(!settings.reducedMotion)}
+          >
+            <span className="toggle-handle" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};

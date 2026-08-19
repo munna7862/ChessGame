@@ -38,6 +38,10 @@ export const Board: React.FC<BoardProps> = ({
   onPromotionCancel,
   disabled = false,
   showCoordinates = true,
+  showLegalMoves = true,
+  showLastMove = true,
+  theme = "classic",
+  pieceSet = "standard",
   reducedMotion = false,
   onSquareClick,
   onSquareFocus,
@@ -92,7 +96,7 @@ export const Board: React.FC<BoardProps> = ({
   }, [position, board, pieces]);
 
   const legalDestMap = useMemo(() => {
-    if (!legalDestinations) {
+    if (!showLegalMoves || !legalDestinations) {
       return new Map<Square, LegalDestination>();
     }
     if (legalDestinations instanceof Map) {
@@ -109,7 +113,7 @@ export const Board: React.FC<BoardProps> = ({
       }
     }
     return map;
-  }, [legalDestinations]);
+  }, [showLegalMoves, legalDestinations]);
 
   const gridSquares = useMemo(
     () => getGridSquares(orientation, pieceResolver),
@@ -193,10 +197,18 @@ export const Board: React.FC<BoardProps> = ({
 
   return (
     <div
-      className={clsx("chess-board-wrapper", className, {
-        "reduced-motion": reducedMotion,
-      })}
+      className={clsx(
+        "chess-board-wrapper",
+        `board-theme-${theme}`,
+        `piece-set-${pieceSet}`,
+        className,
+        {
+          "reduced-motion": reducedMotion,
+        }
+      )}
       data-testid="chess-board-wrapper"
+      data-board-theme={theme}
+      data-piece-set={pieceSet}
       data-reduced-motion={reducedMotion ? "true" : undefined}
     >
       <div
@@ -215,11 +227,19 @@ export const Board: React.FC<BoardProps> = ({
         aria-disabled={disabled ? "true" : "false"}
         data-testid="chess-board"
         data-orientation={orientation}
+        data-board-theme={theme}
+        data-piece-set={pieceSet}
         data-reduced-motion={reducedMotion ? "true" : undefined}
-        className={clsx("chess-board-grid", `orientation-${orientation}`, {
-          "is-board-disabled": disabled,
-          "reduced-motion": reducedMotion,
-        })}
+        className={clsx(
+          "chess-board-grid",
+          `orientation-${orientation}`,
+          `board-theme-${theme}`,
+          `piece-set-${pieceSet}`,
+          {
+            "is-board-disabled": disabled,
+            "reduced-motion": reducedMotion,
+          }
+        )}
       >
         {gridSquares.map((squareData: BoardSquareData) => {
           const isSelected = selectedSquare === squareData.square;
@@ -227,10 +247,13 @@ export const Board: React.FC<BoardProps> = ({
           const legalDest = legalDestMap.get(squareData.square);
           const isLegalTarget = Boolean(legalDest);
           const legalTargetType = legalDest?.targetType ?? "move";
-          const isLastMoveFrom = lastMove?.from === squareData.square;
-          const isLastMoveTo = lastMove?.to === squareData.square;
-          const isLastMove = isLastMoveFrom || isLastMoveTo;
+          const isLastMoveFrom =
+            showLastMove && lastMove?.from === squareData.square;
+          const isLastMoveTo =
+            showLastMove && lastMove?.to === squareData.square;
+          const isLastMove = Boolean(isLastMoveFrom || isLastMoveTo);
           const isCaptureEffect = Boolean(
+            showLastMove &&
             isLastMoveTo &&
             lastMove &&
             "isCapture" in lastMove &&

@@ -156,6 +156,10 @@ export interface BoardProps {
   readonly onPromotionCancel?: (() => void) | undefined;
   readonly disabled?: boolean | undefined;
   readonly showCoordinates?: boolean | undefined;
+  readonly showLegalMoves?: boolean | undefined;
+  readonly showLastMove?: boolean | undefined;
+  readonly theme?: "classic" | "wood" | "slate" | "ocean" | undefined;
+  readonly pieceSet?: "standard" | "classic" | "modern" | undefined;
   readonly reducedMotion?: boolean | undefined;
   readonly animateMoves?: boolean | undefined;
   readonly onSquareClick?: ((square: Square) => void) | undefined;

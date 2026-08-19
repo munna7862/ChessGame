@@ -1,7 +1,11 @@
 import React from "react";
 import { StatusBadge } from "./StatusBadge";
 
-export const Header: React.FC = () => {
+export interface HeaderProps {
+  readonly onOpenSettings?: (() => void) | undefined;
+}
+
+export const Header: React.FC<HeaderProps> = ({ onOpenSettings }) => {
   return (
     <header
       data-testid="app-header"
@@ -51,6 +55,31 @@ export const Header: React.FC = () => {
           label="Local Engine Ready"
           status="ready"
         />
+        {onOpenSettings && (
+          <button
+            type="button"
+            className="btn-control"
+            data-testid="btn-open-settings"
+            onClick={onOpenSettings}
+            aria-label="Open Settings"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.35rem",
+              padding: "0.35rem 0.75rem",
+              fontSize: "0.85rem",
+              fontWeight: 600,
+              backgroundColor: "rgba(30, 41, 59, 0.7)",
+              border: "1px solid rgba(148, 163, 184, 0.2)",
+              borderRadius: "6px",
+              color: "#f8fafc",
+              cursor: "pointer",
+            }}
+          >
+            <span aria-hidden="true">⚙️</span>
+            <span>Settings</span>
+          </button>
+        )}
       </div>
     </header>
   );

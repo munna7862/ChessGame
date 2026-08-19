@@ -394,4 +394,32 @@ describe("ChessForge Bootstrap Layout & Board UI (TC-BOOT-05, TC-PIECE-23, TC-SE
       "Hikaru Nakamura"
     );
   });
+
+  it("opens Settings modal via Header button, applies theme dynamically, and closes modal", () => {
+    render(<App />);
+
+    // Default board theme
+    const boardWrapper = screen.getByTestId("chess-board-wrapper");
+    expect(boardWrapper).toHaveAttribute("data-board-theme", "classic");
+
+    // Click Header Settings button
+    const settingsBtn = screen.getByTestId("btn-open-settings");
+    fireEvent.click(settingsBtn);
+
+    expect(screen.getByTestId("settings-modal")).toBeInTheDocument();
+
+    // Select Wood theme
+    const woodThemeOption = screen.getByTestId("theme-option-wood");
+    fireEvent.click(woodThemeOption);
+
+    // Board instantly reflects wood theme
+    expect(boardWrapper).toHaveAttribute("data-board-theme", "wood");
+
+    // Close Settings modal via Done button
+    const doneBtn = screen.getByTestId("btn-done-settings");
+    fireEvent.click(doneBtn);
+
+    expect(screen.queryByTestId("settings-modal")).not.toBeInTheDocument();
+    expect(boardWrapper).toHaveAttribute("data-board-theme", "wood");
+  });
 });
