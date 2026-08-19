@@ -2,26 +2,26 @@
 
 ## Active Sprint
 
-**Phase 08 · Sprint 06: Settings UI**  
-Branch: `feature/p08-s06-settings-ui`
+**Phase 09 · Sprint 01: Design Tokens and Visual System**  
+Branch: `feature/p09-s01-design-tokens-visual-system`
 
 ---
 
 ## Sprint Tasks Breakdown
 
-- [x] **SM-8601**: [Scrum Master] Initialize Phase 08 Sprint 06 plan, task breakdown, dependency verification, and lifecycle tracking in `task.md`. Checkout branch `feature/p08-s06-settings-ui`.
-- [x] **CDA-8601**: [Chess Domain Architect / Dev Architect] Formalize Settings UI Specification (`REQ-SETUI-01` to `REQ-SETUI-08`), dialog architecture, tab navigation, theme/piece preview states, accessibility guidelines, and reset safety flow in `docs/architecture/settings_ui_specification.md`.
-- [x] **SDET-8601**: [SDET Architect] Author Sprint 06 Pre-Implementation Test Cases Catalog (`docs/testing/test_cases_catalog_P08_S06.md`) covering Settings dialog open/close, board theme preview, piece set switching, audio/volume controls, motion/speed controls, coordinate/highlight toggles, engine difficulty levels, reset confirmation, and keyboard/focus trap accessibility.
-- [x] **DEV-8601**: [Dev Architect / Senior SDE] Implement modular `SettingsModal` dialog with accessible tabbed categories (Appearance, Board & Pieces, Sound & Motion, AI & Gameplay) in `src/features/settings/components/`.
-- [x] **DEV-8602**: [Dev Architect / Senior SDE] Implement interactive controls: Board Theme preview selector, Piece Set selector, Sound & Volume controls, Animation & Reduced Motion controls, Coordinate & Highlight toggles, and Engine Difficulty controls.
-- [x] **DEV-8603**: [Dev Architect / Senior SDE] Implement Reset Settings flow with confirmation dialog, resetting domain settings cleanly.
-- [x] **DEV-8604**: [Dev Architect / Senior SDE] Integrate Settings button into main navigation / header in `src/components/Header.tsx` and `src/App.tsx`, and ensure board styles, animations, sounds, and engine parameters dynamically respond to settings changes.
-- [x] **DEV-8605**: [Dev Architect / Senior SDE] Author comprehensive RTL component tests and integration tests in `src/features/settings/__tests__/SettingsModal.test.tsx` and `src/App.test.tsx`.
-- [x] **DEV-8606**: [Dev Architect / Senior SDE] Conduct Dev Technical Code Acceptance Review.
-- [x] **SEC-8601**: [Security Officer] Conduct Desktop & Capability Security Audit (DOM sanitization, zero unauthorized IPC calls, zero telemetry, local-only preference updates).
-- [x] **SDET-8602**: [SDET Architect] Execute complete test suite and quality gates (100% Green, 0 skips: `npm run lint`, `npm run typecheck`, `npm run format:check`, `npm test`, `npm run test:e2e`, `npm run build`).
-- [x] **PO-8601**: [Product Owner] Conduct Product & UX Acceptance Review and approve release.
-- [x] **DO-8601**: [DevOps Engineer] Author PR documentation (`docs/pull_requests/pr_P08_S06_settings_ui.md`), commit atomic changes, push to origin, create GitHub PR via `gh pr create`, and auto-merge to `main`.
+- [x] **SM-9101**: [Scrum Master] Initialize Phase 09 Sprint 01 plan, task breakdown, dependency verification, and lifecycle tracking in `task.md`. Checkout branch `feature/p09-s01-design-tokens-visual-system`.
+- [x] **CDA-9101**: [Chess Domain Architect / Dev Architect] Formalize Design Tokens and Visual System Specification (`REQ-TOK-01` to `REQ-TOK-08`), spacing scale, typography, surface hierarchy, border/radius rules, state styles, board theme tokens, and component styling conventions in `docs/architecture/design_tokens_and_visual_system_specification.md`.
+- [x] **SDET-9101**: [SDET Architect] Author Sprint 01 Pre-Implementation Test Cases Catalog (`docs/testing/test_cases_catalog_P09_S01.md`) covering tokens definitions, CSS variable availability, TypeScript token mappings, surface contrast ratios, focus ring invariants, board theme token integration, and component styling consistency.
+- [x] **DEV-9101**: [Dev Architect / Senior SDE] Implement centralized CSS design tokens file (`src/theme/tokens.css`) defining spacing, typography, surface hierarchy, elevations/shadows, borders/radii, state colors, and board theme variables.
+- [x] **DEV-9102**: [Dev Architect / Senior SDE] Implement typed TypeScript tokens export (`src/theme/tokens.ts` and `src/theme/types.ts`) with theme utilities and programmatic accessors.
+- [x] **DEV-9103**: [Dev Architect / Senior SDE] Centralize and update global styling (`src/index.css`, `src/App.css`, `src/features/board/Board.css`, modals, headers, panels) to consume centralized design tokens consistently while keeping the board visually dominant.
+- [x] **DEV-9104**: [Dev Architect / Senior SDE] Document Component Styling Conventions and Visual Hierarchy guidelines in `docs/design/design_tokens_and_visual_conventions.md`.
+- [x] **DEV-9105**: [Dev Architect / Senior SDE] Author comprehensive unit and token integrity tests (`src/theme/__tests__/tokens.test.ts`, `src/theme/__tests__/visualSystemInvariants.test.ts`).
+- [x] **DEV-9106**: [Dev Architect / Senior SDE] Conduct Dev Technical Code Acceptance Review.
+- [x] **SEC-9101**: [Security Officer] Conduct Desktop & Capability Security Audit (no remote stylesheet/font fetching, CSP compliance, local asset isolation, zero dangerous style injection).
+- [x] **SDET-9102**: [SDET Architect] Execute complete test suite and quality gates (100% Green, 0 skips: `npm run lint`, `npm run typecheck`, `npm run format:check`, `npm test`, `npm run test:e2e`, `npm run build`).
+- [x] **PO-9101**: [Product Owner] Conduct Product & UX Acceptance Review and approve release.
+- [/] **DO-9101**: [DevOps Engineer] Author PR documentation (`docs/pull_requests/pr_P09_S01_design_tokens_and_visual_system.md`), commit atomic changes, push to origin, create GitHub PR via `gh pr create`, and auto-merge to `main`.
 
 ---
 
@@ -35,10 +35,10 @@ Branch: `feature/p08-s06-settings-ui`
 
 ## Sprint Review Comments & Refinement Loop
 
-- `[SCRUM_MASTER] -> [CHESS_DOMAIN_ARCHITECT]`: Phase 08 · Sprint 06 (Settings UI) initialized on feature branch `feature/p08-s06-settings-ui`. Dependencies verified (Phase 08 Sprint 05 Settings Model and Storage merged and green). Task breakdown complete. Ready for Settings UI Specification in `docs/architecture/settings_ui_specification.md`. Status: **APPROVED**.
-- `[CHESS_DOMAIN_ARCHITECT] -> [SDET_ARCHITECT]`: Authored `docs/architecture/settings_ui_specification.md` defining `REQ-SETUI-01` through `REQ-SETUI-08` (dialog architecture, board theme previews, piece set selector, coordinate/highlight toggles, audio/volume, reduced motion, engine strength, and reset-to-defaults confirmation). Status: **APPROVED**.
-- `[SDET_ARCHITECT] -> [DEV_ARCHITECT]`: Authored `docs/testing/test_cases_catalog_P08_S06.md` detailing test cases `TC-SETUI-01` through `TC-SETUI-20`. Handing off for production implementation. Status: **APPROVED**.
-- `[DEV_ARCHITECT] -> [SECURITY_OFFICER]`: Production implementation completed across `src/features/settings/components/`, `src/features/board/`, `src/components/Header.tsx`, and `src/App.tsx`. 10 new unit/integration tests added (12 tests in settings suite, 737 total in Vitest). All tests passing. Status: **APPROVED**.
-- `[SECURITY_OFFICER] -> [SDET_ARCHITECT]`: Security and desktop capability audit verified. Untrusted inputs sanitized, zero external network requests or telemetry endpoints, focus trapping prevents leakage, CSP compliance preserved. Status: **APPROVED**.
-- `[SDET_ARCHITECT] -> [PRODUCT_OWNER]`: Quality Gates verified: Vitest 89/89 suites (737/737 tests passing, 0 skips), Playwright 55/55 E2E tests passing, TypeScript 0 errors, ESLint 0 errors, Prettier formatting 100% compliant, Vite production build successful in 2.63s. Status: **APPROVED**.
-- `[PRODUCT_OWNER] -> [DEVOPS_ENGINEER]`: Product Acceptance Criteria verified. Dynamic behavior on every setting change, persistence across restarts, reset safety confirmation, and full keyboard/ARIA accessibility validated. Release authorized. Status: **APPROVED**.
+- `[SCRUM_MASTER] -> [CHESS_DOMAIN_ARCHITECT]`: Phase 09 · Sprint 01 (Design Tokens and Visual System) initialized on feature branch `feature/p09-s01-design-tokens-visual-system`. Dependencies verified (Phase 08 complete and merged to main). Task breakdown established in `task.md`. Handing off to CDA / Dev Architect for specification authoring. Status: **APPROVED**.
+- `[CHESS_DOMAIN_ARCHITECT] -> [SDET_ARCHITECT]`: Formalized `docs/architecture/design_tokens_and_visual_system_specification.md` defining `REQ-TOK-01` through `REQ-TOK-08` covering 4px spacing scale, typography, surface hierarchy, border/radius rules, state styles, board themes, and component styling conventions. Handing off to SDET Architect for Test Cases Catalog. Status: **APPROVED**.
+- `[SDET_ARCHITECT] -> [DEV_ARCHITECT]`: Authored `docs/testing/test_cases_catalog_P09_S01.md` detailing test cases `TC-TOK-01` through `TC-TOK-16`. Handing off to Dev Architect / Senior SDE for production implementation. Status: **APPROVED**.
+- `[DEV_ARCHITECT] -> [SECURITY_OFFICER]`: Implemented `src/theme/tokens.css`, `src/theme/types.ts`, `src/theme/tokens.ts`, `src/theme/index.ts`, updated `src/index.css`, created `docs/design/design_tokens_and_visual_conventions.md`, and added unit/invariant test suites in `src/theme/__tests__/`. Handing off for Security Audit. Status: **APPROVED**.
+- `[SECURITY_OFFICER] -> [SDET_ARCHITECT]`: Desktop and capability security audit verified. Native system font stacks used (0 remote CDN fonts or external CSS imports), CSP compliance maintained, no untrusted style injection vectors, local-only runtime isolation preserved. Status: **APPROVED**.
+- `[SDET_ARCHITECT] -> [PRODUCT_OWNER]`: Quality Gates verified: Vitest 91/91 suites (763/763 tests passing, 0 skips), Playwright 55/55 E2E tests passing, TypeScript 0 errors, ESLint 0 errors, Prettier formatting 100% compliant, Vite production build successful in 6.66s. Handing off for PO Acceptance Review. Status: **APPROVED**.
+- `[PRODUCT_OWNER] -> [DEVOPS_ENGINEER]`: Product Acceptance Criteria verified. Visual tokens are centralized across spacing, typography, surfaces, borders, states, and board themes; board dominance is preserved; and component styling conventions are documented. Release and PR authorized. Status: **APPROVED**.
