@@ -18,6 +18,56 @@
     0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
 }
 
+/* Board Themes */
+.board-theme-classic,
+[data-board-theme="classic"] {
+  --board-bg: #1e293b;
+  --board-border: #334155;
+  --square-light-bg: #e2e8f0;
+  --square-light-text: #475569;
+  --square-dark-bg: #64748b;
+  --square-dark-text: #cbd5e1;
+}
+
+.board-theme-wood,
+[data-board-theme="wood"] {
+  --board-bg: #38220f;
+  --board-border: #5c3818;
+  --square-light-bg: #f0d9b5;
+  --square-light-text: #8c6747;
+  --square-dark-bg: #b58863;
+  --square-dark-text: #f0d9b5;
+}
+
+.board-theme-slate,
+[data-board-theme="slate"] {
+  --board-bg: #0f172a;
+  --board-border: #1e293b;
+  --square-light-bg: #cbd5e1;
+  --square-light-text: #334155;
+  --square-dark-bg: #475569;
+  --square-dark-text: #94a3b8;
+}
+
+.board-theme-ocean,
+[data-board-theme="ocean"] {
+  --board-bg: #0c2340;
+  --board-border: #164e63;
+  --square-light-bg: #cbe4f9;
+  --square-light-text: #155e75;
+  --square-dark-bg: #2e5b88;
+  --square-dark-text: #e0f2fe;
+}
+
+/* Piece Sets */
+.piece-set-classic .chess-piece-svg {
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.45));
+}
+
+.piece-set-modern .chess-piece-svg {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
 .chess-board-wrapper {
   display: flex;
   justify-content: center;
