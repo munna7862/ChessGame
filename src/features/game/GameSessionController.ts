@@ -1,6 +1,10 @@
 import { createChessAdapter } from "../../domain/chess/adapters/chessJsAdapter";
-import type { ChessDomainError, Result } from "../../domain/chess/errors";
-import type { PgnTags } from "../../domain/chess/pgn";
+import {
+  type ChessDomainError,
+  ok,
+  type Result,
+} from "../../domain/chess/errors";
+import { parsePgn, type PgnTags } from "../../domain/chess/pgn";
 import type { ChessGame } from "../../domain/chess/ports";
 import type {
   Color,
@@ -19,6 +23,7 @@ import type {
   GameSessionState,
   IGameSessionController,
   PlayerConfig,
+  PgnPreview,
 } from "./types";
 import type { TimeControl } from "../../domain/clock/types";
 import type {
@@ -405,6 +410,79 @@ export class GameSessionController implements IGameSessionController {
       ...tags,
     };
     return this.chessGame.exportPgn(defaultTags);
+  }
+
+  /**
+   * Validates a PGN string on an isolated temporary adapter and produces structured preview metadata.
+   */
+  public validatePgn(pgn: string): Result<PgnPreview, ChessDomainError> {
+    const tempAdapter = createChessAdapter();
+    const importRes = tempAdapter.importPgn(pgn);
+    if (!importRes.success) {
+      return importRes;
+    }
+
+    const parseRes = parsePgn(pgn);
+    const tags = parseRes.success ? parseRes.data.tags : {};
+    const moves = parseRes.success ? parseRes.data.moves : [];
+    const result = parseRes.success ? parseRes.data.result : "*";
+    const startingFen = parseRes.success
+      ? parseRes.data.startingFen
+      : undefined;
+
+    const status = tempAdapter.getStatus();
+    const preview: PgnPreview = {
+      tags,
+      moves,
+      result,
+      startingFen,
+      finalFen: tempAdapter.exportFen(),
+      moveCount: moves.length,
+      whiteName: tags.White?.trim() || "White",
+      blackName: tags.Black?.trim() || "Black",
+      event: tags.Event?.trim() || "Casual Game",
+      date: tags.Date?.trim() || "????.??.??",
+      isGameOver: status.isOver,
+      statusDescription: status.description,
+    };
+
+    return ok(preview);
+  }
+
+  /**
+   * Atomically validates and replaces the active game session with an imported PGN.
+   */
+  public importPgnGame(
+    pgn: string,
+    options?: { updatePlayerNames?: boolean }
+  ): Result<PgnPreview, ChessDomainError> {
+    const validation = this.validatePgn(pgn);
+    if (!validation.success) {
+      return validation;
+    }
+
+    const preview = validation.data;
+
+    // Apply import to authoritative domain instance
+    const importRes = this.chessGame.importPgn(pgn);
+    if (!importRes.success) {
+      return importRes;
+    }
+
+    if (options?.updatePlayerNames !== false) {
+      if (preview.tags.White && preview.tags.White.trim()) {
+        this.players.w.name = preview.tags.White.trim();
+      }
+      if (preview.tags.Black && preview.tags.Black.trim()) {
+        this.players.b.name = preview.tags.Black.trim();
+      }
+    }
+
+    this.id = `session_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+    this.startedAt = Date.now();
+    this.notifyListeners();
+
+    return ok(preview);
   }
 
   public getLegalMoves(square?: Square): Move[] {

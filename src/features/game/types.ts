@@ -11,7 +11,7 @@ import type {
 } from "../../domain/chess/types";
 import type { ChessGame } from "../../domain/chess/ports";
 import type { ChessDomainError, Result } from "../../domain/chess/errors";
-import type { PgnTags } from "../../domain/chess/pgn";
+import type { PgnResult, PgnTags } from "../../domain/chess/pgn";
 import type { TimeControl } from "../../domain/clock/types";
 
 export const PlayerTypeSchema = z.enum(["human", "engine"]);
@@ -165,6 +165,21 @@ import type {
   PersistedClockState,
 } from "../../domain/persistence/schema";
 
+export interface PgnPreview {
+  readonly tags: PgnTags;
+  readonly moves: readonly string[];
+  readonly result: PgnResult;
+  readonly startingFen?: string | undefined;
+  readonly finalFen: string;
+  readonly moveCount: number;
+  readonly whiteName: string;
+  readonly blackName: string;
+  readonly event: string;
+  readonly date: string;
+  readonly isGameOver: boolean;
+  readonly statusDescription: string;
+}
+
 export interface IGameSessionController {
   getState(): GameSessionState;
   subscribe(listener: (state: GameSessionState) => void): () => void;
@@ -186,6 +201,11 @@ export interface IGameSessionController {
   loadFen(fen: string): Result<void, ChessDomainError>;
   exportFen(): string;
   exportPgn(tags?: Partial<PgnTags>): string;
+  validatePgn(pgn: string): Result<PgnPreview, ChessDomainError>;
+  importPgnGame(
+    pgn: string,
+    options?: { updatePlayerNames?: boolean }
+  ): Result<PgnPreview, ChessDomainError>;
   getLegalMoves(square?: Square): Move[];
   isLegalMove(move: MoveInput): boolean;
   getPiece(square: Square): Piece | null;

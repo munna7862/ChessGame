@@ -18,6 +18,8 @@ import {
   MoveHistoryPanel,
   GameResultModal,
   GameRecoveryModal,
+  PgnImportModal,
+  PgnExportModal,
   calculateMaterialAdvantage,
   type ResolvedNewGameSession,
 } from "./features/game";
@@ -44,6 +46,9 @@ export const App: React.FC<AppProps> = ({
     undoMove,
     resign,
     agreeDraw,
+    exportPgn,
+    validatePgn,
+    importPgnGame,
   } = useGameSession();
 
   const [orientation, setOrientation] = useState<BoardOrientation>("w");
@@ -52,6 +57,8 @@ export const App: React.FC<AppProps> = ({
   const [isResignModalOpen, setIsResignModalOpen] = useState<boolean>(false);
   const [isDrawOfferModalOpen, setIsDrawOfferModalOpen] =
     useState<boolean>(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState<boolean>(false);
   const [hasDismissedResultModal, setHasDismissedResultModal] =
     useState<boolean>(false);
   const { prefersReducedMotion, toggleReducedMotion } = useReducedMotion();
@@ -361,6 +368,39 @@ export const App: React.FC<AppProps> = ({
     setAnnouncement(`${opponentName} declined the draw offer.`);
   };
 
+  const handleImportPgn = useCallback(
+    (pgn: string, options?: { updatePlayerNames?: boolean }) => {
+      void cancelThinking();
+      const res = importPgnGame(pgn, options);
+      if (res.success) {
+        handlePromotionCancel();
+        clearSelection(false);
+        resetLastMove();
+        clock.resetClock(sessionState.timeControl);
+        if (res.data.isGameOver) {
+          clock.pauseClock();
+        }
+        setIsRestartModalOpen(false);
+        setIsDrawOfferModalOpen(false);
+        setIsResignModalOpen(false);
+        setHasDismissedResultModal(false);
+        setAnnouncement(
+          `Game imported: ${res.data.whiteName} vs ${res.data.blackName} (${res.data.moveCount} plies).`
+        );
+      }
+    },
+    [
+      cancelThinking,
+      importPgnGame,
+      handlePromotionCancel,
+      clearSelection,
+      resetLastMove,
+      clock,
+      sessionState.timeControl,
+      setAnnouncement,
+    ]
+  );
+
   const turnLabel = isEngineThinking
     ? `${sessionState.players[position.turn].name} is thinking...`
     : position.turn === "w"
@@ -662,6 +702,24 @@ export const App: React.FC<AppProps> = ({
             <button
               type="button"
               className="btn-control"
+              data-testid="btn-export-pgn"
+              onClick={() => setIsExportModalOpen(true)}
+              title="Export game moves to PGN format"
+            >
+              Export PGN
+            </button>
+            <button
+              type="button"
+              className="btn-control"
+              data-testid="btn-import-pgn"
+              onClick={() => setIsImportModalOpen(true)}
+              title="Import and load game from PGN"
+            >
+              Import PGN
+            </button>
+            <button
+              type="button"
+              className="btn-control"
               data-testid="btn-reset-game"
               onClick={handleOpenNewGame}
             >
@@ -800,6 +858,22 @@ export const App: React.FC<AppProps> = ({
           onContinue={continueGame}
           onDiscard={discardGame}
           onClose={dismissRecoveryModal}
+        />
+
+        <PgnExportModal
+          isOpen={isExportModalOpen}
+          onClose={() => setIsExportModalOpen(false)}
+          onExportPgn={exportPgn}
+          players={sessionState.players}
+          moveCount={sessionState.moveHistory.length}
+          isGameOver={sessionState.isGameOver}
+        />
+
+        <PgnImportModal
+          isOpen={isImportModalOpen}
+          onClose={() => setIsImportModalOpen(false)}
+          onImportPgn={handleImportPgn}
+          validatePgn={validatePgn}
         />
       </main>
     </div>

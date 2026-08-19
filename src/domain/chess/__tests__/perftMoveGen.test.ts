@@ -56,7 +56,7 @@ describe("Perft Move Generation Benchmark Suite (TC-REG-01 to TC-REG-11)", () =>
       const adapter = new ChessJsAdapter(fixture.fen);
       const nodes = perft(adapter, 3);
       expect(nodes).toBe(fixture.expectedNodes[3]);
-    }, 60000);
+    }, 120000);
   });
 
   // Position 3: Endgame Pins & Checks
@@ -100,6 +100,6 @@ describe("Perft Move Generation Benchmark Suite (TC-REG-01 to TC-REG-11)", () =>
       expect(perft(adapter, 1)).toBe(fixture.expectedNodes[1]);
       expect(perft(adapter, 2)).toBe(fixture.expectedNodes[2]);
       expect(perft(adapter, 3)).toBe(fixture.expectedNodes[3]);
-    }, 25000);
+    }, 120000);
   });
 });

@@ -2,9 +2,10 @@
 
 ## 1. Summary & Context
 
-This PR delivers the complete persistence abstraction layer and versioned state architecture for **ChessForge** as specified in Phase 08 Sprint 01 (`planning/sprints/P08-S01-persistence-abstraction-and-versioned-state.md`) and ADR-004 (*Local-First JSON Persistence & Crash Recovery*).
+This PR delivers the complete persistence abstraction layer and versioned state architecture for **ChessForge** as specified in Phase 08 Sprint 01 (`planning/sprints/P08-S01-persistence-abstraction-and-versioned-state.md`) and ADR-004 (_Local-First JSON Persistence & Crash Recovery_).
 
 ### Key Deliverables & Architecture
+
 1. **Persistence Storage Port (`ports.ts`):** `PersistenceStorageAdapter` port abstracting physical key-value storage mechanisms (`getItem`, `setItem`, `removeItem`, `clear`, `keys`) using `Result<T, PersistenceError>` error contracts.
 2. **Versioned Zod Schemas (`schema.ts` & `types.ts`):**
    - Versioned root schema (`PersistedStateV1Schema`, `version: 1`, `updatedAt`, `settings`, `activeGame`, `metadata`).
