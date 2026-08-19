@@ -20,8 +20,10 @@ import {
   GameRecoveryModal,
   PgnImportModal,
   PgnExportModal,
+  FenModal,
   calculateMaterialAdvantage,
   type ResolvedNewGameSession,
+  type NewGameConfigOptions,
 } from "./features/game";
 import "./App.css";
 
@@ -46,6 +48,8 @@ export const App: React.FC<AppProps> = ({
     undoMove,
     resign,
     agreeDraw,
+    loadFen,
+    exportFen,
     exportPgn,
     validatePgn,
     importPgnGame,
@@ -53,12 +57,16 @@ export const App: React.FC<AppProps> = ({
 
   const [orientation, setOrientation] = useState<BoardOrientation>("w");
   const [isNewGameModalOpen, setIsNewGameModalOpen] = useState<boolean>(false);
+  const [newGameInitialValues, setNewGameInitialValues] = useState<
+    Partial<NewGameConfigOptions> | undefined
+  >(undefined);
   const [isRestartModalOpen, setIsRestartModalOpen] = useState<boolean>(false);
   const [isResignModalOpen, setIsResignModalOpen] = useState<boolean>(false);
   const [isDrawOfferModalOpen, setIsDrawOfferModalOpen] =
     useState<boolean>(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState<boolean>(false);
+  const [isFenModalOpen, setIsFenModalOpen] = useState<boolean>(false);
   const [hasDismissedResultModal, setHasDismissedResultModal] =
     useState<boolean>(false);
   const { prefersReducedMotion, toggleReducedMotion } = useReducedMotion();
@@ -240,6 +248,7 @@ export const App: React.FC<AppProps> = ({
   };
 
   const handleOpenNewGame = () => {
+    setNewGameInitialValues(undefined);
     setIsNewGameModalOpen(true);
   };
 
@@ -263,6 +272,54 @@ export const App: React.FC<AppProps> = ({
       }.`
     );
   };
+
+  const handleLoadFen = useCallback(
+    (fen: string) => {
+      void cancelThinking();
+      const res = loadFen(fen);
+      if (res.success) {
+        handlePromotionCancel();
+        clearSelection(false);
+        resetLastMove();
+        clock.resetClock(sessionState.timeControl);
+        setIsRestartModalOpen(false);
+        setIsDrawOfferModalOpen(false);
+        setIsResignModalOpen(false);
+        setHasDismissedResultModal(false);
+        setAnnouncement("Position loaded from FEN.");
+      }
+    },
+    [
+      cancelThinking,
+      loadFen,
+      handlePromotionCancel,
+      clearSelection,
+      resetLastMove,
+      clock,
+      sessionState.timeControl,
+      setAnnouncement,
+    ]
+  );
+
+  const handleStartGameFromFen = useCallback(
+    (fen: string) => {
+      setNewGameInitialValues({
+        mode: sessionState.mode,
+        player1Name: sessionState.players.w.name,
+        player2Name: sessionState.players.b.name,
+        player1Color: orientation,
+        initialFen: fen,
+        timeControl: sessionState.timeControl,
+      });
+      setIsNewGameModalOpen(true);
+    },
+    [
+      sessionState.mode,
+      sessionState.players,
+      orientation,
+      sessionState.timeControl,
+    ]
+  );
 
   const handleUndo = () => {
     if (sessionState.moveHistory.length === 0 || sessionState.isGameOver) {
@@ -720,6 +777,15 @@ export const App: React.FC<AppProps> = ({
             <button
               type="button"
               className="btn-control"
+              data-testid="btn-fen-workflow"
+              onClick={() => setIsFenModalOpen(true)}
+              title="Inspect, copy, or load FEN position"
+            >
+              FEN
+            </button>
+            <button
+              type="button"
+              className="btn-control"
               data-testid="btn-reset-game"
               onClick={handleOpenNewGame}
             >
@@ -780,12 +846,14 @@ export const App: React.FC<AppProps> = ({
           isOpen={isNewGameModalOpen}
           onClose={handleCloseNewGame}
           onStartGame={handleStartNewGame}
-          initialValues={{
-            mode: sessionState.mode,
-            player1Name: sessionState.players.w.name,
-            player2Name: sessionState.players.b.name,
-            player1Color: orientation,
-          }}
+          initialValues={
+            newGameInitialValues ?? {
+              mode: sessionState.mode,
+              player1Name: sessionState.players.w.name,
+              player2Name: sessionState.players.b.name,
+              player1Color: orientation,
+            }
+          }
         />
 
         <ConfirmationModal
@@ -874,6 +942,14 @@ export const App: React.FC<AppProps> = ({
           onClose={() => setIsImportModalOpen(false)}
           onImportPgn={handleImportPgn}
           validatePgn={validatePgn}
+        />
+
+        <FenModal
+          isOpen={isFenModalOpen}
+          onClose={() => setIsFenModalOpen(false)}
+          currentFen={exportFen()}
+          onLoadFen={handleLoadFen}
+          onStartGameFromFen={handleStartGameFromFen}
         />
       </main>
     </div>

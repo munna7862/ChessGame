@@ -24,8 +24,13 @@ export interface NewGameModalProps {
   readonly initialValues?: Partial<NewGameConfigOptions> | undefined;
 }
 
-export const NewGameModal: React.FC<NewGameModalProps> = ({
-  isOpen,
+interface NewGameModalContentProps {
+  readonly onClose: () => void;
+  readonly onStartGame: (session: ResolvedNewGameSession) => void;
+  readonly initialValues?: Partial<NewGameConfigOptions> | undefined;
+}
+
+const NewGameModalContent: React.FC<NewGameModalContentProps> = ({
   onClose,
   onStartGame,
   initialValues,
@@ -82,8 +87,6 @@ export const NewGameModal: React.FC<NewGameModalProps> = ({
 
   // Keyboard navigation & focus trap
   useEffect(() => {
-    if (!isOpen) return;
-
     previouslyFocusedElementRef.current =
       document.activeElement as HTMLElement | null;
 
@@ -129,9 +132,7 @@ export const NewGameModal: React.FC<NewGameModalProps> = ({
       window.removeEventListener("keydown", handleKeyDown);
       previouslyFocusedElementRef.current?.focus();
     };
-  }, [isOpen, onClose]);
-
-  if (!isOpen) return null;
+  }, [onClose]);
 
   const handleFenChange = (value: string) => {
     setCustomFen(value);
@@ -451,5 +452,23 @@ export const NewGameModal: React.FC<NewGameModalProps> = ({
         </form>
       </div>
     </div>
+  );
+};
+
+export const NewGameModal: React.FC<NewGameModalProps> = ({
+  isOpen,
+  onClose,
+  onStartGame,
+  initialValues,
+}) => {
+  if (!isOpen) return null;
+
+  return (
+    <NewGameModalContent
+      key={`${initialValues?.mode ?? "default"}_${initialValues?.initialFen ?? "none"}_${initialValues?.player1Color ?? "w"}`}
+      onClose={onClose}
+      onStartGame={onStartGame}
+      initialValues={initialValues}
+    />
   );
 };
