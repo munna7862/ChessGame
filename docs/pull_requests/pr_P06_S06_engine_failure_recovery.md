@@ -3,9 +3,11 @@
 ## Summary of Changes
 
 ### Sprint Objective
+
 Make engine failures recoverable without corrupting the chess game, ensuring seamless error visibility, robust WebWorker error interception, clean restart lifecycle, zero state corruption, local diagnostics telemetry logging, and graceful two-player human mode fallback.
 
 ### Key Architectural & Implementation Enhancements
+
 1. **Worker Crash & Fault Interception (`StockfishWorkerBridge.ts`):**
    - Added listeners for `messageerror` and enhanced `error` event interception on the Stockfish WebWorker.
    - Cleanly intercepts unexpected crashes, terminates damaged worker threads, and dispatches standardized `{ type: "ERROR", message: ..., fatal: true }` responses.
@@ -36,6 +38,7 @@ Make engine failures recoverable without corrupting the chess game, ensuring sea
 ## Test Results & Quality Gates
 
 ### Automated Test Execution
+
 - **Unit & Integration Tests (Vitest):** 58/58 test suites passed (541/541 tests passing, 0 failures, 0 skips).
 - **Desktop E2E Tests (Playwright):** 47/47 tests passed across Chromium webview.
 - **TypeScript Typecheck:** 0 errors (`tsc --noEmit`).
@@ -46,6 +49,7 @@ Make engine failures recoverable without corrupting the chess game, ensuring sea
 ---
 
 ## Security & Safety Audit Sign-Off
+
 - **WebWorker Isolation:** Stockfish WebWorker remains strictly isolated within browser WebWorker sandboxing with zero DOM access or network capabilities.
 - **Zero External Telemetry:** All error telemetry and diagnostics remain in local memory circular buffers with no outbound network sockets.
 - **Resource Discipline:** Zombie workers are terminated immediately upon error detection; memory footprint remains well within $< 150\text{ MB}$ limits.
