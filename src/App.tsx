@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import type { Color } from "./domain/chess/types";
 import type { TimeProvider } from "./domain/clock/types";
+import { PersistenceService } from "./domain/persistence/PersistenceService";
 import { Header } from "./components/Header";
 import { ConfirmationModal } from "./components/ConfirmationModal";
 import { Board } from "./features/board/Board";
@@ -11,10 +12,12 @@ import { useEngineOpponent, EngineErrorBanner } from "./features/engine";
 import { useClock } from "./features/clock";
 import {
   useGameSession,
+  useGameRecovery,
   PlayerPanel,
   NewGameModal,
   MoveHistoryPanel,
   GameResultModal,
+  GameRecoveryModal,
   calculateMaterialAdvantage,
   type ResolvedNewGameSession,
 } from "./features/game";
@@ -22,9 +25,17 @@ import "./App.css";
 
 export interface AppProps {
   readonly timeProvider?: TimeProvider | undefined;
+  readonly persistenceService?: PersistenceService | undefined;
 }
 
-export const App: React.FC<AppProps> = ({ timeProvider }) => {
+export const App: React.FC<AppProps> = ({
+  timeProvider,
+  persistenceService,
+}) => {
+  const [defaultPersistenceService] = useState(() => new PersistenceService());
+  const activePersistenceService =
+    persistenceService ?? defaultPersistenceService;
+
   const {
     sessionState,
     sessionController,
@@ -182,6 +193,31 @@ export const App: React.FC<AppProps> = ({ timeProvider }) => {
       resetLastMove();
     }
   }, [sessionState.moveHistory, setLastMove, resetLastMove]);
+
+  const {
+    isRecoveryModalOpen,
+    recoverableGame,
+    continueGame,
+    discardGame,
+    dismissModal: dismissRecoveryModal,
+  } = useGameRecovery({
+    persistenceService: activePersistenceService,
+    sessionController,
+    sessionState,
+    clock,
+    orientation,
+    setOrientation,
+    onGameRestored: (restoredSnapshot) => {
+      handlePromotionCancel();
+      clearSelection(false);
+      resetLastMove();
+      setIsDrawOfferModalOpen(false);
+      setHasDismissedResultModal(false);
+      setAnnouncement(
+        `Previous game resumed: ${restoredSnapshot.players.w.name} vs ${restoredSnapshot.players.b.name}.`
+      );
+    },
+  });
 
   const position = sessionState.position;
   const isResultModalOpen = sessionState.isGameOver && !hasDismissedResultModal;
@@ -756,6 +792,14 @@ export const App: React.FC<AppProps> = ({ timeProvider }) => {
               "Game result dismissed. You may review the final board position."
             );
           }}
+        />
+
+        <GameRecoveryModal
+          isOpen={isRecoveryModalOpen}
+          activeGame={recoverableGame}
+          onContinue={continueGame}
+          onDiscard={discardGame}
+          onClose={dismissRecoveryModal}
         />
       </main>
     </div>

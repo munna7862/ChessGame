@@ -1,10 +1,18 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import App from "./App";
 import { StatusBadge } from "./components/StatusBadge";
 import { Header } from "./components/Header";
 
 describe("ChessForge Bootstrap Layout & Board UI (TC-BOOT-05, TC-PIECE-23, TC-SEL-01 to TC-ANIM-13)", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  afterEach(() => {
+    localStorage.clear();
+  });
+
   it("renders the root application container and title", () => {
     render(<App />);
     expect(screen.getByTestId("chessforge-app")).toBeInTheDocument();
@@ -282,5 +290,60 @@ describe("ChessForge Bootstrap Layout & Board UI (TC-BOOT-05, TC-PIECE-23, TC-SE
     expect(screen.getByTestId("clock-display-b")).toBeInTheDocument();
     expect(screen.getByTestId("clock-time-w")).toHaveTextContent("3:00");
     expect(screen.getByTestId("clock-time-b")).toHaveTextContent("3:00");
+  });
+
+  it("TC-RECOV-APP-01: prompts to resume game when opening App with active game in persistence", () => {
+    // Seed persistence with an active game
+    localStorage.setItem(
+      "chessforge_state_v1",
+      JSON.stringify({
+        version: 1,
+        updatedAt: Date.now(),
+        settings: {
+          boardTheme: "classic",
+          pieceSet: "standard",
+          showCoordinates: true,
+          showLegalMoves: true,
+          showLastMove: true,
+          soundEnabled: true,
+          autoQueen: false,
+          engineDifficulty: 3,
+          reducedMotion: false,
+          volume: 80,
+        },
+        activeGame: {
+          id: "app-recover-test",
+          mode: "human_vs_human",
+          fen: "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+          moveHistorySan: ["e4", "e5"],
+          players: {
+            w: { id: "p1", name: "Alpha", color: "w", type: "human" },
+            b: { id: "p2", name: "Beta", color: "b", type: "human" },
+          },
+          userOrientation: "w",
+          startedAt: Date.now() - 10000,
+          updatedAt: Date.now() - 5000,
+        },
+      })
+    );
+
+    render(<App />);
+
+    // Recovery modal should appear
+    expect(screen.getByTestId("game-recovery-modal")).toBeInTheDocument();
+    expect(screen.getByTestId("recovery-players")).toHaveTextContent(
+      "Alpha (White) vs Beta (Black)"
+    );
+
+    // Click Continue Game
+    fireEvent.click(screen.getByTestId("btn-continue-game"));
+
+    // Modal closes and game is resumed
+    expect(screen.queryByTestId("game-recovery-modal")).not.toBeInTheDocument();
+    expect(screen.getByTestId("player-name-w")).toHaveTextContent("Alpha");
+    expect(screen.getByTestId("player-name-b")).toHaveTextContent("Beta");
+    expect(screen.getByTestId("last-move-indicator")).toHaveTextContent(
+      "Last: e7 → e5 (e5)"
+    );
   });
 });

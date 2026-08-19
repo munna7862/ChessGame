@@ -342,3 +342,29 @@ export function addTime(
 export function resetClock(timeControl: TimeControl): ClockState {
   return createClockState(timeControl);
 }
+
+/**
+ * Restores a ClockState with explicit banked balances for White and Black.
+ */
+export function restoreClockState(
+  timeControl: TimeControl,
+  whiteMs: number,
+  blackMs: number,
+  activeColor: "white" | "black" | null = null
+): ClockState {
+  const isUntimed = timeControl.type === "none" || timeControl.initialMs <= 0;
+  return {
+    whiteMs: isUntimed ? 0 : Math.max(0, whiteMs),
+    blackMs: isUntimed ? 0 : Math.max(0, blackMs),
+    activeColor,
+    turnStartedAt: null,
+    status: activeColor !== null ? "paused" : "idle",
+    running: false,
+    timeControl,
+    flaggedColor: null,
+    moveCount: {
+      white: 0,
+      black: 0,
+    },
+  };
+}

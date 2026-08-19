@@ -8,3 +8,5 @@ export * from "./CapturedPiecesView";
 export * from "./moveHistoryUtils";
 export * from "./gameResultUtils";
 export * from "./GameResultModal";
+export * from "./GameRecoveryModal";
+export * from "./useGameRecovery";

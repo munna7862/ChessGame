@@ -160,12 +160,22 @@ export interface GameSessionState {
   readonly timeControl?: TimeControl | undefined;
 }
 
+import type {
+  PersistedActiveGame,
+  PersistedClockState,
+} from "../../domain/persistence/schema";
+
 export interface IGameSessionController {
   getState(): GameSessionState;
   subscribe(listener: (state: GameSessionState) => void): () => void;
   makeMove(move: MoveInput): Result<Move, ChessDomainError>;
   undo(): Result<Move, ChessDomainError>;
   reset(config?: Partial<GameSessionConfig>): void;
+  restoreSession(snapshot: PersistedActiveGame): Result<void, ChessDomainError>;
+  toSnapshot(
+    userOrientation: "w" | "b",
+    clockState?: PersistedClockState
+  ): PersistedActiveGame;
   updateGameMode(
     mode: GameMode,
     players?: { w?: PlayerConfig; b?: PlayerConfig }
