@@ -21,8 +21,8 @@ export type PieceSet = z.infer<typeof PieceSetSchema>;
  * Persisted application settings and preferences.
  */
 export const PersistedSettingsSchema = z.object({
-  boardTheme: z.string().default("classic"),
-  pieceSet: z.string().default("standard"),
+  boardTheme: BoardThemeSchema.default("classic"),
+  pieceSet: PieceSetSchema.default("standard"),
   showCoordinates: z.boolean().default(true),
   showLegalMoves: z.boolean().default(true),
   showLastMove: z.boolean().default(true),
@@ -33,6 +33,14 @@ export const PersistedSettingsSchema = z.object({
   volume: z.number().min(0).max(100).default(80),
 });
 export type PersistedSettings = z.infer<typeof PersistedSettingsSchema>;
+
+/**
+ * Schema for validating partial settings updates.
+ */
+export const PartialPersistedSettingsSchema = PersistedSettingsSchema.partial();
+export type PartialPersistedSettings = z.infer<
+  typeof PartialPersistedSettingsSchema
+>;
 
 /**
  * Player configuration schema for saved active games.
