@@ -9,6 +9,7 @@
 ## 1. Summary of Changes
 
 This pull request implements the complete **PGN Export and Import UI & Persistence Workflow** for ChessForge:
+
 1. **PGN File & Clipboard Service (`PgnFileService.ts`):** Safe, sandbox-compliant desktop file download and clipboard copy/paste utilities with filename sanitization and file size guards (2 MB limit).
 2. **Authoritative Domain PGN Validation & Atomic Replacement (`GameSessionController.ts` & `useGameSession.ts`):** Non-destructive validation of untrusted PGN strings on isolated domain replay instances before mutating active session state; atomic state replacement upon user confirmation with tag metadata parsing.
 3. **PGN Import Modal (`PgnImportModal.tsx`, `PgnImportModal.css`):** Glassmorphic modal providing multi-line text input, file upload, clipboard paste, real-time syntax/move validation, structured preview card (players, date, plies, result), and error diagnostics with exact ply indicators.

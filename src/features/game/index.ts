@@ -12,3 +12,5 @@ export * from "./GameRecoveryModal";
 export * from "./useGameRecovery";
 export * from "./PgnImportModal";
 export * from "./PgnExportModal";
+export * from "./FenModal";
+export * from "./fenPresets";
