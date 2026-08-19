@@ -1,0 +1,214 @@
+/* Clock Display Component Styles */
+
+.clock-display {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  background: var(--color-surface-subtle, #1e293b);
+  border: 2px solid var(--color-border-subtle, #334155);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+  user-select: none;
+  min-width: 100px;
+  box-sizing: border-box;
+}
+
+.clock-display__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  width: 100%;
+}
+
+.clock-display__indicators {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 1.1rem;
+}
+
+.clock-display__time-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+}
+
+.clock-display__time {
+  font-family: var(
+    --font-mono,
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    monospace
+  );
+  font-size: 1.4rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+  color: var(--color-text-primary, #f8fafc);
+  line-height: 1.1;
+}
+
+/* Active Clock State */
+.clock-display--active {
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.15),
+    rgba(30, 41, 59, 0.95)
+  );
+  border-color: var(--color-accent-primary, #3b82f6);
+  box-shadow:
+    0 0 12px rgba(59, 130, 246, 0.4),
+    0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.clock-display--active .clock-display__time {
+  color: #ffffff;
+  text-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+}
+
+/* Inactive Clock State */
+.clock-display--inactive {
+  opacity: 0.85;
+}
+
+/* Active Badge */
+.clock-display__active-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #60a5fa;
+  background: rgba(37, 99, 235, 0.25);
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  border: 1px solid rgba(96, 165, 250, 0.3);
+}
+
+.clock-display__pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #3b82f6;
+  box-shadow: 0 0 6px #60a5fa;
+  animation: pulse-dot 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    transform: scale(0.85);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.25);
+    opacity: 1;
+  }
+}
+
+/* Low Time State (< 20s) - Visual distinction NOT relying on color alone */
+.clock-display--low-time {
+  border-style: dashed;
+  border-width: 2px;
+  border-color: #f59e0b !important;
+  background: linear-gradient(
+    135deg,
+    rgba(245, 158, 11, 0.18),
+    rgba(220, 38, 38, 0.12)
+  ) !important;
+  box-shadow: 0 0 14px rgba(245, 158, 11, 0.5) !important;
+  animation: low-time-pulse 1s infinite alternate ease-in-out;
+}
+
+.clock-display--low-time .clock-display__time {
+  color: #fef08a;
+  font-weight: 800;
+  text-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
+}
+
+.clock-display__low-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: #78350f;
+  color: #fef3c7;
+  border: 1px solid #f59e0b;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+}
+
+@keyframes low-time-pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.3);
+  }
+  100% {
+    transform: scale(1.02);
+    box-shadow: 0 0 16px rgba(239, 68, 68, 0.6);
+  }
+}
+
+/* Expired Flag State (0:00.0) */
+.clock-display--expired {
+  border-color: #ef4444 !important;
+  background: rgba(127, 29, 29, 0.4) !important;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.5) !important;
+}
+
+.clock-display--expired .clock-display__time {
+  color: #fca5a5;
+  text-decoration: line-through;
+}
+
+.clock-display__flag-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  background: #991b1b;
+  color: #fee2e2;
+  border: 1px solid #f87171;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+}
+
+/* Untimed State */
+.clock-display--untimed {
+  border-style: dotted;
+}
+
+.clock-display__untimed-badge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--color-text-secondary, #94a3b8);
+  background: rgba(148, 163, 184, 0.1);
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+}
+
+/* Accessibility & Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .clock-display,
+  .clock-display--low-time,
+  .clock-display__pulse-dot {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}

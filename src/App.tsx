@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import type { Color } from "./domain/chess/types";
 import { Header } from "./components/Header";
 import { ConfirmationModal } from "./components/ConfirmationModal";
 import { Board } from "./features/board/Board";
@@ -6,6 +7,7 @@ import type { BoardOrientation } from "./features/board/types";
 import { useBoardInteraction } from "./features/board/useBoardInteraction";
 import { useReducedMotion } from "./features/board/useReducedMotion";
 import { useEngineOpponent, EngineErrorBanner } from "./features/engine";
+import { useClock } from "./features/clock";
 import {
   useGameSession,
   PlayerPanel,
@@ -77,6 +79,74 @@ export const App: React.FC = () => {
     disabled: isInputDisabled,
   });
 
+  // Handle clock flag fall timeout
+  const handleClockTimeout = useCallback(
+    (timedOutColor: Color) => {
+      if (!sessionState.isGameOver) {
+        void cancelThinking();
+        const res = sessionController.timeout(timedOutColor);
+        if (res.success) {
+          handlePromotionCancel();
+          clearSelection(false);
+          const loserName =
+            timedOutColor === "w"
+              ? sessionState.players.w.name
+              : sessionState.players.b.name;
+          const winnerName =
+            timedOutColor === "w"
+              ? sessionState.players.b.name
+              : sessionState.players.w.name;
+          setAnnouncement(
+            `${loserName} ran out of time. ${winnerName} wins by timeout.`
+          );
+        }
+      }
+    },
+    [
+      sessionState.isGameOver,
+      sessionState.players,
+      cancelThinking,
+      sessionController,
+      handlePromotionCancel,
+      clearSelection,
+      setAnnouncement,
+    ]
+  );
+
+  const clock = useClock({
+    timeControl: sessionState.timeControl,
+    onTimeout: handleClockTimeout,
+  });
+
+  // Keep clock running and synced with move history
+  const prevMoveCountRef = useRef<number>(sessionState.moveHistory.length);
+  useEffect(() => {
+    const currentCount = sessionState.moveHistory.length;
+    const prevCount = prevMoveCountRef.current;
+    prevMoveCountRef.current = currentCount;
+
+    if (sessionState.isGameOver) {
+      clock.pauseClock();
+      return;
+    }
+
+    if (currentCount > prevCount) {
+      if (!clock.isRunning && clock.timeControl.type !== "none") {
+        clock.startClock(sessionState.turn);
+      } else if (clock.isRunning) {
+        clock.switchTurn();
+      }
+    } else if (currentCount === 0 && prevCount > 0) {
+      clock.resetClock(sessionState.timeControl);
+    }
+  }, [
+    sessionState.moveHistory.length,
+    sessionState.isGameOver,
+    sessionState.turn,
+    sessionState.timeControl,
+    clock,
+  ]);
+
   // Automatically keep lastMove in sync with authoritative session move history
   useEffect(() => {
     const history = sessionState.moveHistory;
@@ -117,6 +187,7 @@ export const App: React.FC = () => {
   const handleStartNewGame = (resolved: ResolvedNewGameSession) => {
     void cancelThinking();
     resetGame(resolved.config);
+    clock.resetClock(resolved.config.timeControl);
     handlePromotionCancel();
     clearSelection(false);
     resetLastMove();
@@ -173,7 +244,9 @@ export const App: React.FC = () => {
     resetGame({
       mode: sessionState.mode,
       players: sessionState.players,
+      timeControl: sessionState.timeControl,
     });
+    clock.resetClock(sessionState.timeControl);
     handlePromotionCancel();
     clearSelection(false);
     resetLastMove();
@@ -382,6 +455,18 @@ export const App: React.FC = () => {
             capturedPieces={topPlayerCaptures}
             materialAdvantage={topMaterialAdvantage}
             position="top"
+            timeRemainingMs={
+              topPlayer.color === "w"
+                ? clock.whiteRemainingMs
+                : clock.blackRemainingMs
+            }
+            isClockActive={
+              clock.isRunning &&
+              sessionState.turn === topPlayer.color &&
+              !sessionState.isGameOver
+            }
+            timeControl={clock.timeControl}
+            isGameOver={sessionState.isGameOver}
           />
 
           <Board
@@ -422,6 +507,18 @@ export const App: React.FC = () => {
             capturedPieces={bottomPlayerCaptures}
             materialAdvantage={bottomMaterialAdvantage}
             position="bottom"
+            timeRemainingMs={
+              bottomPlayer.color === "w"
+                ? clock.whiteRemainingMs
+                : clock.blackRemainingMs
+            }
+            isClockActive={
+              clock.isRunning &&
+              sessionState.turn === bottomPlayer.color &&
+              !sessionState.isGameOver
+            }
+            timeControl={clock.timeControl}
+            isGameOver={sessionState.isGameOver}
           />
 
           <div className="board-controls" data-testid="board-controls">
