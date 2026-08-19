@@ -21,6 +21,10 @@ import type {
   PlayerConfig,
 } from "./types";
 import type { TimeControl } from "../../domain/clock/types";
+import type {
+  PersistedActiveGame,
+  PersistedClockState,
+} from "../../domain/persistence/schema";
 
 export const DEFAULT_WHITE_PLAYER: PlayerConfig = Object.freeze({
   id: "player-white",
@@ -233,6 +237,93 @@ export class GameSessionController implements IGameSessionController {
     }
     this.startedAt = Date.now();
     this.notifyListeners();
+  }
+
+  /**
+   * Restores a complete active game session snapshot.
+   */
+  public restoreSession(
+    snapshot: PersistedActiveGame
+  ): Result<void, ChessDomainError> {
+    let replaySuccess = false;
+    if (snapshot.moveHistorySan && snapshot.moveHistorySan.length > 0) {
+      try {
+        const tempAdapter = createChessAdapter();
+        const pgnStr = snapshot.moveHistorySan.join(" ");
+        const importRes = tempAdapter.importPgn(pgnStr);
+        if (importRes.success && tempAdapter.exportFen() === snapshot.fen) {
+          this.chessGame.reset();
+          this.chessGame.importPgn(pgnStr);
+          replaySuccess = true;
+        }
+      } catch {
+        replaySuccess = false;
+      }
+    }
+
+    if (!replaySuccess) {
+      const loadRes = this.chessGame.loadFen(snapshot.fen);
+      if (!loadRes.success) {
+        return loadRes;
+      }
+    }
+
+    this.id = snapshot.id;
+    this.mode = snapshot.mode;
+    this.players = {
+      w: {
+        id: snapshot.players.w.id,
+        name: snapshot.players.w.name,
+        color: "w",
+        type: snapshot.players.w.type,
+        rating: snapshot.players.w.rating,
+        difficulty: snapshot.players.w.difficulty,
+      },
+      b: {
+        id: snapshot.players.b.id,
+        name: snapshot.players.b.name,
+        color: "b",
+        type: snapshot.players.b.type,
+        rating: snapshot.players.b.rating,
+        difficulty: snapshot.players.b.difficulty,
+      },
+    };
+    if (snapshot.clock?.timeControl) {
+      const tc = snapshot.clock.timeControl;
+      this.timeControl = {
+        type: tc.type,
+        initialMs: tc.initialMs,
+        incrementMs: tc.incrementMs,
+        ...(tc.label !== undefined ? { label: tc.label } : {}),
+      };
+    }
+    this.startedAt = snapshot.startedAt;
+    this.notifyListeners();
+    return { success: true, data: undefined };
+  }
+
+  /**
+   * Generates a persistent snapshot of the current active session.
+   */
+  public toSnapshot(
+    userOrientation: "w" | "b",
+    clockState?: PersistedClockState
+  ): PersistedActiveGame {
+    const state = this.getState();
+    return {
+      id: this.id,
+      mode: this.mode,
+      fen: state.position.fen,
+      moveHistorySan: state.moveHistory.map((m) => m.san),
+      players: {
+        w: { ...this.players.w },
+        b: { ...this.players.b },
+      },
+      clock: clockState,
+      userOrientation,
+      startedAt: this.startedAt,
+      updatedAt: Date.now(),
+    };
   }
 
   /**

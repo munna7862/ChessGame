@@ -40,6 +40,13 @@ export interface UseClockReturn {
   readonly switchTurn: () => void;
   /** Resets the clock to initial state with optional new TimeControl */
   readonly resetClock: (newTimeControl?: TimeControl) => void;
+  /** Restores clock state with explicit banked balances and time control */
+  readonly restoreClock: (
+    newTimeControl: TimeControl,
+    whiteMs: number,
+    blackMs: number,
+    activeColor?: Color | null
+  ) => void;
   /** Adds bonus time to a player */
   readonly addTime: (color: Color, ms: number) => void;
   /** Force check for timeout */
@@ -157,6 +164,21 @@ export function useClock(options: UseClockOptions = {}): UseClockReturn {
     [controller]
   );
 
+  const restoreClock = useCallback(
+    (
+      newTimeControl: TimeControl,
+      whiteMs: number,
+      blackMs: number,
+      activeColor?: Color | null
+    ) => {
+      const internalColor =
+        activeColor === "w" ? "white" : activeColor === "b" ? "black" : null;
+      controller.restore(newTimeControl, whiteMs, blackMs, internalColor);
+      setRemainingTimes(controller.getRemainingTime());
+    },
+    [controller]
+  );
+
   const addTime = useCallback(
     (color: Color, ms: number) => {
       controller.addTime(color === "w" ? "white" : "black", ms);
@@ -189,6 +211,7 @@ export function useClock(options: UseClockOptions = {}): UseClockReturn {
     resumeClock,
     switchTurn,
     resetClock,
+    restoreClock,
     addTime,
     checkTimeout,
   };

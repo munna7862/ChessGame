@@ -15,6 +15,7 @@ import {
   checkTimeout,
   addTime,
   resetClock,
+  restoreClockState,
   isFlagged,
 } from "./clockEngine";
 import { defaultTimeProvider } from "./timeProvider";
@@ -118,6 +119,24 @@ export class ClockController {
   reset(newTimeControl?: TimeControl): ClockState {
     const tc = newTimeControl ?? this.state.timeControl;
     const nextState = resetClock(tc);
+    return this.updateState(nextState);
+  }
+
+  /**
+   * Restores clock state with explicit remaining balances and time control.
+   */
+  restore(
+    timeControl: TimeControl,
+    whiteMs: number,
+    blackMs: number,
+    activeColor: "white" | "black" | null = null
+  ): ClockState {
+    const nextState = restoreClockState(
+      timeControl,
+      whiteMs,
+      blackMs,
+      activeColor
+    );
     return this.updateState(nextState);
   }
 
