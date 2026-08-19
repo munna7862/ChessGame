@@ -157,6 +157,43 @@ export function buildDifficultySearchOptions(
   };
 }
 
+export interface EngineTimeBudgetOptions {
+  readonly difficultyLevel: number;
+  readonly remainingMs?: number | undefined;
+  readonly incrementMs?: number | undefined;
+  readonly isTimedGame?: boolean | undefined;
+}
+
+/**
+ * Calculates dynamic search time budget for the engine in milliseconds.
+ * Respects difficulty preset as an upper bound, but scales down when clock time is limited
+ * to prevent flag fall (REQ-AI-CLK-02).
+ */
+export function calculateEngineSearchTimeBudget({
+  difficultyLevel,
+  remainingMs,
+  incrementMs = 0,
+  isTimedGame = false,
+}: EngineTimeBudgetOptions): number {
+  const config = getEngineDifficultyConfig(difficultyLevel);
+  const baseMovetime = config.movetimeMs;
+
+  if (!isTimedGame || remainingMs === undefined || remainingMs <= 0) {
+    return baseMovetime;
+  }
+
+  // Standard chess engine time management heuristic:
+  // target = remaining / 20 + increment / 2
+  const targetMovetime = Math.floor(remainingMs / 20 + incrementMs / 2);
+
+  // Safe ceiling: do not spend more than remainingMs - 100ms (emergency floor 50ms)
+  const maxSafeMovetime = Math.max(50, remainingMs - 100);
+
+  // Take the minimum of preset baseMovetime, calculated target, bounded by maxSafeMovetime
+  const allocated = Math.min(baseMovetime, Math.max(50, targetMovetime));
+  return Math.min(allocated, maxSafeMovetime);
+}
+
 /**
  * Local storage persistence key for engine difficulty.
  */

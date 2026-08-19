@@ -5,6 +5,7 @@ import {
   EngineDifficultyLevelSchema,
   getEngineDifficultyConfig,
   buildDifficultySearchOptions,
+  calculateEngineSearchTimeBudget,
   type EngineDifficultyPreset,
 } from "../difficulty";
 
@@ -117,5 +118,75 @@ describe("Engine Difficulty and Thinking Policy (TC-DIFF-01 to TC-DIFF-05, TC-DI
     expect(optionsInvalid.depth).toBe(5);
     expect(optionsInvalid.skillLevel).toBe(6);
     expect(optionsInvalid.movetimeMs).toBe(800);
+  });
+
+  it("TC-AICLK-03 to TC-AICLK-05: calculateEngineSearchTimeBudget dynamically scales search movetime based on clock", () => {
+    // Untimed game returns standard difficulty movetime
+    const untimedBudget = calculateEngineSearchTimeBudget({
+      difficultyLevel: 3, // base 800ms
+      isTimedGame: false,
+    });
+    expect(untimedBudget).toBe(800);
+
+    // Timed game with ample time (e.g. 5 minutes = 300,000ms): 300,000 / 20 = 15,000 -> capped by preset 800ms
+    const ampleBudgetL3 = calculateEngineSearchTimeBudget({
+      difficultyLevel: 3,
+      remainingMs: 300000,
+      incrementMs: 0,
+      isTimedGame: true,
+    });
+    expect(ampleBudgetL3).toBe(800);
+
+    // Timed game on Grandmaster (level 8, 5000ms base): 300,000 / 20 = 15,000 -> capped by preset 5000ms
+    const ampleBudgetL8 = calculateEngineSearchTimeBudget({
+      difficultyLevel: 8,
+      remainingMs: 300000,
+      incrementMs: 0,
+      isTimedGame: true,
+    });
+    expect(ampleBudgetL8).toBe(5000);
+
+    // Timed game in time pressure (e.g. 4,000ms remaining, 0 inc): 4,000 / 20 = 200ms -> scales down from 800ms to 200ms
+    const timePressureBudget = calculateEngineSearchTimeBudget({
+      difficultyLevel: 3,
+      remainingMs: 4000,
+      incrementMs: 0,
+      isTimedGame: true,
+    });
+    expect(timePressureBudget).toBe(200);
+
+    // Timed game with increment bonus (4,000ms remaining + 2,000ms inc): 4,000/20 + 2,000/2 = 200 + 1,000 = 1,200ms -> capped by preset 800ms
+    const incrementBonusBudget = calculateEngineSearchTimeBudget({
+      difficultyLevel: 3,
+      remainingMs: 4000,
+      incrementMs: 2000,
+      isTimedGame: true,
+    });
+    expect(incrementBonusBudget).toBe(800);
+
+    // Timed game in critical time (e.g. 150ms remaining): safe ceiling max(50, 150 - 100) = 50ms
+    const criticalBudget = calculateEngineSearchTimeBudget({
+      difficultyLevel: 3,
+      remainingMs: 150,
+      incrementMs: 0,
+      isTimedGame: true,
+    });
+    expect(criticalBudget).toBe(50);
+
+    // Non-positive or undefined remaining time in timed game falls back safely to preset
+    expect(
+      calculateEngineSearchTimeBudget({
+        difficultyLevel: 3,
+        remainingMs: 0,
+        isTimedGame: true,
+      })
+    ).toBe(800);
+    expect(
+      calculateEngineSearchTimeBudget({
+        difficultyLevel: 3,
+        remainingMs: -500,
+        isTimedGame: true,
+      })
+    ).toBe(800);
   });
 });

@@ -35,6 +35,58 @@ export const App: React.FC<AppProps> = ({ timeProvider }) => {
     agreeDraw,
   } = useGameSession();
 
+  const [orientation, setOrientation] = useState<BoardOrientation>("w");
+  const [isNewGameModalOpen, setIsNewGameModalOpen] = useState<boolean>(false);
+  const [isRestartModalOpen, setIsRestartModalOpen] = useState<boolean>(false);
+  const [isResignModalOpen, setIsResignModalOpen] = useState<boolean>(false);
+  const [isDrawOfferModalOpen, setIsDrawOfferModalOpen] =
+    useState<boolean>(false);
+  const [hasDismissedResultModal, setHasDismissedResultModal] =
+    useState<boolean>(false);
+  const { prefersReducedMotion, toggleReducedMotion } = useReducedMotion();
+
+  const cancelThinkingRef = useRef<() => Promise<void>>(() =>
+    Promise.resolve()
+  );
+  const handlePromotionCancelRef = useRef<() => void>(() => {});
+  const clearSelectionRef = useRef<(focusBoard?: boolean) => void>(() => {});
+  const setAnnouncementRef = useRef<(text: string) => void>(() => {});
+
+  // Handle clock flag fall timeout
+  const handleClockTimeout = useCallback(
+    (timedOutColor: Color) => {
+      if (!sessionState.isGameOver) {
+        void cancelThinkingRef.current();
+        const res = sessionController.timeout(timedOutColor);
+        if (res.success) {
+          handlePromotionCancelRef.current();
+          clearSelectionRef.current(false);
+          const loserName =
+            timedOutColor === "w"
+              ? sessionState.players.w.name
+              : sessionState.players.b.name;
+          const winnerName =
+            timedOutColor === "w"
+              ? sessionState.players.b.name
+              : sessionState.players.w.name;
+          setAnnouncementRef.current(
+            `${loserName} ran out of time. ${winnerName} wins by timeout.`
+          );
+        }
+      }
+    },
+    [sessionState.isGameOver, sessionState.players, sessionController]
+  );
+
+  const clock = useClock({
+    timeControl: sessionState.timeControl,
+    timeProvider,
+    onTimeout: handleClockTimeout,
+  });
+
+  const engineClockRemainingMs =
+    sessionState.turn === "w" ? clock.whiteRemainingMs : clock.blackRemainingMs;
+
   const {
     isEngineThinking,
     isEngineTurn,
@@ -46,17 +98,13 @@ export const App: React.FC<AppProps> = ({ timeProvider }) => {
   } = useEngineOpponent({
     sessionController,
     sessionState,
+    clockRemainingMs: engineClockRemainingMs,
+    clockIncrementMs: sessionState.timeControl?.incrementMs,
   });
 
-  const [orientation, setOrientation] = useState<BoardOrientation>("w");
-  const [isNewGameModalOpen, setIsNewGameModalOpen] = useState<boolean>(false);
-  const [isRestartModalOpen, setIsRestartModalOpen] = useState<boolean>(false);
-  const [isResignModalOpen, setIsResignModalOpen] = useState<boolean>(false);
-  const [isDrawOfferModalOpen, setIsDrawOfferModalOpen] =
-    useState<boolean>(false);
-  const [hasDismissedResultModal, setHasDismissedResultModal] =
-    useState<boolean>(false);
-  const { prefersReducedMotion, toggleReducedMotion } = useReducedMotion();
+  useEffect(() => {
+    cancelThinkingRef.current = cancelThinking;
+  }, [cancelThinking]);
 
   const isInputDisabled =
     sessionState.isGameOver || isEngineThinking || isEngineTurn;
@@ -84,45 +132,11 @@ export const App: React.FC<AppProps> = ({ timeProvider }) => {
     disabled: isInputDisabled,
   });
 
-  // Handle clock flag fall timeout
-  const handleClockTimeout = useCallback(
-    (timedOutColor: Color) => {
-      if (!sessionState.isGameOver) {
-        void cancelThinking();
-        const res = sessionController.timeout(timedOutColor);
-        if (res.success) {
-          handlePromotionCancel();
-          clearSelection(false);
-          const loserName =
-            timedOutColor === "w"
-              ? sessionState.players.w.name
-              : sessionState.players.b.name;
-          const winnerName =
-            timedOutColor === "w"
-              ? sessionState.players.b.name
-              : sessionState.players.w.name;
-          setAnnouncement(
-            `${loserName} ran out of time. ${winnerName} wins by timeout.`
-          );
-        }
-      }
-    },
-    [
-      sessionState.isGameOver,
-      sessionState.players,
-      cancelThinking,
-      sessionController,
-      handlePromotionCancel,
-      clearSelection,
-      setAnnouncement,
-    ]
-  );
-
-  const clock = useClock({
-    timeControl: sessionState.timeControl,
-    timeProvider,
-    onTimeout: handleClockTimeout,
-  });
+  useEffect(() => {
+    handlePromotionCancelRef.current = handlePromotionCancel;
+    clearSelectionRef.current = clearSelection;
+    setAnnouncementRef.current = setAnnouncement;
+  }, [handlePromotionCancel, clearSelection, setAnnouncement]);
 
   // Keep clock running and synced with move history
   const prevMoveCountRef = useRef<number>(sessionState.moveHistory.length);

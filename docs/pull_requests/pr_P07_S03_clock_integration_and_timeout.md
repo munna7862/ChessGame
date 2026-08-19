@@ -1,6 +1,7 @@
 # Pull Request: Phase 07 · Sprint 03: Clock Integration and Timeout
 
 ## PR Metadata
+
 - **Branch:** `feature/p07-s03-clock-integration-and-timeout`
 - **Target:** `main`
 - **Sprint:** Phase 07 · Sprint 03: Clock Integration and Timeout
@@ -29,14 +30,14 @@ This pull request completes **Phase 07 · Sprint 03: Clock Integration and Timeo
 
 ## 2. Quality Gate Verification
 
-| Verification Gate | Command | Result | Skips |
-| :--- | :--- | :--- | :--- |
-| **Unit & Integration Tests** | `npm test` | **68/68 suites, 606/606 tests passed** | 0 skips |
-| **E2E Playout Tests** | `npm run test:e2e` | **47/47 tests passed** | 0 skips |
-| **TypeScript Typecheck** | `npm run typecheck` | **0 errors** | 0 skips |
-| **ESLint Static Analysis** | `npm run lint` | **0 errors, 0 warnings** | 0 skips |
-| **Prettier Formatting** | `npm run format:check` | **100% compliant** | 0 skips |
-| **Production Build** | `npm run build` | **Build successful** | 0 skips |
+| Verification Gate            | Command                | Result                                 | Skips   |
+| :--------------------------- | :--------------------- | :------------------------------------- | :------ |
+| **Unit & Integration Tests** | `npm test`             | **68/68 suites, 606/606 tests passed** | 0 skips |
+| **E2E Playout Tests**        | `npm run test:e2e`     | **47/47 tests passed**                 | 0 skips |
+| **TypeScript Typecheck**     | `npm run typecheck`    | **0 errors**                           | 0 skips |
+| **ESLint Static Analysis**   | `npm run lint`         | **0 errors, 0 warnings**               | 0 skips |
+| **Prettier Formatting**      | `npm run format:check` | **100% compliant**                     | 0 skips |
+| **Production Build**         | `npm run build`        | **Build successful**                   | 0 skips |
 
 ---
 
