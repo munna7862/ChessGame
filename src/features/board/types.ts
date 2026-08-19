@@ -137,6 +137,7 @@ export interface PromotionDialogProps {
  * Props for the full Board component.
  */
 export interface BoardProps {
+  readonly id?: string | undefined;
   readonly orientation?: BoardOrientation | undefined;
   readonly board?: BoardMatrix | null | undefined;
   readonly position?: Position | null | undefined;

@@ -1,10 +1,5 @@
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-  useMemo,
-} from "react";
+import React, { useState, useRef, useCallback, useMemo } from "react";
+import { useFocusTrap } from "../../hooks/useFocusTrap";
 import type { ChessDomainError } from "../../domain/chess/errors";
 import { PgnFileService } from "../../domain/persistence/PgnFileService";
 import type { PgnPreview } from "./types";
@@ -43,8 +38,8 @@ export const PgnImportModal: React.FC<PgnImportModalProps> = ({
     null
   );
 
-  const modalRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Compute validationResult and validationError reactively from pgnText
@@ -67,27 +62,13 @@ export const PgnImportModal: React.FC<PgnImportModalProps> = ({
 
   const errorMessage = fileError ?? validationError;
 
-  // Auto-focus textarea when modal opens
-  useEffect(() => {
-    if (isOpen) {
-      textareaRef.current?.focus();
-    }
-  }, [isOpen]);
-
-  // Keyboard accessibility: Escape to close
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        onClose();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
+  // Focus trap & Escape to close
+  useFocusTrap({
+    isOpen,
+    containerRef: modalRef,
+    initialFocusRef: textareaRef,
+    onEscape: onClose,
+  });
 
   const handleFileUpload = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {

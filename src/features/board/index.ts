@@ -7,3 +7,6 @@ export * from "./Piece";
 export * from "./Square";
 export * from "./Board";
 export * from "./useBoardInteraction";
+export * from "./useReducedMotion";
+export * from "./useGlobalShortcuts";
+export * from "./ShortcutsModal";

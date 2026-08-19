@@ -23,6 +23,7 @@ import type {
 import "./Board.css";
 
 export const Board: React.FC<BoardProps> = ({
+  id,
   orientation = "w",
   board,
   position,
@@ -197,6 +198,7 @@ export const Board: React.FC<BoardProps> = ({
 
   return (
     <div
+      id={id}
       className={clsx(
         "chess-board-wrapper",
         `board-theme-${theme}`,

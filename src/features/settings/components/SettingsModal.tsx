@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
+import { useFocusTrap } from "../../../hooks/useFocusTrap";
 import { AppearanceSettingsSection } from "./AppearanceSettingsSection";
 import { GameplaySettingsSection } from "./GameplaySettingsSection";
 import { AudioMotionSettingsSection } from "./AudioMotionSettingsSection";
@@ -29,61 +30,21 @@ const SettingsModalContent: React.FC<SettingsModalContentProps> = ({
   const { resetSettings } = useSettings();
 
   const dialogRef = useRef<HTMLDivElement>(null);
-  const previouslyFocusedElementRef = useRef<HTMLElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   // Keyboard navigation & focus trap
-  useEffect(() => {
-    previouslyFocusedElementRef.current =
-      document.activeElement as HTMLElement | null;
-
-    const timer = setTimeout(() => {
-      closeButtonRef.current?.focus();
-    }, 50);
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        if (isResetConfirmOpen) {
-          setIsResetConfirmOpen(false);
-          return;
-        }
-        e.preventDefault();
+  useFocusTrap({
+    isOpen: !isResetConfirmOpen,
+    containerRef: dialogRef,
+    initialFocusRef: closeButtonRef,
+    onEscape: () => {
+      if (isResetConfirmOpen) {
+        setIsResetConfirmOpen(false);
+      } else {
         onClose();
-        return;
       }
-
-      if (e.key === "Tab" && dialogRef.current && !isResetConfirmOpen) {
-        const focusableElements =
-          dialogRef.current.querySelectorAll<HTMLElement>(
-            'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]):not([disabled])'
-          );
-        if (focusableElements.length === 0) return;
-
-        const firstElement = focusableElements[0];
-        const lastElement = focusableElements[focusableElements.length - 1];
-
-        if (e.shiftKey) {
-          if (document.activeElement === firstElement) {
-            e.preventDefault();
-            lastElement?.focus();
-          }
-        } else {
-          if (document.activeElement === lastElement) {
-            e.preventDefault();
-            firstElement?.focus();
-          }
-        }
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      clearTimeout(timer);
-      window.removeEventListener("keydown", handleKeyDown);
-      previouslyFocusedElementRef.current?.focus();
-    };
-  }, [onClose, isResetConfirmOpen]);
+    },
+  });
 
   const handleConfirmReset = () => {
     resetSettings();

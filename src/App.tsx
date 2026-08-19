@@ -4,10 +4,14 @@ import type { TimeProvider } from "./domain/clock/types";
 import { PersistenceService } from "./domain/persistence/PersistenceService";
 import { Header } from "./components/Header";
 import { ConfirmationModal } from "./components/ConfirmationModal";
-import { Board } from "./features/board/Board";
-import type { BoardOrientation } from "./features/board/types";
-import { useBoardInteraction } from "./features/board/useBoardInteraction";
-import { useReducedMotion } from "./features/board/useReducedMotion";
+import {
+  Board,
+  useBoardInteraction,
+  useReducedMotion,
+  useGlobalShortcuts,
+  ShortcutsModal,
+  type BoardOrientation,
+} from "./features/board";
 import { useEngineOpponent, EngineErrorBanner } from "./features/engine";
 import { useClock } from "./features/clock";
 import {
@@ -79,6 +83,8 @@ const AppContent: React.FC<AppContentProps> = ({
   const [isImportModalOpen, setIsImportModalOpen] = useState<boolean>(false);
   const [isFenModalOpen, setIsFenModalOpen] = useState<boolean>(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] =
+    useState<boolean>(false);
+  const [isShortcutsModalOpen, setIsShortcutsModalOpen] =
     useState<boolean>(false);
   const [hasDismissedResultModal, setHasDismissedResultModal] =
     useState<boolean>(false);
@@ -587,9 +593,51 @@ const AppContent: React.FC<AppContentProps> = ({
       : sessionState.players.w.name;
   const offeringColorLabel = sessionState.turn === "w" ? "White" : "Black";
 
+  const isAnyModalOpen =
+    isNewGameModalOpen ||
+    isRestartModalOpen ||
+    isResignModalOpen ||
+    isDrawOfferModalOpen ||
+    isExportModalOpen ||
+    isImportModalOpen ||
+    isFenModalOpen ||
+    isSettingsModalOpen ||
+    isResultModalOpen ||
+    isRecoveryModalOpen ||
+    isShortcutsModalOpen;
+
+  useGlobalShortcuts({
+    enabled: !isAnyModalOpen,
+    onNewGame: handleOpenNewGame,
+    onUndo: handleUndo,
+    onFlipBoard: toggleOrientation,
+    onOpenSettings: () => setIsSettingsModalOpen(true),
+    onExportPgn: () => setIsExportModalOpen(true),
+    onImportPgn: () => setIsImportModalOpen(true),
+    onOpenFen: () => setIsFenModalOpen(true),
+    onOpenShortcuts: () => setIsShortcutsModalOpen(true),
+    onEscape: () => {
+      if (pendingPromotion) {
+        handlePromotionCancel();
+      } else if (selectedSquare) {
+        clearSelection(true);
+      }
+    },
+  });
+
   return (
     <div className="app-container" data-testid="chessforge-app">
-      <Header onOpenSettings={() => setIsSettingsModalOpen(true)} />
+      <a
+        href="#main-chessboard"
+        className="skip-link"
+        data-testid="skip-to-board-link"
+      >
+        Skip to chessboard
+      </a>
+      <Header
+        onOpenSettings={() => setIsSettingsModalOpen(true)}
+        onOpenShortcuts={() => setIsShortcutsModalOpen(true)}
+      />
       <main className="main-content">
         <div className="board-section" data-testid="board-section">
           {engineError && (
@@ -700,6 +748,7 @@ const AppContent: React.FC<AppContentProps> = ({
           />
 
           <Board
+            id="main-chessboard"
             orientation={orientation}
             position={position}
             selectedSquare={selectedSquare}
@@ -1046,6 +1095,11 @@ const AppContent: React.FC<AppContentProps> = ({
         <SettingsModal
           isOpen={isSettingsModalOpen}
           onClose={() => setIsSettingsModalOpen(false)}
+        />
+
+        <ShortcutsModal
+          isOpen={isShortcutsModalOpen}
+          onClose={() => setIsShortcutsModalOpen(false)}
         />
       </main>
     </div>

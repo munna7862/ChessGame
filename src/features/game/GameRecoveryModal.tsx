@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
+import { useFocusTrap } from "../../hooks/useFocusTrap";
 import type { PersistedActiveGame } from "../../domain/persistence/schema";
 import "./GameRecoveryModal.css";
 
@@ -40,51 +41,18 @@ export const GameRecoveryModal: React.FC<GameRecoveryModalProps> = ({
   const dialogRef = useRef<HTMLDivElement>(null);
   const primaryButtonRef = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => {
-    if (!isOpen) return;
-
-    // Focus primary "Continue Game" button on display
-    const timer = setTimeout(() => {
-      primaryButtonRef.current?.focus();
-    }, 50);
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        if (onClose) {
-          onClose();
-        } else {
-          onDiscard();
-        }
-        return;
+  useFocusTrap({
+    isOpen,
+    containerRef: dialogRef,
+    initialFocusRef: primaryButtonRef,
+    onEscape: () => {
+      if (onClose) {
+        onClose();
+      } else {
+        onDiscard();
       }
-
-      // Tab focus trap
-      if (e.key === "Tab" && dialogRef.current) {
-        const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        );
-        if (focusable.length === 0) return;
-
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-
-        if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault();
-          last?.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault();
-          first?.focus();
-        }
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      clearTimeout(timer);
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isOpen, onDiscard, onClose]);
+    },
+  });
 
   if (!isOpen || !activeGame) {
     return null;

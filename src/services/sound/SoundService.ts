@@ -29,7 +29,8 @@ export class SoundService implements ISoundService {
   private volume: number; // 0 to 100
   private audioContext: AudioContext | null = null;
   private masterGainNode: GainNode | null = null;
-  private readonly audioContextFactory?: (() => AudioContext | null) | undefined;
+  private readonly audioContextFactory?:
+    (() => AudioContext | null) | undefined;
 
   constructor(config: SoundServiceConfig = {}) {
     this.soundEnabled = config.soundEnabled ?? true;

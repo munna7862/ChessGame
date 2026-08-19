@@ -3,9 +3,13 @@ import { StatusBadge } from "./StatusBadge";
 
 export interface HeaderProps {
   readonly onOpenSettings?: (() => void) | undefined;
+  readonly onOpenShortcuts?: (() => void) | undefined;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onOpenSettings }) => {
+export const Header: React.FC<HeaderProps> = ({
+  onOpenSettings,
+  onOpenShortcuts,
+}) => {
   return (
     <header
       data-testid="app-header"
@@ -49,12 +53,38 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSettings }) => {
         </span>
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
         <StatusBadge
           data-testid="engine-status-badge"
           label="Local Engine Ready"
           status="ready"
         />
+        {onOpenShortcuts && (
+          <button
+            type="button"
+            className="btn-control"
+            data-testid="btn-open-shortcuts"
+            onClick={onOpenShortcuts}
+            aria-label="Keyboard Shortcuts (Press ? or F1)"
+            title="Keyboard Shortcuts (? or F1)"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.35rem",
+              padding: "0.35rem 0.75rem",
+              fontSize: "0.85rem",
+              fontWeight: 600,
+              backgroundColor: "rgba(30, 41, 59, 0.7)",
+              border: "1px solid rgba(148, 163, 184, 0.2)",
+              borderRadius: "6px",
+              color: "#f8fafc",
+              cursor: "pointer",
+            }}
+          >
+            <span aria-hidden="true">⌨️</span>
+            <span>Shortcuts</span>
+          </button>
+        )}
         {onOpenSettings && (
           <button
             type="button"

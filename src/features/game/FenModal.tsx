@@ -1,10 +1,5 @@
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-  useMemo,
-} from "react";
+import React, { useState, useRef, useCallback, useMemo } from "react";
+import { useFocusTrap } from "../../hooks/useFocusTrap";
 import { validateFen } from "../../domain/chess/fen";
 import { FenFileService } from "../../domain/persistence/FenFileService";
 import { STANDARD_FEN_PRESETS } from "./fenPresets";
@@ -47,18 +42,13 @@ const FenModalContent: React.FC<FenModalContentProps> = ({
   const modalRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Keyboard accessibility: Escape to close
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        onClose();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [onClose]);
+  // Keyboard accessibility: Focus trap & Escape to close
+  useFocusTrap({
+    isOpen: true,
+    containerRef: modalRef,
+    initialFocusRef: textareaRef,
+    onEscape: onClose,
+  });
 
   // Live validation
   const validation = useMemo(() => {
