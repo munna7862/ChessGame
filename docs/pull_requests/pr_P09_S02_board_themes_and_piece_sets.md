@@ -4,7 +4,7 @@
 **Sprint:** Sprint 02 · Board Themes and Piece Sets  
 **Branch:** `feature/p09-s02-board-themes-piece-sets`  
 **Author:** DevOps Engineer & Senior SDE  
-**Status:** Approved for Merge  
+**Status:** Approved for Merge
 
 ---
 

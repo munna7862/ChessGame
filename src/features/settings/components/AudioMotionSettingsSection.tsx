@@ -1,9 +1,19 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { useSettings } from "../useSettings";
+import { soundService } from "../../../services/sound";
 
 export const AudioMotionSettingsSection: React.FC = () => {
   const { settings, setSoundEnabled, setVolume, setReducedMotion } =
     useSettings();
+
+  const handleTestSound = useCallback(
+    (
+      effect: "move" | "capture" | "check" | "castle" | "promotion" | "gameOver"
+    ) => {
+      soundService.play(effect);
+    },
+    []
+  );
 
   return (
     <div
@@ -64,6 +74,92 @@ export const AudioMotionSettingsSection: React.FC = () => {
               aria-valuetext={`${settings.volume} percent`}
               onChange={(e) => setVolume(Number(e.target.value))}
             />
+          </div>
+        </div>
+
+        <div
+          className="settings-audition-group"
+          data-testid="settings-audition-group"
+        >
+          <div className="settings-group-header">
+            <span className="settings-group-title">Audition Sound Cues</span>
+            <span className="settings-group-subtitle">
+              Test synthesized audio cues with current master volume
+            </span>
+          </div>
+          <div className="sound-audition-buttons">
+            <button
+              type="button"
+              className="sound-audition-btn"
+              disabled={!settings.soundEnabled || settings.volume === 0}
+              data-testid="btn-test-sound-move"
+              onClick={() => handleTestSound("move")}
+            >
+              <span className="audition-icon" aria-hidden="true">
+                ♟
+              </span>{" "}
+              Move
+            </button>
+            <button
+              type="button"
+              className="sound-audition-btn"
+              disabled={!settings.soundEnabled || settings.volume === 0}
+              data-testid="btn-test-sound-capture"
+              onClick={() => handleTestSound("capture")}
+            >
+              <span className="audition-icon" aria-hidden="true">
+                ⚔
+              </span>{" "}
+              Capture
+            </button>
+            <button
+              type="button"
+              className="sound-audition-btn"
+              disabled={!settings.soundEnabled || settings.volume === 0}
+              data-testid="btn-test-sound-check"
+              onClick={() => handleTestSound("check")}
+            >
+              <span className="audition-icon" aria-hidden="true">
+                ⚠
+              </span>{" "}
+              Check
+            </button>
+            <button
+              type="button"
+              className="sound-audition-btn"
+              disabled={!settings.soundEnabled || settings.volume === 0}
+              data-testid="btn-test-sound-castle"
+              onClick={() => handleTestSound("castle")}
+            >
+              <span className="audition-icon" aria-hidden="true">
+                ♜
+              </span>{" "}
+              Castle
+            </button>
+            <button
+              type="button"
+              className="sound-audition-btn"
+              disabled={!settings.soundEnabled || settings.volume === 0}
+              data-testid="btn-test-sound-promotion"
+              onClick={() => handleTestSound("promotion")}
+            >
+              <span className="audition-icon" aria-hidden="true">
+                ♛
+              </span>{" "}
+              Promotion
+            </button>
+            <button
+              type="button"
+              className="sound-audition-btn"
+              disabled={!settings.soundEnabled || settings.volume === 0}
+              data-testid="btn-test-sound-gameover"
+              onClick={() => handleTestSound("gameOver")}
+            >
+              <span className="audition-icon" aria-hidden="true">
+                🏆
+              </span>{" "}
+              Game Over
+            </button>
           </div>
         </div>
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import type { Color } from "./domain/chess/types";
+import type { Color, Move } from "./domain/chess/types";
 import type { TimeProvider } from "./domain/clock/types";
 import { PersistenceService } from "./domain/persistence/PersistenceService";
 import { Header } from "./components/Header";
@@ -30,6 +30,7 @@ import {
   useSettings,
   SettingsModal,
 } from "./features/settings";
+import { soundService } from "./services/sound";
 import type { SettingsService } from "./domain/persistence/settings";
 import "./App.css";
 
@@ -97,6 +98,7 @@ const AppContent: React.FC<AppContentProps> = ({
         void cancelThinkingRef.current();
         const res = sessionController.timeout(timedOutColor);
         if (res.success) {
+          soundService.play("gameOver");
           handlePromotionCancelRef.current();
           clearSelectionRef.current(false);
           const loserName =
@@ -147,6 +149,32 @@ const AppContent: React.FC<AppContentProps> = ({
   const isInputDisabled =
     sessionState.isGameOver || isEngineThinking || isEngineTurn;
 
+  const handleMoveExecuted = useCallback(
+    (move: Move) => {
+      const status = chessGame.getStatus();
+      if (move.isCheckmate || status.state === "checkmate") {
+        soundService.play("gameOver");
+      } else if (status.isOver) {
+        soundService.play("draw");
+      } else if (move.isCheck || status.isCheck) {
+        soundService.play("check");
+      } else if (move.promotion) {
+        soundService.play("promotion");
+      } else if (
+        move.san === "O-O" ||
+        move.san === "O-O-O" ||
+        move.isCastling
+      ) {
+        soundService.play("castle");
+      } else if (move.captured || move.isEnPassant) {
+        soundService.play("capture");
+      } else {
+        soundService.play("move");
+      }
+    },
+    [chessGame]
+  );
+
   const {
     selectedSquare,
     focusedSquare,
@@ -167,6 +195,7 @@ const AppContent: React.FC<AppContentProps> = ({
     resetLastMove,
   } = useBoardInteraction({
     game: chessGame,
+    onMoveExecuted: handleMoveExecuted,
     disabled: isInputDisabled,
   });
 
@@ -176,7 +205,7 @@ const AppContent: React.FC<AppContentProps> = ({
     setAnnouncementRef.current = setAnnouncement;
   }, [handlePromotionCancel, clearSelection, setAnnouncement]);
 
-  // Keep clock running and synced with move history
+  // Keep clock running and synced with move history, and dispatch sound effects
   const prevMoveCountRef = useRef<number>(sessionState.moveHistory.length);
   useEffect(() => {
     const currentCount = sessionState.moveHistory.length;
@@ -194,14 +223,48 @@ const AppContent: React.FC<AppContentProps> = ({
       } else if (clock.isRunning) {
         clock.switchTurn();
       }
+
+      // Play audio feedback for new move
+      const latestMove = sessionState.moveHistory[currentCount - 1];
+      if (latestMove) {
+        if (sessionState.isGameOver) {
+          if (
+            sessionState.status.state === "checkmate" ||
+            sessionState.status.winner
+          ) {
+            soundService.play("gameOver");
+          } else {
+            soundService.play("draw");
+          }
+        } else if (
+          latestMove.isCheck ||
+          latestMove.isCheckmate ||
+          sessionState.status.isCheck
+        ) {
+          soundService.play("check");
+        } else if (latestMove.promotion) {
+          soundService.play("promotion");
+        } else if (
+          latestMove.san === "O-O" ||
+          latestMove.san === "O-O-O" ||
+          latestMove.isCastling
+        ) {
+          soundService.play("castle");
+        } else if (latestMove.captured || latestMove.isEnPassant) {
+          soundService.play("capture");
+        } else {
+          soundService.play("move");
+        }
+      }
     } else if (currentCount === 0 && prevCount > 0) {
       clock.resetClock(sessionState.timeControl);
     }
   }, [
-    sessionState.moveHistory.length,
+    sessionState.moveHistory,
     sessionState.isGameOver,
     sessionState.turn,
     sessionState.timeControl,
+    sessionState.status,
     clock,
   ]);
 
@@ -394,6 +457,7 @@ const AppContent: React.FC<AppContentProps> = ({
     const resigningColor = sessionState.turn;
     const res = resign(resigningColor);
     if (res.success) {
+      soundService.play("gameOver");
       handlePromotionCancel();
       clearSelection(false);
       setIsResignModalOpen(false);
@@ -420,6 +484,7 @@ const AppContent: React.FC<AppContentProps> = ({
     if (sessionState.isGameOver) return;
     const res = agreeDraw();
     if (res.success) {
+      soundService.play("draw");
       handlePromotionCancel();
       clearSelection(false);
       setIsDrawOfferModalOpen(false);
