@@ -10,3 +10,5 @@ export * from "./gameResultUtils";
 export * from "./GameResultModal";
 export * from "./GameRecoveryModal";
 export * from "./useGameRecovery";
+export * from "./PgnImportModal";
+export * from "./PgnExportModal";

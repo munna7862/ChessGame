@@ -346,4 +346,52 @@ describe("ChessForge Bootstrap Layout & Board UI (TC-BOOT-05, TC-PIECE-23, TC-SE
       "Last: e7 → e5 (e5)"
     );
   });
+
+  it("opens PGN Export modal when Export PGN button is clicked", () => {
+    render(<App />);
+
+    const exportBtn = screen.getByTestId("btn-export-pgn");
+    fireEvent.click(exportBtn);
+
+    expect(screen.getByTestId("pgn-export-modal")).toBeInTheDocument();
+    expect(screen.getByTestId("pgn-export-textarea")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId("btn-close-export-modal"));
+    expect(screen.queryByTestId("pgn-export-modal")).not.toBeInTheDocument();
+  });
+
+  it("opens PGN Import modal, validates and imports game successfully", () => {
+    render(<App />);
+
+    const importBtn = screen.getByTestId("btn-import-pgn");
+    fireEvent.click(importBtn);
+
+    expect(screen.getByTestId("pgn-import-modal")).toBeInTheDocument();
+
+    const samplePgn = `[Event "Candidates 2026"]
+[White "Fabiano Caruana"]
+[Black "Hikaru Nakamura"]
+[Result "1-0"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 1-0`;
+
+    fireEvent.change(screen.getByTestId("pgn-import-textarea"), {
+      target: { value: samplePgn },
+    });
+
+    expect(screen.getByTestId("pgn-import-preview-card")).toBeInTheDocument();
+    expect(screen.getByTestId("preview-white-player")).toHaveTextContent(
+      "Fabiano Caruana"
+    );
+
+    fireEvent.click(screen.getByTestId("btn-confirm-import-pgn"));
+
+    expect(screen.queryByTestId("pgn-import-modal")).not.toBeInTheDocument();
+    expect(screen.getByTestId("player-name-w")).toHaveTextContent(
+      "Fabiano Caruana"
+    );
+    expect(screen.getByTestId("player-name-b")).toHaveTextContent(
+      "Hikaru Nakamura"
+    );
+  });
 });

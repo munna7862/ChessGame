@@ -12,7 +12,7 @@ import {
   createGameSession,
   type GameSessionController,
 } from "./GameSessionController";
-import type { GameSessionConfig, GameSessionState } from "./types";
+import type { GameSessionConfig, GameSessionState, PgnPreview } from "./types";
 
 export interface UseGameSessionOptions {
   readonly initialConfig?: GameSessionConfig | undefined;
@@ -32,6 +32,11 @@ export interface UseGameSessionReturn {
   readonly loadFen: (fen: string) => Result<void, ChessDomainError>;
   readonly exportFen: () => string;
   readonly exportPgn: (tags?: Partial<PgnTags>) => string;
+  readonly validatePgn: (pgn: string) => Result<PgnPreview, ChessDomainError>;
+  readonly importPgnGame: (
+    pgn: string,
+    options?: { updatePlayerNames?: boolean }
+  ) => Result<PgnPreview, ChessDomainError>;
 }
 
 /**
@@ -100,6 +105,17 @@ export function useGameSession({
     [controller]
   );
 
+  const validatePgn = useCallback(
+    (pgn: string) => controller.validatePgn(pgn),
+    [controller]
+  );
+
+  const importPgnGame = useCallback(
+    (pgn: string, options?: { updatePlayerNames?: boolean }) =>
+      controller.importPgnGame(pgn, options),
+    [controller]
+  );
+
   return {
     sessionState,
     sessionController: controller,
@@ -113,5 +129,7 @@ export function useGameSession({
     loadFen,
     exportFen,
     exportPgn,
+    validatePgn,
+    importPgnGame,
   };
 }

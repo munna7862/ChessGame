@@ -10,3 +10,4 @@ export * from "./migration";
 export * from "./adapters/InMemoryPersistenceAdapter";
 export * from "./adapters/LocalStoragePersistenceAdapter";
 export * from "./PersistenceService";
+export * from "./PgnFileService";
