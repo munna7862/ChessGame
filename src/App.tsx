@@ -25,20 +25,26 @@ import {
   type ResolvedNewGameSession,
   type NewGameConfigOptions,
 } from "./features/game";
+import { SettingsProvider, useSettings } from "./features/settings";
+import type { SettingsService } from "./domain/persistence/settings";
 import "./App.css";
 
 export interface AppProps {
   readonly timeProvider?: TimeProvider | undefined;
   readonly persistenceService?: PersistenceService | undefined;
+  readonly settingsService?: SettingsService | undefined;
 }
 
-export const App: React.FC<AppProps> = ({
+interface AppContentProps {
+  readonly timeProvider?: TimeProvider | undefined;
+  readonly activePersistenceService: PersistenceService;
+}
+
+const AppContent: React.FC<AppContentProps> = ({
   timeProvider,
-  persistenceService,
+  activePersistenceService,
 }) => {
-  const [defaultPersistenceService] = useState(() => new PersistenceService());
-  const activePersistenceService =
-    persistenceService ?? defaultPersistenceService;
+  const { settings, setReducedMotion } = useSettings();
 
   const {
     sessionState,
@@ -636,7 +642,7 @@ export const App: React.FC<AppProps> = ({
             onPromotionCancel={handlePromotionCancel}
             onClearSelection={clearSelection}
             announcement={announcement}
-            reducedMotion={prefersReducedMotion}
+            reducedMotion={settings.reducedMotion || prefersReducedMotion}
             disabled={isGameOver || isInputDisabled}
             onSquareClick={handleSquareClick}
           />
@@ -687,10 +693,19 @@ export const App: React.FC<AppProps> = ({
               type="button"
               className="btn-control"
               data-testid="btn-toggle-motion"
-              onClick={toggleReducedMotion}
-              aria-pressed={prefersReducedMotion}
+              onClick={() => {
+                const nextMotion = !(
+                  settings.reducedMotion || prefersReducedMotion
+                );
+                toggleReducedMotion();
+                setReducedMotion(nextMotion);
+              }}
+              aria-pressed={settings.reducedMotion || prefersReducedMotion}
             >
-              Motion: {prefersReducedMotion ? "Reduced" : "Standard"}
+              Motion:{" "}
+              {settings.reducedMotion || prefersReducedMotion
+                ? "Reduced"
+                : "Standard"}
             </button>
             <button
               type="button"
@@ -953,6 +968,28 @@ export const App: React.FC<AppProps> = ({
         />
       </main>
     </div>
+  );
+};
+
+export const App: React.FC<AppProps> = ({
+  timeProvider,
+  persistenceService,
+  settingsService,
+}) => {
+  const [defaultPersistenceService] = useState(() => new PersistenceService());
+  const activePersistenceService =
+    persistenceService ?? defaultPersistenceService;
+
+  return (
+    <SettingsProvider
+      persistenceService={activePersistenceService}
+      service={settingsService}
+    >
+      <AppContent
+        timeProvider={timeProvider}
+        activePersistenceService={activePersistenceService}
+      />
+    </SettingsProvider>
   );
 };
 

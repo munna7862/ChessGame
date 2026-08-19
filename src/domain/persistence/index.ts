@@ -12,3 +12,4 @@ export * from "./adapters/LocalStoragePersistenceAdapter";
 export * from "./PersistenceService";
 export * from "./PgnFileService";
 export * from "./FenFileService";
+export * from "./settings";

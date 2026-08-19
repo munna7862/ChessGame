@@ -6,6 +6,7 @@ export type {
   BoardTheme,
   PieceSet,
   PersistedSettings,
+  PartialPersistedSettings,
   PersistedPlayerConfig,
   PersistedTimeControl,
   PersistedClockState,
