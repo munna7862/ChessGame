@@ -10,6 +10,7 @@ import type {
   Move,
   PromotionPieceType,
 } from "../../domain/chess/types";
+import type { BoardTheme, PieceSet } from "../../domain/persistence/schema";
 
 /**
  * Board orientation perspective ('w' for White at bottom, 'b' for Black at bottom).
@@ -84,6 +85,7 @@ export interface BoardSquareData {
 export interface SquareProps {
   readonly square: Square;
   readonly piece?: Piece | null | undefined;
+  readonly pieceSet?: PieceSet | undefined;
   readonly color?: SquareColor | undefined;
   readonly orientation?: BoardOrientation | undefined;
   readonly isSelected?: boolean | undefined;
@@ -122,6 +124,7 @@ export type PieceRenderer = (piece: Piece, square: Square) => React.ReactNode;
  */
 export interface PromotionDialogProps {
   readonly color: Color;
+  readonly pieceSet?: PieceSet | undefined;
   readonly targetSquare?: Square | undefined;
   readonly orientation?: BoardOrientation | undefined;
   readonly onSelect: (pieceType: PromotionPieceType) => void;
@@ -158,8 +161,8 @@ export interface BoardProps {
   readonly showCoordinates?: boolean | undefined;
   readonly showLegalMoves?: boolean | undefined;
   readonly showLastMove?: boolean | undefined;
-  readonly theme?: "classic" | "wood" | "slate" | "ocean" | undefined;
-  readonly pieceSet?: "standard" | "classic" | "modern" | undefined;
+  readonly theme?: BoardTheme | undefined;
+  readonly pieceSet?: PieceSet | undefined;
   readonly reducedMotion?: boolean | undefined;
   readonly animateMoves?: boolean | undefined;
   readonly onSquareClick?: ((square: Square) => void) | undefined;

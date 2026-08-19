@@ -68,4 +68,40 @@ test.describe("ChessForge Piece Rendering (Phase 04 · Sprint 02)", () => {
     await flipButton.click();
     await expect(squareE1.locator("[data-testid='piece-wk']")).toBeVisible();
   });
+
+  test("TC-THM-14: allows switching board themes and piece sets in settings with immediate board update", async ({
+    page,
+  }) => {
+    const board = page.getByTestId("chess-board");
+    await expect(board).toHaveAttribute("data-board-theme", "classic");
+    await expect(board).toHaveAttribute("data-piece-set", "standard");
+
+    // Open settings
+    const settingsBtn = page.getByTestId("btn-open-settings");
+    await settingsBtn.click();
+    await expect(page.getByTestId("settings-modal")).toBeVisible();
+
+    // Select Wood theme
+    const woodThemeOption = page.getByTestId("theme-option-wood");
+    await woodThemeOption.click();
+    await expect(page.getByTestId("theme-badge-selected-wood")).toBeVisible();
+    await expect(board).toHaveAttribute("data-board-theme", "wood");
+
+    // Select Modern piece set
+    const modernPieceOption = page.getByTestId("piece-set-option-modern");
+    await modernPieceOption.click();
+    await expect(
+      page.getByTestId("piece-set-badge-selected-modern")
+    ).toBeVisible();
+    await expect(board).toHaveAttribute("data-piece-set", "modern");
+
+    // Close settings
+    const doneBtn = page.getByTestId("btn-done-settings");
+    await doneBtn.click();
+    await expect(page.getByTestId("settings-modal")).not.toBeVisible();
+
+    // Verify board retained updated theme and piece set
+    await expect(board).toHaveAttribute("data-board-theme", "wood");
+    await expect(board).toHaveAttribute("data-piece-set", "modern");
+  });
 });

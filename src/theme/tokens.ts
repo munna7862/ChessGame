@@ -163,6 +163,22 @@ export const DESIGN_TOKENS: DesignTokens = Object.freeze({
       squareDarkBg: "#2e5b88",
       squareDarkText: "#e0f2fe",
     }),
+    emerald: Object.freeze({
+      boardBg: "#142816",
+      boardBorder: "#274a2b",
+      squareLightBg: "#eeeed2",
+      squareLightText: "#4d6a36",
+      squareDarkBg: "#769656",
+      squareDarkText: "#eeeed2",
+    }),
+    midnight: Object.freeze({
+      boardBg: "#0b0f19",
+      boardBorder: "#1e1b4b",
+      squareLightBg: "#e2e8f0",
+      squareLightText: "#334155",
+      squareDarkBg: "#334155",
+      squareDarkText: "#cbd5e1",
+    }),
   }),
 });
 

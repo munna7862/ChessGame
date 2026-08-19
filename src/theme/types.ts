@@ -121,7 +121,10 @@ export interface BoardThemeTokenValues {
   readonly squareDarkText: string;
 }
 
-export type BoardThemeId = "classic" | "wood" | "slate" | "ocean";
+export type BoardThemeId =
+  "classic" | "wood" | "slate" | "ocean" | "emerald" | "midnight";
+
+export type PieceSetId = "standard" | "classic" | "modern";
 
 export interface DesignTokens {
   readonly spacing: SpacingTokens;

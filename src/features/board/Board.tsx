@@ -293,6 +293,7 @@ export const Board: React.FC<BoardProps> = ({
               key={squareData.square}
               square={squareData.square}
               piece={renderedPieceChild ? undefined : squareData.piece}
+              pieceSet={pieceSet}
               color={squareData.color}
               tabIndex={disabled ? -1 : isFocused ? 0 : -1}
               isSelected={isSelected}
@@ -354,6 +355,7 @@ export const Board: React.FC<BoardProps> = ({
         {pendingPromotion && (
           <PromotionDialog
             color={pendingPromotion.color}
+            pieceSet={pieceSet}
             targetSquare={pendingPromotion.to}
             orientation={orientation}
             disabled={disabled}

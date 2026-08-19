@@ -21,6 +21,7 @@ const PROMOTION_OPTIONS: ReadonlyArray<PromotionOption> = [
 
 export const PromotionDialog: React.FC<PromotionDialogProps> = ({
   color,
+  pieceSet = "standard",
   targetSquare,
   onSelect,
   onCancel,
@@ -136,7 +137,7 @@ export const PromotionDialog: React.FC<PromotionDialogProps> = ({
               }}
             >
               <div className="promotion-piece-icon">
-                <Piece piece={{ type: opt.type, color }} />
+                <Piece piece={{ type: opt.type, color }} pieceSet={pieceSet} />
               </div>
               <span className="promotion-piece-name">{opt.name}</span>
               <kbd className="promotion-piece-hotkey" aria-hidden="true">

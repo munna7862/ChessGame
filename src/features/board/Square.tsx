@@ -9,6 +9,7 @@ import type { SquareProps } from "./types";
 export const Square: React.FC<SquareProps> = ({
   square,
   piece,
+  pieceSet,
   color,
   isSelected = false,
   isLastMove = false,
@@ -196,7 +197,7 @@ export const Square: React.FC<SquareProps> = ({
           aria-hidden="true"
         />
       )}
-      {piece ? <Piece piece={piece} /> : null}
+      {piece ? <Piece piece={piece} pieceSet={pieceSet} /> : null}
       {children}
     </div>
   );
