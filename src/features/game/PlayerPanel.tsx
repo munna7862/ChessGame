@@ -1,7 +1,9 @@
 import React from "react";
 import type { PieceType } from "../../domain/chess/types";
+import type { TimeControl } from "../../domain/clock/types";
 import type { PlayerConfig } from "./types";
 import { CapturedPiecesView } from "./CapturedPiecesView";
+import { ClockDisplay } from "../clock/ClockDisplay";
 import "./PlayerPanel.css";
 
 export interface PlayerPanelProps {
@@ -12,6 +14,10 @@ export interface PlayerPanelProps {
   readonly capturedPieces?: readonly PieceType[] | undefined;
   readonly materialAdvantage?: number | undefined;
   readonly position?: "top" | "bottom" | undefined;
+  readonly timeRemainingMs?: number | undefined;
+  readonly isClockActive?: boolean | undefined;
+  readonly timeControl?: TimeControl | undefined;
+  readonly isGameOver?: boolean | undefined;
   readonly className?: string | undefined;
 }
 
@@ -23,12 +29,18 @@ export const PlayerPanel: React.FC<PlayerPanelProps> = ({
   capturedPieces = [],
   materialAdvantage,
   position = "bottom",
+  timeRemainingMs,
+  isClockActive,
+  timeControl,
+  isGameOver = false,
   className = "",
 }) => {
   const isWhite = player.color === "w";
   const avatarClass = isWhite
     ? "player-panel__avatar--white"
     : "player-panel__avatar--black";
+
+  const showClock = timeRemainingMs !== undefined || timeControl !== undefined;
 
   return (
     <section
@@ -115,6 +127,18 @@ export const PlayerPanel: React.FC<PlayerPanelProps> = ({
           >
             Turn
           </span>
+        )}
+
+        {showClock && (
+          <div className="player-panel__clock-container">
+            <ClockDisplay
+              color={player.color}
+              timeRemainingMs={timeRemainingMs ?? 0}
+              isActive={isClockActive ?? false}
+              timeControl={timeControl}
+              isGameOver={isGameOver}
+            />
+          </div>
         )}
       </div>
     </section>

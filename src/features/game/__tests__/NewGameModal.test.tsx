@@ -203,6 +203,33 @@ describe("NewGameModal Component (TC-NG-01 to TC-NG-15)", () => {
     expect(session.config.initialFen).toBe(customFen);
   });
 
+  it("TC-CLK-UI-23: selects time control preset and passes it in resolved game session config", () => {
+    const handleStartGame = vi.fn();
+
+    render(
+      <NewGameModal
+        isOpen={true}
+        onClose={vi.fn()}
+        onStartGame={handleStartGame}
+      />
+    );
+
+    // Select Blitz 5+3 preset
+    const blitz53Btn = screen.getByTestId("preset-5---3--blitz-");
+    fireEvent.click(blitz53Btn);
+
+    fireEvent.click(screen.getByTestId("btn-submit-new-game"));
+
+    const session: ResolvedNewGameSession = handleStartGame.mock.calls[0]![0];
+    expect(session.config.timeControl).toEqual(
+      expect.objectContaining({
+        type: "blitz",
+        initialMs: 300_000,
+        incrementMs: 3000,
+      })
+    );
+  });
+
   it("TC-NG-12 & TC-NG-15: handles cancel button, overlay click, and Escape key", () => {
     const handleClose = vi.fn();
 

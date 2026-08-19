@@ -12,6 +12,7 @@ import type {
 import type { ChessGame } from "../../domain/chess/ports";
 import type { ChessDomainError, Result } from "../../domain/chess/errors";
 import type { PgnTags } from "../../domain/chess/pgn";
+import type { TimeControl } from "../../domain/clock/types";
 
 export const PlayerTypeSchema = z.enum(["human", "engine"]);
 export type PlayerType = z.infer<typeof PlayerTypeSchema>;
@@ -41,6 +42,7 @@ export interface NewGameConfigOptions {
   readonly player2Rating?: number | undefined;
   readonly initialFen?: string | undefined;
   readonly difficulty?: number | undefined;
+  readonly timeControl?: TimeControl | undefined;
 }
 
 export interface ResolvedNewGameSession {
@@ -113,6 +115,7 @@ export function resolveNewGameSession(
         b: blackPlayer,
       },
       initialFen: options.initialFen?.trim() || undefined,
+      timeControl: options.timeControl,
     },
     userOrientation: p1AssignedColor,
   };
@@ -135,6 +138,7 @@ export interface GameSessionConfig {
       }
     | undefined;
   readonly initialFen?: string | undefined;
+  readonly timeControl?: TimeControl | undefined;
 }
 
 export interface GameSessionState {
@@ -153,6 +157,7 @@ export interface GameSessionState {
   readonly isGameOver: boolean;
   readonly isCheck: boolean;
   readonly isCheckmate: boolean;
+  readonly timeControl?: TimeControl | undefined;
 }
 
 export interface IGameSessionController {

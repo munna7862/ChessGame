@@ -20,6 +20,7 @@ import type {
   IGameSessionController,
   PlayerConfig,
 } from "./types";
+import type { TimeControl } from "../../domain/clock/types";
 
 export const DEFAULT_WHITE_PLAYER: PlayerConfig = Object.freeze({
   id: "player-white",
@@ -77,6 +78,7 @@ export class GameSessionController implements IGameSessionController {
     w: PlayerConfig;
     b: PlayerConfig;
   };
+  private timeControl?: TimeControl | undefined;
   private startedAt: number;
   private cachedState: GameSessionState | null = null;
   private readonly listeners: Set<(state: GameSessionState) => void> =
@@ -90,6 +92,7 @@ export class GameSessionController implements IGameSessionController {
       w: config?.players?.w ?? { ...DEFAULT_WHITE_PLAYER },
       b: config?.players?.b ?? { ...DEFAULT_BLACK_PLAYER },
     };
+    this.timeControl = config?.timeControl;
     this.startedAt = Date.now();
 
     this.facadeGame = {
@@ -144,6 +147,7 @@ export class GameSessionController implements IGameSessionController {
         isGameOver: status.isOver,
         isCheck: status.isCheck,
         isCheckmate: status.state === "checkmate",
+        timeControl: this.timeControl,
       });
     }
 
@@ -223,6 +227,9 @@ export class GameSessionController implements IGameSessionController {
     }
     if (config?.players?.b) {
       this.players.b = { ...config.players.b };
+    }
+    if (config?.timeControl !== undefined) {
+      this.timeControl = config.timeControl;
     }
     this.startedAt = Date.now();
     this.notifyListeners();

@@ -1,0 +1,137 @@
+/* Time Control Selector Component Styles */
+
+.time-control-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.time-control-selector__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.time-control-selector__active-summary {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-accent-primary, #60a5fa);
+  background: rgba(59, 130, 246, 0.12);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid rgba(96, 165, 250, 0.25);
+  text-transform: capitalize;
+}
+
+.time-control-selector__groups {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.time-control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.time-control-group__title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-secondary, #94a3b8);
+}
+
+.time-control-group__items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 0.4rem;
+}
+
+.time-preset-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 0.6rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--color-text-secondary, #cbd5e1);
+  background: var(--color-surface-subtle, #1e293b);
+  border: 1px solid var(--color-border-subtle, #334155);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.time-preset-btn:hover:not(:disabled) {
+  background: rgba(51, 65, 85, 0.8);
+  border-color: var(--color-border-hover, #475569);
+  color: #ffffff;
+}
+
+.time-preset-btn--selected {
+  background: var(--color-accent-primary, #2563eb) !important;
+  border-color: #3b82f6 !important;
+  color: #ffffff !important;
+  font-weight: 600;
+  box-shadow: 0 0 8px rgba(37, 99, 235, 0.4);
+}
+
+.time-preset-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.time-control-custom-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.time-preset-btn--custom {
+  width: 100%;
+}
+
+.custom-time-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.5rem;
+  padding: 0.6rem;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--color-border-subtle, #334155);
+  border-radius: 6px;
+}
+
+.custom-time-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.custom-time-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text-secondary, #94a3b8);
+}
+
+.custom-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.85rem;
+  border-radius: 4px;
+}
+
+.custom-time-error {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  padding: 0.35rem 0.5rem;
+  border-radius: 4px;
+}

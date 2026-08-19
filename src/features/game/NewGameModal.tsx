@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { validateFen } from "../../domain/chess/fen";
+import type { TimeControl } from "../../domain/clock/types";
+import { TIME_CONTROL_PRESETS } from "../../domain/clock/timeControl";
+import { TimeControlSelector } from "../clock/TimeControlSelector";
 import {
   useEngineDifficulty,
   DIFFICULTY_PRESETS,
@@ -32,6 +35,15 @@ export const NewGameModal: React.FC<NewGameModalProps> = ({
   );
   const { difficulty, preset, setDifficulty } = useEngineDifficulty(
     (initialValues?.difficulty as EngineDifficultyLevel) || undefined
+  );
+  const [timeControl, setTimeControl] = useState<TimeControl>(
+    initialValues?.timeControl ??
+      TIME_CONTROL_PRESETS.find((p) => p.type === "none") ?? {
+        type: "none",
+        initialMs: 0,
+        incrementMs: 0,
+        label: "Unlimited (Untimed)",
+      }
   );
   const [player1Name, setPlayer1Name] = useState<string>(
     initialValues?.player1Name ?? "White"
@@ -154,6 +166,7 @@ export const NewGameModal: React.FC<NewGameModalProps> = ({
       difficulty: mode === "human_vs_engine" ? difficulty : undefined,
       initialFen:
         showCustomFen && customFen.trim() ? customFen.trim() : undefined,
+      timeControl,
     };
 
     const resolved = resolveNewGameSession(options);
@@ -228,6 +241,13 @@ export const NewGameModal: React.FC<NewGameModalProps> = ({
                   <span>🤖 vs Computer</span>
                 </button>
               </div>
+            </div>
+
+            <div className="form-group" data-testid="time-control-form-group">
+              <TimeControlSelector
+                value={timeControl}
+                onChange={setTimeControl}
+              />
             </div>
 
             {mode === "human_vs_engine" && (

@@ -74,4 +74,25 @@ describe("PlayerPanel Component (TC-NG-13)", () => {
     // When thinking, regular turn badge is replaced by thinking badge
     expect(screen.queryByTestId("player-turn-b")).toBeNull();
   });
+
+  it("TC-CLK-UI-24: renders ClockDisplay with active and remaining time props", () => {
+    render(
+      <PlayerPanel
+        player={defaultWhitePlayer}
+        isTurn={true}
+        timeRemainingMs={175_000}
+        isClockActive={true}
+        timeControl={{
+          type: "blitz",
+          initialMs: 180_000,
+          incrementMs: 2000,
+          label: "3 + 2",
+        }}
+      />
+    );
+
+    expect(screen.getByTestId("clock-display-w")).toBeInTheDocument();
+    expect(screen.getByTestId("clock-time-w")).toHaveTextContent("2:55");
+    expect(screen.getByTestId("clock-active-badge-w")).toBeInTheDocument();
+  });
 });

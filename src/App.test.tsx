@@ -266,4 +266,21 @@ describe("ChessForge Bootstrap Layout & Board UI (TC-BOOT-05, TC-PIECE-23, TC-SE
       screen.getByTestId("history-captured-w-advantage")
     ).toHaveTextContent("+1");
   });
+
+  it("TC-CLK-UI-25: starts game with time control preset and displays clocks in PlayerPanels", () => {
+    render(<App />);
+
+    // Open New Game Modal
+    fireEvent.click(screen.getByTestId("btn-reset-game"));
+
+    // Select Blitz 3+2
+    fireEvent.click(screen.getByTestId("preset-3---2--blitz-"));
+    fireEvent.click(screen.getByTestId("btn-submit-new-game"));
+
+    // Both clocks are rendered with initial time 3:00
+    expect(screen.getByTestId("clock-display-w")).toBeInTheDocument();
+    expect(screen.getByTestId("clock-display-b")).toBeInTheDocument();
+    expect(screen.getByTestId("clock-time-w")).toHaveTextContent("3:00");
+    expect(screen.getByTestId("clock-time-b")).toHaveTextContent("3:00");
+  });
 });
