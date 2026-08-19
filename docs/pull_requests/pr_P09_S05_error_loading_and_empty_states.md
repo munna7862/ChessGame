@@ -4,7 +4,7 @@
 **Branch:** `feature/p09-s05-error-loading-empty-states`  
 **Target:** `main`  
 **Author:** DevOps Engineer / Dev Architect  
-**Status:** Approved & Merged  
+**Status:** Approved & Merged
 
 ---
 
