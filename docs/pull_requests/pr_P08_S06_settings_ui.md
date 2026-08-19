@@ -3,7 +3,7 @@
 **PR Title:** `feat(settings): implement accessible settings modal and dynamic preferences UI`  
 **Branch:** `feature/p08-s06-settings-ui` -> `main`  
 **Author:** DevOps Engineer & Virtual Persona Team  
-**Status:** APPROVED FOR MERGE  
+**Status:** APPROVED FOR MERGE
 
 ---
 
@@ -42,14 +42,14 @@ This pull request implements the user-facing Settings UI for ChessForge, allowin
 
 ## 2. Quality Gate Verification
 
-| Verification Gate | Command | Result | Notes |
-| :--- | :--- | :--- | :--- |
-| **TypeScript Typecheck** | `npm run typecheck` | **PASS (0 errors)** | `strict: true` compliance |
-| **ESLint Static Analysis** | `npm run lint` | **PASS (0 errors, 0 warnings)** | 0 lint issues |
-| **Prettier Formatting** | `npm run format:check` | **PASS (100% compliant)** | Clean code formatting |
-| **Vitest Unit & Integration** | `npm test` | **PASS (89/89 suites, 737/737 tests)** | 0 skips, 100% green |
-| **Playwright Desktop E2E** | `npm run test:e2e` | **PASS (55/55 tests)** | End-to-end user journeys |
-| **Vite Production Build** | `npm run build` | **PASS (2.63s)** | Zero packaging errors |
+| Verification Gate             | Command                | Result                                 | Notes                     |
+| :---------------------------- | :--------------------- | :------------------------------------- | :------------------------ |
+| **TypeScript Typecheck**      | `npm run typecheck`    | **PASS (0 errors)**                    | `strict: true` compliance |
+| **ESLint Static Analysis**    | `npm run lint`         | **PASS (0 errors, 0 warnings)**        | 0 lint issues             |
+| **Prettier Formatting**       | `npm run format:check` | **PASS (100% compliant)**              | Clean code formatting     |
+| **Vitest Unit & Integration** | `npm test`             | **PASS (89/89 suites, 737/737 tests)** | 0 skips, 100% green       |
+| **Playwright Desktop E2E**    | `npm run test:e2e`     | **PASS (55/55 tests)**                 | End-to-end user journeys  |
+| **Vite Production Build**     | `npm run build`        | **PASS (2.63s)**                       | Zero packaging errors     |
 
 ---
 
