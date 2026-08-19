@@ -59,6 +59,26 @@
   --square-dark-text: #e0f2fe;
 }
 
+.board-theme-emerald,
+[data-board-theme="emerald"] {
+  --board-bg: #142816;
+  --board-border: #274a2b;
+  --square-light-bg: #eeeed2;
+  --square-light-text: #4d6a36;
+  --square-dark-bg: #769656;
+  --square-dark-text: #eeeed2;
+}
+
+.board-theme-midnight,
+[data-board-theme="midnight"] {
+  --board-bg: #0b0f19;
+  --board-border: #1e1b4b;
+  --square-light-bg: #e2e8f0;
+  --square-light-text: #334155;
+  --square-dark-bg: #334155;
+  --square-dark-text: #cbd5e1;
+}
+
 /* Piece Sets */
 .piece-set-classic .chess-piece-svg {
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.45));

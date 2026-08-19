@@ -8,7 +8,14 @@ export const CURRENT_SCHEMA_VERSION = 1;
 /**
  * Board visual themes supported by ChessForge.
  */
-export const BoardThemeSchema = z.enum(["classic", "wood", "slate", "ocean"]);
+export const BoardThemeSchema = z.enum([
+  "classic",
+  "wood",
+  "slate",
+  "ocean",
+  "emerald",
+  "midnight",
+]);
 export type BoardTheme = z.infer<typeof BoardThemeSchema>;
 
 /**

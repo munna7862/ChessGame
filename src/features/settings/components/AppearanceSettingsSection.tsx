@@ -39,6 +39,20 @@ const THEME_OPTIONS: readonly ThemeOption[] = [
     darkColor: "#2e5b88",
     description: "Crisp nautical blue tones with high board legibility",
   },
+  {
+    id: "emerald",
+    name: "Emerald",
+    lightColor: "#eeeed2",
+    darkColor: "#769656",
+    description: "Classic tournament green and buff competition palette",
+  },
+  {
+    id: "midnight",
+    name: "Midnight",
+    lightColor: "#e2e8f0",
+    darkColor: "#334155",
+    description: "Deep obsidian and slate palette with high piece contrast",
+  },
 ];
 
 interface PieceSetOption {

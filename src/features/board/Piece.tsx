@@ -1,7 +1,11 @@
 import React from "react";
 import clsx from "clsx";
 import type { Piece as PieceModel } from "../../domain/chess/types";
-import { PIECE_SVG_MAP } from "./assets/pieceSvgMap";
+import type { PieceSet } from "../../domain/persistence/schema";
+import {
+  PIECE_SET_SVG_MAP,
+  STANDARD_PIECE_SVG_MAP,
+} from "./assets/pieceSvgMap";
 import {
   getPieceAriaLabel,
   getPieceCode,
@@ -12,6 +16,7 @@ import "./Piece.css";
 
 export interface PieceProps {
   readonly piece: PieceModel;
+  readonly pieceSet?: PieceSet | undefined;
   readonly ariaLabel?: string | undefined;
   readonly className?: string | undefined;
   readonly style?: React.CSSProperties | undefined;
@@ -22,6 +27,7 @@ export interface PieceProps {
 
 export const Piece: React.FC<PieceProps> = ({
   piece,
+  pieceSet = "standard",
   ariaLabel,
   className,
   style,
@@ -49,7 +55,9 @@ export const Piece: React.FC<PieceProps> = ({
     );
   }
 
-  const SvgComponent = PIECE_SVG_MAP[piece.color]?.[piece.type];
+  const SvgComponent =
+    PIECE_SET_SVG_MAP[pieceSet]?.[piece.color]?.[piece.type] ??
+    STANDARD_PIECE_SVG_MAP[piece.color]?.[piece.type];
   const pieceCode = getPieceCode(piece);
   const resolvedAriaLabel = ariaLabel ?? getPieceAriaLabel(piece);
   const testId = dataTestId ?? `piece-${pieceCode}`;
