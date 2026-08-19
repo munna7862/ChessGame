@@ -91,6 +91,17 @@ export function useClock(options: UseClockOptions = {}): UseClockReturn {
     }
   }, [controller, timeProvider]);
 
+  // Sync timeControl changes from external session updates
+  const prevTimeControlRef = useRef<TimeControl>(timeControl);
+  useEffect(() => {
+    if (prevTimeControlRef.current !== timeControl) {
+      prevTimeControlRef.current = timeControl;
+      controller.reset(timeControl);
+      setClockState(controller.getState());
+      setRemainingTimes(controller.getRemainingTime());
+    }
+  }, [controller, timeControl]);
+
   // Interval ticker for visual rendering when clock is running
   useEffect(() => {
     if (

@@ -3,7 +3,7 @@
 **Branch:** `feature/p07-s01-clock-domain-model`  
 **Target:** `main`  
 **Author:** DevOps Engineer / Dev Architect / SDET Architect  
-**Reviewers:** Chess Domain Architect, SDET Architect, Security Officer, Product Owner  
+**Reviewers:** Chess Domain Architect, SDET Architect, Security Officer, Product Owner
 
 ---
 
@@ -12,6 +12,7 @@
 This pull request implements the foundational **Clock Domain Model** for ChessForge (`src/domain/clock/`), providing deterministic, render-independent chess clock calculations, Fischer increment mechanics, time control presets, authoritative timeout detection, and injectable time providers.
 
 ### Key Deliverables & Modules:
+
 - **`src/domain/clock/types.ts`**: Pure TypeScript contracts for `ClockState`, `TimeControl`, `TimeControlType`, `ClockStatus`, `TimeProvider`, `TimeRemaining`, and `ClockListener`.
 - **`src/domain/clock/timeControl.ts`**: Standard presets (`1+0`, `2+1`, `3+0`, `3+2`, `5+0`, `5+3`, `10+0`, `10+5`, `15+10`, `30+0`, `unlimited`), category deduction, custom builder, and standard clock formatters.
 - **`src/domain/clock/timeProvider.ts`**: `SystemTimeProvider` and `DeterministicFakeTimeProvider` for testability without sleeps.
@@ -26,15 +27,15 @@ This pull request implements the foundational **Clock Domain Model** for ChessFo
 
 ## 2. Invariants & Acceptance Verification
 
-| Invariant / Requirement | Description | Status |
-| :--- | :--- | :--- |
-| **INV-CLK-01** | Deterministic State Evaluation (identical inputs -> identical outputs) | **VERIFIED** |
-| **INV-CLK-02** | Zero Render-Loop Dependency (no `setInterval`/`setTimeout` in domain) | **VERIFIED** |
-| **INV-CLK-03** | Exact Fischer Increment awarded only on valid unflagged move completion | **VERIFIED** |
-| **INV-CLK-04** | Authoritative Timeout & Flagged State Immutability | **VERIFIED** |
-| **INV-CLK-05** | Inactive Player Time Invariance across plies | **VERIFIED** |
-| **INV-CLK-06** | Monotonic Time Decay during active turn | **VERIFIED** |
-| **INV-CLK-07** | Pause/Resume state preservation with zero phantom drift | **VERIFIED** |
+| Invariant / Requirement | Description                                                             | Status       |
+| :---------------------- | :---------------------------------------------------------------------- | :----------- |
+| **INV-CLK-01**          | Deterministic State Evaluation (identical inputs -> identical outputs)  | **VERIFIED** |
+| **INV-CLK-02**          | Zero Render-Loop Dependency (no `setInterval`/`setTimeout` in domain)   | **VERIFIED** |
+| **INV-CLK-03**          | Exact Fischer Increment awarded only on valid unflagged move completion | **VERIFIED** |
+| **INV-CLK-04**          | Authoritative Timeout & Flagged State Immutability                      | **VERIFIED** |
+| **INV-CLK-05**          | Inactive Player Time Invariance across plies                            | **VERIFIED** |
+| **INV-CLK-06**          | Monotonic Time Decay during active turn                                 | **VERIFIED** |
+| **INV-CLK-07**          | Pause/Resume state preservation with zero phantom drift                 | **VERIFIED** |
 
 ---
 

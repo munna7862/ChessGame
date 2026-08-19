@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import type { Color } from "./domain/chess/types";
+import type { TimeProvider } from "./domain/clock/types";
 import { Header } from "./components/Header";
 import { ConfirmationModal } from "./components/ConfirmationModal";
 import { Board } from "./features/board/Board";
@@ -19,7 +20,11 @@ import {
 } from "./features/game";
 import "./App.css";
 
-export const App: React.FC = () => {
+export interface AppProps {
+  readonly timeProvider?: TimeProvider | undefined;
+}
+
+export const App: React.FC<AppProps> = ({ timeProvider }) => {
   const {
     sessionState,
     sessionController,
@@ -115,6 +120,7 @@ export const App: React.FC = () => {
 
   const clock = useClock({
     timeControl: sessionState.timeControl,
+    timeProvider,
     onTimeout: handleClockTimeout,
   });
 
