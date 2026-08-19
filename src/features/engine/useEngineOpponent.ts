@@ -5,6 +5,7 @@ import { StockfishWorkerBridge } from "./StockfishWorkerBridge";
 import { EngineServiceImpl } from "./EngineServiceImpl";
 import {
   getEngineDifficultyConfig,
+  calculateEngineSearchTimeBudget,
   DEFAULT_DIFFICULTY_LEVEL,
 } from "./difficulty";
 import { parseUciMoveToInput } from "./uciProtocol";
@@ -38,6 +39,8 @@ export interface UseEngineOpponentOptions {
   readonly engineService?: EngineService | undefined;
   readonly enabled?: boolean | undefined;
   readonly onEngineError?: ((error: Error) => void) | undefined;
+  readonly clockRemainingMs?: number | undefined;
+  readonly clockIncrementMs?: number | undefined;
 }
 
 export interface UseEngineOpponentReturn {
@@ -61,6 +64,8 @@ export function useEngineOpponent({
   engineService: customEngineService,
   enabled = true,
   onEngineError,
+  clockRemainingMs,
+  clockIncrementMs,
 }: UseEngineOpponentOptions): UseEngineOpponentReturn {
   const engineService = customEngineService ?? getSharedEngineService();
 
@@ -166,6 +171,16 @@ export function useEngineOpponent({
     setEngineError(null);
   }, []);
 
+  const clockRemainingMsRef = useRef(clockRemainingMs);
+  useEffect(() => {
+    clockRemainingMsRef.current = clockRemainingMs;
+  }, [clockRemainingMs]);
+
+  const clockIncrementMsRef = useRef(clockIncrementMs);
+  useEffect(() => {
+    clockIncrementMsRef.current = clockIncrementMs;
+  }, [clockIncrementMs]);
+
   // Main turn-triggering effect
   useEffect(() => {
     if (!enabled || !isEngineTurn) {
@@ -190,10 +205,23 @@ export function useEngineOpponent({
           return;
         }
 
-        // Determine difficulty configuration
+        // Determine difficulty configuration & time budget
         const difficultyLevel =
           activePlayer.difficulty ?? DEFAULT_DIFFICULTY_LEVEL;
         const difficultyConfig = getEngineDifficultyConfig(difficultyLevel);
+
+        const isTimed = Boolean(
+          sessionState.timeControl && sessionState.timeControl.type !== "none"
+        );
+        const movetimeMs = calculateEngineSearchTimeBudget({
+          difficultyLevel,
+          remainingMs: clockRemainingMsRef.current,
+          incrementMs:
+            clockIncrementMsRef.current ??
+            sessionState.timeControl?.incrementMs ??
+            0,
+          isTimedGame: isTimed,
+        });
 
         const currentFen = sessionController.exportFen();
         const sessionId = sessionState.id;
@@ -203,17 +231,24 @@ export function useEngineOpponent({
           sessionId,
           skillLevel: difficultyConfig.skillLevel,
           depth: difficultyConfig.depth,
-          movetimeMs: difficultyConfig.movetimeMs,
+          movetimeMs,
         });
 
         if (!isMountedRef.current || isCancelled) {
           return;
         }
 
-        // Apply best move through domain
-        const moveInput = parseUciMoveToInput(result.bestMoveUci);
-        if (moveInput) {
-          sessionController.makeMove(moveInput);
+        // Verify session is still active and valid before committing move (REQ-AI-CLK-04)
+        const currentSession = sessionController.getState();
+        if (
+          !currentSession.isGameOver &&
+          currentSession.id === sessionId &&
+          currentSession.turn === sessionState.turn
+        ) {
+          const moveInput = parseUciMoveToInput(result.bestMoveUci);
+          if (moveInput) {
+            sessionController.makeMove(moveInput);
+          }
         }
 
         if (isMountedRef.current && !isCancelled) {
@@ -249,6 +284,7 @@ export function useEngineOpponent({
     sessionState.id,
     sessionState.position.fen,
     sessionState.turn,
+    sessionState.timeControl,
     activePlayer.difficulty,
     retryTrigger,
     engineService,
