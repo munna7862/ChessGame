@@ -118,6 +118,13 @@ export function useGameRecovery(
           // Stale / completed / invalid recovery state is safely discarded
           persistenceService.saveActiveGame(null);
         }
+      } else if (!loadResult.success) {
+        // Corrupted persistence state: safely discard and reset
+        console.warn(
+          "[ChessForge] Persistence recovery state corrupted or invalid:",
+          loadResult.error
+        );
+        persistenceService.saveActiveGame(null);
       }
     } catch {
       // Safe fallback on any unhandled error

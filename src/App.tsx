@@ -4,6 +4,7 @@ import type { TimeProvider } from "./domain/clock/types";
 import { PersistenceService } from "./domain/persistence/PersistenceService";
 import { Header } from "./components/Header";
 import { ConfirmationModal } from "./components/ConfirmationModal";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import {
   Board,
   useBoardInteraction,
@@ -1116,15 +1117,17 @@ export const App: React.FC<AppProps> = ({
     persistenceService ?? defaultPersistenceService;
 
   return (
-    <SettingsProvider
-      persistenceService={activePersistenceService}
-      service={settingsService}
-    >
-      <AppContent
-        timeProvider={timeProvider}
-        activePersistenceService={activePersistenceService}
-      />
-    </SettingsProvider>
+    <ErrorBoundary>
+      <SettingsProvider
+        persistenceService={activePersistenceService}
+        service={settingsService}
+      >
+        <AppContent
+          timeProvider={timeProvider}
+          activePersistenceService={activePersistenceService}
+        />
+      </SettingsProvider>
+    </ErrorBoundary>
   );
 };
 

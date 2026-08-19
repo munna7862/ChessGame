@@ -1,0 +1,228 @@
+/* ErrorBoundary CSS */
+
+.error-boundary-screen {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  background-color: var(--bg-primary, #090d16);
+  color: var(--text-primary, #f8fafc);
+  font-family: var(
+    --font-family,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    sans-serif
+  );
+}
+
+.error-boundary-card {
+  width: 100%;
+  max-width: 680px;
+  background: var(--bg-surface, #131d2e);
+  border: 1px solid var(--border-subtle, rgba(148, 163, 184, 0.2));
+  border-radius: 16px;
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.error-boundary-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.75rem 2rem 1.25rem;
+  border-bottom: 1px solid var(--border-subtle, rgba(148, 163, 184, 0.15));
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.error-boundary-icon {
+  font-size: 2rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.error-boundary-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.error-boundary-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #f87171;
+  letter-spacing: -0.02em;
+}
+
+.error-boundary-subtitle {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary, #94a3b8);
+  line-height: 1.4;
+}
+
+.error-boundary-body {
+  padding: 1.75rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.error-boundary-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.error-boundary-summary__label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #f87171;
+}
+
+.error-boundary-summary__msg {
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  font-size: 0.85rem;
+  color: #fca5a5;
+  word-break: break-word;
+}
+
+.error-boundary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.btn-error-action {
+  padding: 0.65rem 1.2rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.btn-error-action:focus-visible {
+  outline: 2px solid var(--accent-primary, #38bdf8);
+  outline-offset: 2px;
+}
+
+.btn-error-action--primary {
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+  color: #ffffff;
+  border-color: rgba(56, 189, 248, 0.4);
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+}
+
+.btn-error-action--primary:hover {
+  background: linear-gradient(135deg, #0369a1, #075985);
+  transform: translateY(-1px);
+}
+
+.btn-error-action--secondary {
+  background: rgba(148, 163, 184, 0.12);
+  color: var(--text-primary, #f8fafc);
+  border-color: var(--border-subtle, rgba(148, 163, 184, 0.25));
+}
+
+.btn-error-action--secondary:hover {
+  background: rgba(148, 163, 184, 0.2);
+}
+
+.btn-error-action--ghost {
+  background: transparent;
+  color: var(--accent-primary, #38bdf8);
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+.btn-error-action--ghost:hover {
+  background: rgba(56, 189, 248, 0.1);
+  border-color: rgba(56, 189, 248, 0.5);
+}
+
+.btn-error-action--danger {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+.btn-error-action--danger:hover {
+  background: rgba(239, 68, 68, 0.25);
+  color: #ffffff;
+}
+
+.error-boundary-details {
+  border: 1px solid var(--border-subtle, rgba(148, 163, 184, 0.2));
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.5);
+  overflow: hidden;
+}
+
+.error-boundary-details__summary {
+  padding: 0.75rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary, #94a3b8);
+  cursor: pointer;
+  user-select: none;
+  background: rgba(30, 41, 59, 0.3);
+  transition: background 0.15s ease;
+}
+
+.error-boundary-details__summary:hover {
+  background: rgba(30, 41, 59, 0.6);
+  color: var(--text-primary, #f8fafc);
+}
+
+.error-boundary-details__summary:focus-visible {
+  outline: 2px solid var(--accent-primary, #38bdf8);
+  outline-offset: -2px;
+}
+
+.error-boundary-details__content {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  overflow-x: auto;
+}
+
+.error-boundary-stack {
+  margin: 0;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 6px;
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: #e2e8f0;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.error-boundary-stack--component {
+  color: #94a3b8;
+}
