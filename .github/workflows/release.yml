@@ -1,0 +1,215 @@
+name: Release Automation
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run release (validate & build packages without publishing to GitHub Releases)"
+        type: boolean
+        default: false
+        required: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify-frontend-quality-gates:
+    name: Frontend Quality Gates (Lint, Format, Typecheck, Test, E2E, Build)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: "npm"
+
+      - name: Install dependencies deterministically
+        run: npm ci
+
+      - name: Check code formatting (Prettier)
+        run: npm run format:check
+
+      - name: Lint code (ESLint)
+        run: npm run lint
+
+      - name: Typecheck TypeScript
+        run: npm run typecheck
+
+      - name: Run unit, property & integration tests (Vitest)
+        run: npm run test
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright E2E tests
+        run: npm run test:e2e
+
+      - name: Build production web bundle
+        run: npm run build
+
+  verify-rust-quality-gates:
+    name: Rust Native Quality Gates (Clippy, Cargo Test, Cargo Check)
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: "npm"
+
+      - name: Setup Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: stable
+          components: clippy
+
+      - name: Install dependencies deterministically
+        run: npm ci
+
+      - name: Run Rust unit tests
+        run: cargo test --manifest-path src-tauri/Cargo.toml
+
+      - name: Run Rust Clippy checks
+        run: cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings
+
+      - name: Check Tauri Rust compilation
+        run: cargo check --manifest-path src-tauri/Cargo.toml --release
+
+  build-windows-release:
+    name: Build & Package Windows Desktop Release
+    needs: [verify-frontend-quality-gates, verify-rust-quality-gates]
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: "npm"
+
+      - name: Setup Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Install dependencies deterministically
+        run: npm ci
+
+      - name: Build frontend assets
+        run: npm run build
+
+      - name: Build and package Windows Desktop installers
+        env:
+          WINDOWS_CERTIFICATE_BASE64: ${{ secrets.WINDOWS_CERTIFICATE_BASE64 }}
+          WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+          SIGNTOOL_TIMESTAMP_SERVER: "http://timestamp.digicert.com"
+        shell: pwsh
+        run: |
+          Write-Host "Compiling Tauri Windows release bundles (NSIS .exe & .msi)..."
+          npm run tauri:build
+
+          # Check if code signing secrets are configured
+          if ($env:WINDOWS_CERTIFICATE_BASE64 -and $env:WINDOWS_CERTIFICATE_PASSWORD) {
+            Write-Host "Code signing credentials detected. Executing secure Authenticode signing..."
+            $certPath = "$env:TEMP\chessforge_release_signing_cert.pfx"
+            try {
+              $certBytes = [System.Convert]::FromBase64String($env:WINDOWS_CERTIFICATE_BASE64)
+              [System.IO.File]::WriteAllBytes($certPath, $certBytes)
+
+              # Discover and sign generated setup packages
+              $bundleFiles = Get-ChildItem -Path "src-tauri/target/release/bundle" -Recurse -Include *.exe,*.msi
+              foreach ($file in $bundleFiles) {
+                Write-Host "Signing release artifact: $($file.FullName)"
+                & signtool sign /f $certPath /p $env:WINDOWS_CERTIFICATE_PASSWORD /tr $env:SIGNTOOL_TIMESTAMP_SERVER /td sha256 /fd sha256 $file.FullName
+              }
+            }
+            finally {
+              if (Test-Path $certPath) {
+                Remove-Item -Force $certPath
+                Write-Host "Securely deleted temporary signing certificate from runner."
+              }
+            }
+          } else {
+            Write-Host "No code signing credentials provided. Proceeding with unsigned release bundle."
+          }
+
+      - name: Generate SHA-256 Artifact Checksums
+        shell: pwsh
+        run: |
+          Write-Host "Calculating SHA-256 checksums for release bundle artifacts..."
+          node scripts/release_checksums.mjs --dir src-tauri/target/release/bundle --output src-tauri/target/release/bundle/checksums.txt
+
+      - name: Upload Windows Release Bundle Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: chessforge-windows-release-bundle
+          path: |
+            src-tauri/target/release/bundle/**/*.exe
+            src-tauri/target/release/bundle/**/*.msi
+            src-tauri/target/release/bundle/checksums.txt
+          retention-days: 14
+
+  publish-github-release:
+    name: Publish Tagged GitHub Release
+    needs:
+      [
+        verify-frontend-quality-gates,
+        verify-rust-quality-gates,
+        build-windows-release,
+      ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    if: ${{ !inputs.dry_run }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: "npm"
+
+      - name: Download Windows Release Bundle Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: chessforge-windows-release-bundle
+          path: release-bundle
+
+      - name: Extract Version Release Notes
+        run: |
+          node scripts/extract_release_notes.mjs --file RELEASE_NOTES.md --tag "${{ github.ref_name }}" --output extracted_release_notes.md
+
+      - name: Verify Checksums File Exists
+        run: |
+          test -f release-bundle/checksums.txt || (echo "Missing checksums.txt in release bundle!" && exit 1)
+          cat release-bundle/checksums.txt
+
+      - name: Publish GitHub Release with Artifacts
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: extracted_release_notes.md
+          files: |
+            release-bundle/**/*.exe
+            release-bundle/**/*.msi
+            release-bundle/checksums.txt
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
