@@ -34,7 +34,7 @@ describe("Release Candidate Build & Clean-Machine Validation Suite (TC-RC-01 - T
       const config = JSON.parse(raw);
 
       expect(config.productName).toBe("ChessForge");
-      expect(config.version).toBe("0.1.0");
+      expect(config.version).toBe("1.0.0");
       expect(config.identifier).toBe("com.chessforge.app");
       expect(config.bundle.active).toBe(true);
       expect(config.bundle.targets).toBe("all");
@@ -54,7 +54,7 @@ describe("Release Candidate Build & Clean-Machine Validation Suite (TC-RC-01 - T
       const pkg = JSON.parse(raw);
 
       expect(pkg.name).toBe("chessforge");
-      expect(pkg.version).toBe("0.1.0");
+      expect(pkg.version).toBe("1.0.0");
       expect(pkg.scripts.build).toBe("tsc -b && vite build");
       expect(pkg.scripts.typecheck).toBe("tsc --noEmit");
       expect(pkg.scripts.lint).toBe("eslint .");

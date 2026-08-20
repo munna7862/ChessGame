@@ -35,7 +35,7 @@ test.describe("ChessForge Desktop Webview Launch Smoke Tests", () => {
 
     const version = page.getByTestId("app-version");
     await expect(version).toBeVisible();
-    await expect(version).toHaveText(/v0\.1\.0/);
+    await expect(version).toHaveText(/v1\.0\.0/);
   });
 
   test("TC-E2E-04: should display engine status badge indicating local readiness", async ({

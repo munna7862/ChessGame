@@ -22,7 +22,7 @@ describe("ChessForge Bootstrap Layout & Board UI (TC-BOOT-05, TC-PIECE-23, TC-SE
   it("renders the Header with branding and version tag", () => {
     render(<Header />);
     expect(screen.getByTestId("app-header")).toBeInTheDocument();
-    expect(screen.getByText("v0.1.0-alpha")).toBeInTheDocument();
+    expect(screen.getByText("v1.0.0")).toBeInTheDocument();
   });
 
   it("renders the StatusBadge with correct status indicator and custom testid", () => {
