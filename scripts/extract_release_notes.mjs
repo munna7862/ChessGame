@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * ChessForge Release Notes Extractor
  * Extracts version-specific release notes from RELEASE_NOTES.md or CHANGELOG.md
