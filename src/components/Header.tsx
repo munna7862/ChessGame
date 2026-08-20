@@ -49,7 +49,7 @@ export const Header: React.FC<HeaderProps> = ({
             borderRadius: "4px",
           }}
         >
-          v0.1.0-alpha
+          v1.0.0
         </span>
       </div>
 

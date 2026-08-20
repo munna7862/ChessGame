@@ -1,9 +1,9 @@
 {
   "name": "chessforge",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "module",
-  "description": "High-performance, local-first chess desktop application built with Tauri v2, React 19, and Stockfish",
+  "description": "ChessForge - High-performance, local-first chess desktop application built with Tauri v2, React 19, and Stockfish",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
