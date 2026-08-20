@@ -3,7 +3,7 @@
 **Branch:** `feature/p11-s02-windows-installer-and-packaging`  
 **Target:** `main`  
 **Author:** DevOps Engineer / Dev Architect  
-**Reviewers:** Scrum Master, Chess Domain Architect, SDET Architect, Security Officer, Product Owner  
+**Reviewers:** Scrum Master, Chess Domain Architect, SDET Architect, Security Officer, Product Owner
 
 ---
 
@@ -27,15 +27,15 @@ This pull request completes **Phase 11 · Sprint 02: Windows Installer and Packa
 
 ## 2. Test Execution & Quality Gates Verification
 
-| Quality Gate | Tool / Runner | Result |
-| :--- | :--- | :--- |
-| **ESLint** | `npm run lint` | 0 errors, 0 warnings |
-| **TypeScript Typecheck** | `npm run typecheck` | 0 type errors |
-| **Formatting** | `npm run format:check` | 100% compliant |
-| **Vitest Tests** | `npm test` | 119 files, 980/980 passed (0 skips) |
-| **Playwright E2E Tests** | `npm run test:e2e` | 24 files, 82/82 passed (0 skips) |
-| **Production Build** | `npm run build` | Clean bundle (504 kB JS, 74.5 kB CSS) |
-| **Security Audit** | `npm audit` | 0 vulnerabilities |
+| Quality Gate             | Tool / Runner          | Result                                |
+| :----------------------- | :--------------------- | :------------------------------------ |
+| **ESLint**               | `npm run lint`         | 0 errors, 0 warnings                  |
+| **TypeScript Typecheck** | `npm run typecheck`    | 0 type errors                         |
+| **Formatting**           | `npm run format:check` | 100% compliant                        |
+| **Vitest Tests**         | `npm test`             | 119 files, 980/980 passed (0 skips)   |
+| **Playwright E2E Tests** | `npm run test:e2e`     | 24 files, 82/82 passed (0 skips)      |
+| **Production Build**     | `npm run build`        | Clean bundle (504 kB JS, 74.5 kB CSS) |
+| **Security Audit**       | `npm audit`            | 0 vulnerabilities                     |
 
 ---
 

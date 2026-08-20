@@ -111,3 +111,21 @@ Desktop.ini
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
+
+# Code Signing Certificates & Secret Keys
+*.pfx
+*.p12
+*.key
+*.snk
+*.sig
+*.cert
+*.cer
+*.crt
+*.pem
+*.asc
+*.der
+*.jks
+*.keystore
+secrets/
+credentials/
+
