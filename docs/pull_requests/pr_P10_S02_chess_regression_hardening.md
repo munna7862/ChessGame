@@ -3,7 +3,7 @@
 **Branch:** `feature/p10-s02-chess-regression-hardening` -> `main`  
 **Authors:** Chess Domain Architect, SDET Architect, Dev Architect, Security Officer, Product Owner, DevOps Engineer  
 **Sprint Specification:** [Phase 10 · Sprint 02 Plan](file:///c:/Workspace/ChessGame/planning/sprints/P10-S02-chess-regression-hardening.md)  
-**Pre-Implementation Test Catalog:** [P10-S02 Test Cases Catalog](file:///c:/Workspace/ChessGame/docs/testing/test_cases_catalog_P10_S02.md)  
+**Pre-Implementation Test Catalog:** [P10-S02 Test Cases Catalog](file:///c:/Workspace/ChessGame/docs/testing/test_cases_catalog_P10_S02.md)
 
 ---
 
