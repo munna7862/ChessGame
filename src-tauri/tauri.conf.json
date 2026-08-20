@@ -34,6 +34,19 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "publisher": "ChessForge Team",
+    "copyright": "Copyright © 2026 ChessForge Team. All rights reserved.",
+    "category": "Game",
+    "shortDescription": "ChessForge Desktop Chess Application",
+    "longDescription": "ChessForge is a high-performance, local-first chess desktop application built with Tauri v2, React 19, and Stockfish AI.",
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser"
+      },
+      "wix": {
+        "language": "en-US"
+      }
+    }
   }
 }
