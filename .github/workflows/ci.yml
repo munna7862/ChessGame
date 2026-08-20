@@ -111,3 +111,53 @@ jobs:
 
       - name: Check Tauri Rust compilation
         run: cargo check --manifest-path src-tauri/Cargo.toml --release
+
+      - name: Build and package Windows Desktop installers
+        env:
+          WINDOWS_CERTIFICATE_BASE64: ${{ secrets.WINDOWS_CERTIFICATE_BASE64 }}
+          WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+          SIGNTOOL_TIMESTAMP_SERVER: "http://timestamp.digicert.com"
+        shell: pwsh
+        run: |
+          Write-Host "Compiling Windows packages..."
+          npm run tauri:build
+
+          # Check if code signing secrets are configured
+          if ($env:WINDOWS_CERTIFICATE_BASE64 -and $env:WINDOWS_CERTIFICATE_PASSWORD) {
+            Write-Host "Code signing credentials detected. Executing secure Authenticode signing..."
+            $certPath = "$env:TEMP\chessforge_signing_cert.pfx"
+            try {
+              $certBytes = [System.Convert]::FromBase64String($env:WINDOWS_CERTIFICATE_BASE64)
+              [System.IO.File]::WriteAllBytes($certPath, $certBytes)
+
+              # Discover and sign generated setup packages
+              $bundleFiles = Get-ChildItem -Path "src-tauri/target/release/bundle" -Recurse -Include *.exe,*.msi
+              foreach ($file in $bundleFiles) {
+                Write-Host "Signing release artifact: $($file.FullName)"
+                & signtool sign /f $certPath /p $env:WINDOWS_CERTIFICATE_PASSWORD /tr $env:SIGNTOOL_TIMESTAMP_SERVER /td sha256 /fd sha256 $file.FullName
+              }
+            }
+            finally {
+              if (Test-Path $certPath) {
+                Remove-Item -Force $certPath
+                Write-Host "Securely deleted temporary signing certificate from runner."
+              }
+            }
+          } else {
+            Write-Host "No code signing credentials provided. Proceeding with unsigned development package verification."
+          }
+
+      - name: Generate SHA-256 Artifact Checksums
+        shell: pwsh
+        run: |
+          $artifacts = Get-ChildItem -Path "src-tauri/target/release/bundle" -Recurse -Include *.exe,*.msi
+          if ($artifacts.Count -gt 0) {
+            $checksumFile = "src-tauri/target/release/bundle/checksums.txt"
+            "" | Out-File -FilePath $checksumFile -Encoding utf8
+            foreach ($item in $artifacts) {
+              $hash = (Get-FileHash -Path $item.FullName -Algorithm SHA256).Hash.ToLower()
+              "$hash  $($item.Name)" | Out-File -FilePath $checksumFile -Append -Encoding utf8
+            }
+            Write-Host "Generated SHA-256 checksums:"
+            Get-Content $checksumFile
+          }
