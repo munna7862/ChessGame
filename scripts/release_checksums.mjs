@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * ChessForge Release Checksums Utility
  * Computes, formats, and verifies SHA-256 checksums for release distribution packages.
