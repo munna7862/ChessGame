@@ -12,6 +12,7 @@
 This pull request completes Phase 09 Sprint 06 (**Visual Regression and UX Review**), validating the visual presentation, responsive scaling, themes, and UX polish of ChessForge v1.
 
 Key deliverables:
+
 - **Visual Regression & UX Layout Specification:** Documented in [`docs/architecture/visual_regression_and_ux_review_specification.md`](file:///c:/Workspace/ChessGame/docs/architecture/visual_regression_and_ux_review_specification.md).
 - **Pre-Implementation Test Cases Catalog:** Documented in [`docs/testing/test_cases_catalog_P09_S06.md`](file:///c:/Workspace/ChessGame/docs/testing/test_cases_catalog_P09_S06.md).
 - **Unit & Layout Invariants Suite:** Added [`src/features/board/__tests__/visualRegressionLayout.test.tsx`](file:///c:/Workspace/ChessGame/src/features/board/__tests__/visualRegressionLayout.test.tsx) and [`src/theme/__tests__/visualTokensLayoutInvariants.test.ts`](file:///c:/Workspace/ChessGame/src/theme/__tests__/visualTokensLayoutInvariants.test.ts).
@@ -22,14 +23,14 @@ Key deliverables:
 
 ## 2. Test Verification & Quality Gates Report
 
-| Quality Gate | Command | Result | Details |
-| :--- | :--- | :--- | :--- |
-| **Unit & Invariants** | `npm test` | **PASS (100%)** | 105 test files, 862 tests passed, 0 failed, 0 skipped |
-| **E2E Visual & Functional** | `npm run test:e2e` | **PASS (100%)** | 20 test files, 69 scenarios passed, 0 failed |
-| **Type Safety** | `npm run typecheck` | **PASS (100%)** | `tsc --noEmit` passed with 0 errors |
-| **Code Quality** | `npm run lint` | **PASS (100%)** | ESLint passed with 0 errors, 0 warnings |
-| **Code Formatting** | `npm run format:check` | **PASS (100%)** | 100% files conform to Prettier formatting |
-| **Production Build** | `npm run build` | **PASS (100%)** | Vite bundle generated cleanly |
+| Quality Gate                | Command                | Result          | Details                                               |
+| :-------------------------- | :--------------------- | :-------------- | :---------------------------------------------------- |
+| **Unit & Invariants**       | `npm test`             | **PASS (100%)** | 105 test files, 862 tests passed, 0 failed, 0 skipped |
+| **E2E Visual & Functional** | `npm run test:e2e`     | **PASS (100%)** | 20 test files, 69 scenarios passed, 0 failed          |
+| **Type Safety**             | `npm run typecheck`    | **PASS (100%)** | `tsc --noEmit` passed with 0 errors                   |
+| **Code Quality**            | `npm run lint`         | **PASS (100%)** | ESLint passed with 0 errors, 0 warnings               |
+| **Code Formatting**         | `npm run format:check` | **PASS (100%)** | 100% files conform to Prettier formatting             |
+| **Production Build**        | `npm run build`        | **PASS (100%)** | Vite bundle generated cleanly                         |
 
 ---
 
