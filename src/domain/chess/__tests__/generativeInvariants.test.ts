@@ -199,14 +199,19 @@ describe("Phase 10 · Sprint 03: Generative Property-Based Invariant Fuzzing (fa
 
             const legalMoves = adapter.getLegalMoves();
             const legalPairs = new Set(
-              legalMoves.map(
-                (m) => `${m.from}-${m.to}-${m.promotion ?? ""}`
-              )
+              legalMoves.map((m) => `${m.from}-${m.to}-${m.promotion ?? ""}`)
             );
 
             // Test non-legal moves
             const allSquares: Square[] = [
-              "a1", "a8", "e1", "e8", "h1", "h8", "d4", "e5",
+              "a1",
+              "a8",
+              "e1",
+              "e8",
+              "h1",
+              "h8",
+              "d4",
+              "e5",
             ];
             for (const from of allSquares) {
               for (const to of allSquares) {
@@ -232,7 +237,8 @@ describe("Phase 10 · Sprint 03: Generative Property-Based Invariant Fuzzing (fa
           fc.integer({ min: 1, max: 100000 }),
           fc.integer({ min: 5, max: 30 }),
           (seed, plies) => {
-            const initialFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+            const initialFen =
+              "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
             const { adapter, movesMade, positions } = playLegalGame(
               seed,
               plies,
