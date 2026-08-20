@@ -4,7 +4,7 @@
 **Authors:** Chess Domain Architect, SDET Architect, Dev Architect, Security Officer, Product Owner, DevOps Engineer  
 **Sprint Specification:** [Phase 10 · Sprint 03 Plan](file:///c:/Workspace/ChessGame/planning/sprints/P10-S03-property-and-mutation-testing.md)  
 **Pre-Implementation Test Catalog:** [P10-S03 Test Cases Catalog](file:///c:/Workspace/ChessGame/docs/testing/test_cases_catalog_P10_S03.md)  
-**Mutation Report:** [P10-S03 Mutation Testing Report](file:///c:/Workspace/ChessGame/docs/testing/mutation_testing_report_P10_S03.md)  
+**Mutation Report:** [P10-S03 Mutation Testing Report](file:///c:/Workspace/ChessGame/docs/testing/mutation_testing_report_P10_S03.md)
 
 ---
 
@@ -13,6 +13,7 @@
 Phase 10 Sprint 03 (**Property and Mutation Testing**) establishes mathematical invariance proofs and systematic fault-injection resilience for the ChessForge chess domain engine.
 
 This sprint introduces:
+
 1. **Generative Property-Based Invariant Fuzzing (`fast-check`):** Multi-ply legal game generation using reproducible PRNG seeds to prove universal chess invariants (king counts, king safety, bijective FEN/PGN codecs, reversible move history, and irreversible move counters).
 2. **Controlled Domain Fault Injection Battery:** Systematic mutation test harness covering 12 targeted domain mutations across king safety, castling, en passant, promotions, turn alternation, and state restoration.
 3. **100% Mutation Kill Rate:** Verification that all 12 domain fault mutants are detected ("killed") by the test suite with zero surviving mutants.
