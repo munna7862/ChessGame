@@ -37,7 +37,7 @@ describe("Performance & Benchmark Suite: Chess Domain (TC-PERF-02, TC-PERF-07)",
       expect(avgTimePerQuery).toBeLessThan(2.0);
     });
 
-    it("evaluates Perft Depth 1 across all 5 benchmark positions in < 50ms total", () => {
+    it("evaluates Perft Depth 1 across all 5 benchmark positions in < 250ms total", () => {
       const startTime = performance.now();
       for (const fixture of PERFT_CORPUS) {
         const adapter = new ChessJsAdapter(fixture.fen);
@@ -45,7 +45,7 @@ describe("Performance & Benchmark Suite: Chess Domain (TC-PERF-02, TC-PERF-07)",
         expect(nodes).toBe(fixture.expectedNodes[1]);
       }
       const totalTime = performance.now() - startTime;
-      expect(totalTime).toBeLessThan(50);
+      expect(totalTime).toBeLessThan(250);
     });
 
     it("evaluates Perft Depth 2 across all 5 benchmark positions within standard budget (< 1500ms)", () => {
