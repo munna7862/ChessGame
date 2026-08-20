@@ -43,14 +43,14 @@ This pull request delivers the **Performance and Reliability Verification & Benc
 
 ## 2. Test Cases & Quality Gate Verification
 
-| Gate / Command | Result | Details |
-| :--- | :--- | :--- |
-| `npm run typecheck` | **PASS** | 0 TypeScript errors across frontend and E2E suites |
-| `npm run lint` | **PASS** | 0 ESLint errors, 0 warnings |
-| `npm run format:check` | **PASS** | 100% Prettier formatting compliance |
-| `npm test` | **PASS** | 115 test files passed, 934/934 unit, property, and benchmark tests green (0 skips) |
-| `npm run test:e2e` | **PASS** | 24 E2E test files passed, 82/82 Playwright scenarios green (0 skips) |
-| `npm run build` | **PASS** | Clean production bundle generated in 2.78s |
+| Gate / Command         | Result   | Details                                                                            |
+| :--------------------- | :------- | :--------------------------------------------------------------------------------- |
+| `npm run typecheck`    | **PASS** | 0 TypeScript errors across frontend and E2E suites                                 |
+| `npm run lint`         | **PASS** | 0 ESLint errors, 0 warnings                                                        |
+| `npm run format:check` | **PASS** | 100% Prettier formatting compliance                                                |
+| `npm test`             | **PASS** | 115 test files passed, 934/934 unit, property, and benchmark tests green (0 skips) |
+| `npm run test:e2e`     | **PASS** | 24 E2E test files passed, 82/82 Playwright scenarios green (0 skips)               |
+| `npm run build`        | **PASS** | Clean production bundle generated in 2.78s                                         |
 
 ---
 
