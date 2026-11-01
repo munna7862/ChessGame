@@ -1,176 +1,85 @@
 # ChessForge
 
 [![CI](https://github.com/munna7862/ChessGame/actions/workflows/ci.yml/badge.svg)](https://github.com/munna7862/ChessGame/actions/workflows/ci.yml)
+[![Release Automation](https://github.com/munna7862/ChessGame/actions/workflows/release.yml/badge.svg)](https://github.com/munna7862/ChessGame/actions/workflows/release.yml)
 
-> **ChessForge** is a high-performance, 100% local-first Windows desktop chess application engineered with **Tauri v2**, **React 19**, **TypeScript**, and **Stockfish WASM**.
+ChessForge is an offline chess app for Windows, built with Tauri v2, React 19, TypeScript and Stockfish compiled to WebAssembly. It has no backend, no accounts and no telemetry.
 
----
+## Status
 
-## 1. Architectural Highlights & Mandates
+**v1.0.0**, released 2026-08-20. All 11 planned phases are complete. Download the Windows installer (`ChessForge_1.0.0_x64-setup.exe` or `.msi`) from [Releases](https://github.com/munna7862/ChessGame/releases/tag/v1.0.0); the release includes `checksums.txt`.
 
-- **100% Local-First:** Runs entirely offline on Windows. Zero cloud backends, zero external microservices, zero telemetry, and zero remote tracking.
-- **Strict Resource Guardrails:** Designed for a lightweight desktop footprint ($< 150\text{ MB}$ total application memory) and a 60 FPS rendering frame budget.
-- **Decoupled Architecture:** Strict unidirectional dependency flow:
-  $$\text{Presentation (React 19)} \longrightarrow \text{Application Service} \longrightarrow \text{Domain} \longrightarrow \text{Chess Library Adapter}$$
-- **Engine as Advisor:** Stockfish engine runs asynchronously in a dedicated WebWorker communicating via UCI. The domain is the sole authority for move legality.
+## Features
 
----
+- Full chess rules through `chess.js`: castling, en passant, promotion, check, checkmate, stalemate, threefold repetition, fifty-move rule and insufficient material.
+- Human vs human on one screen, or human vs Stockfish as White or Black.
+- Eight engine difficulty levels, mapped to Stockfish skill levels. The engine runs in a Web Worker over UCI and never decides move legality; the domain layer does.
+- Chess clocks with increment and low-time warnings.
+- PGN import and export, FEN copy and paste, move history navigation, captured pieces.
+- Local persistence with Zod-validated saves and recovery of an interrupted game.
+- Board themes, sound effects, keyboard play and screen-reader move announcements.
 
-## 2. Windows Development Prerequisites
+## Tech stack
 
-Before developing or building ChessForge on Windows 10/11, ensure the following prerequisites are installed:
+- Tauri v2 (Rust shell, least-privilege capabilities), Microsoft Edge WebView2
+- React 19, TypeScript, Vite
+- `chess.js` 1.4, `stockfish.js` 10 (WASM), Zod
+- Vitest, Testing Library, fast-check (property tests), Playwright
+- ESLint, Prettier, `cargo test`, `cargo clippy`, GitHub Actions
 
-1. **Node.js**: `v20.x` LTS or `v24.x` (Recommended). Verify with `node -v` and `npm -v`.
-2. **Rust & Cargo Toolchain**:
-   - Install `rustup` from [https://rustup.rs](https://rustup.rs).
-   - Install the MSVC toolchain: `rustup default stable-x86_64-pc-windows-msvc`.
-3. **C++ Build Tools**:
-   - Visual Studio 2022 C++ Build Tools (with "Desktop development with C++" workload selected).
-4. **Microsoft Edge WebView2**: Pre-installed on modern Windows 10 and Windows 11 systems.
+## Run from source
 
----
-
-## 3. Quickstart & Clean Checkout Instructions
-
-### 3.1 Install Dependencies
+Prerequisites (Windows 10/11): Node.js 20 or 24, the Rust MSVC toolchain (`rustup default stable-x86_64-pc-windows-msvc`), Visual Studio 2022 C++ Build Tools ("Desktop development with C++") and WebView2 (preinstalled on current Windows).
 
 ```powershell
 npm install
+npm run dev          # web UI only, http://localhost:1420
+npm run tauri:dev    # desktop app
+npm run tauri:build  # Windows .exe (NSIS) and .msi bundles
 ```
 
-### 3.2 Frontend Development Server
-
-Start the local Vite development server with Hot Module Replacement (HMR):
+## Tests
 
 ```powershell
-npm run dev
-```
-
-The frontend will be accessible at `http://localhost:1420`.
-
-### 3.3 Execute Automated Unit & Property Tests (Vitest)
-
-Run the Vitest test runner across domain, component, and property-based test suites (Tiers 1-4):
-
-```powershell
-npm run test
-```
-
-To run tests with watch mode or coverage:
-
-```powershell
-npm run test:watch
+npm run test            # Vitest: domain, component and property-based tests
 npm run test:coverage
-```
-
-### 3.4 Execute End-to-End Tests (Playwright)
-
-Run the Tier 5 E2E browser/webview automation suite:
-
-```powershell
-# Run all E2E tests headlessly
-npm run test:e2e
-
-# Run E2E tests in interactive UI mode
-npm run test:e2e:ui
-
-# View the generated HTML test execution report
+npm run test:e2e        # Playwright end-to-end suite (tests/e2e)
 npm run test:e2e:report
-```
-
-For locator policies and diagnostics, see the [Playwright & E2E Testing Guide](file:///c:/Workspace/ChessGame/docs/guides/e2e_testing_guide.md) and [E2E Stable Test Identifiers Policy](file:///c:/Workspace/ChessGame/docs/testing/e2e_identifiers_policy.md).
-
-### 3.5 Code Quality, Linting & Formatting
-
-```powershell
-# Run ESLint across all TypeScript and React source files
 npm run lint
-
-# Auto-fix fixable ESLint violations
-npm run lint:fix
-
-# Check formatting conformity with Prettier
 npm run format:check
-
-# Auto-format all project files with Prettier
-npm run format
-```
-
-For detailed conventions and rules, see the [Developer Tooling and Code Quality Guide](file:///c:/Workspace/ChessGame/docs/guides/developer_tooling.md).
-
-### 3.6 Typecheck & Production Frontend Build
-
-```powershell
-# Strict TypeScript compilation check (0 errors)
 npm run typecheck
-
-# Production Vite bundle to dist/
 npm run build
 ```
 
-### 3.7 Launch Desktop Shell (Tauri v2)
+The test pyramid and golden FEN fixtures are described in [docs/testing-strategy.md](docs/testing-strategy.md); locator rules are in the [E2E testing guide](docs/guides/e2e_testing_guide.md).
 
-Run the native Windows desktop application shell:
+## CI
 
-```powershell
-npm run tauri dev
+- **CI** (`ci.yml`, every push and pull request to `main`):
+  - `frontend-checks`: format, lint, typecheck, unit tests, Vite build
+  - `e2e-tests`: Playwright in headless Chromium, traces kept on failure
+  - `desktop-windows-build`: `cargo test`, `cargo clippy -D warnings` and a release `cargo check` on Windows
+- **Release Automation** (`release.yml`, on a `v*` tag or manual dry run): re-runs the checks, builds the NSIS and MSI bundles on Windows and publishes them to GitHub Releases with checksums.
+
+See the [CI workflow guide](docs/guides/ci_workflow_guide.md) for details.
+
+## Project structure
+
+```
+src/
+  domain/          chess rules adapter, clock and persistence (no React)
+  features/        board, game, engine, clock and settings features with their tests
+  components/      shared UI components
+  services/, hooks/, theme/
+  App.tsx, main.tsx
+src-tauri/         Rust shell, capabilities, tauri.conf.json, icons
+tests/e2e/         Playwright specs
+docs/              architecture, ADRs, security model, testing strategy, guides, release notes
+planning/          11 phase plans and sprint specs
 ```
 
-Build the optimized Windows production executable:
+Dependencies flow one way: presentation (React) -> application services -> domain -> chess library adapter. See [docs/architecture.md](docs/architecture.md) and [docs/security-model.md](docs/security-model.md).
 
-```powershell
-npm run tauri build
-```
+## Contributing
 
-### 3.8 Continuous Integration (GitHub Actions)
-
-Every pull request and push to `main` is validated automatically via GitHub Actions CI across three distinct jobs:
-
-- **`frontend-checks`**: Format check, ESLint, TypeScript typecheck, Vitest unit tests, and Vite build.
-- **`e2e-tests`**: Headless Playwright Chromium smoke tests with failure trace artifact capture.
-- **`desktop-windows-build`**: Native Windows compilation, cargo test, and cargo clippy checks.
-
-For full architectural details, see the [GitHub Actions CI Workflow Guide](file:///c:/Workspace/ChessGame/docs/guides/ci_workflow_guide.md).
-
----
-
-## 4. Repository Structure
-
-```text
-ChessGame/
-├── .agents/                 # Multi-agent agile rules, skills, and personas
-├── docs/                    # Architectural blueprints, testing strategies, security models
-│   ├── architecture.md      # System architecture & decoupled domain design
-│   ├── security-model.md    # Tauri IPC capabilities, CSP, and threat model
-│   └── testing-strategy.md  # 6-tier test pyramid & golden FEN fixtures
-├── planning/                # Project roadmap and granular sprint specs
-├── src/                     # React 19 frontend application
-│   ├── components/          # Reusable UI components & presentation layer
-│   ├── test/                # Testing harnesses & mocks
-│   ├── App.tsx              # Root desktop layout
-│   ├── main.tsx             # React DOM entrypoint
-│   └── index.css            # Design tokens & dark theme styling
-├── src-tauri/               # Tauri v2 native desktop application shell
-│   ├── capabilities/        # Least-privilege IPC capability manifests
-│   ├── src/                 # Rust entrypoint and native window lifecycle
-│   ├── Cargo.toml           # Rust dependencies
-│   └── tauri.conf.json      # Tauri v2 window and security configuration
-├── package.json             # NPM package scripts & dependencies
-├── tsconfig.json            # Strict TypeScript configuration
-├── vite.config.ts           # Vite bundler & Vitest test runner config
-└── task.md                  # Active sprint task tracking & agile handoffs
-```
-
----
-
-## 5. Agile Quality Gates & Anti-Bypass Standards
-
-All contributions must strictly satisfy the sprint **Definition of Done (DoD)**:
-
-- 100% Green test automation (Vitest unit, component, property tests).
-- Zero TypeScript compiler errors (`tsc --noEmit`).
-- Zero linter/compiler suppression flags (`it.skip`, `@ts-ignore`, `eslint-disable`).
-- Least-privilege capability verification for native desktop APIs.
-- Clean pull request created on an isolated `feature/*` branch.
-
-For complete multi-agent operating rules, command allowlists, and handoff protocols, see the [Agent Guardrails & Multi-Agent Development Guide](file:///c:/Workspace/ChessGame/docs/guides/agent_guardrails_guide.md) and [Universal Operating Contract](file:///c:/Workspace/ChessGame/AGENTS.md).
+Work happens on `feature/*` branches through pull requests. The Definition of Done is green tests, zero TypeScript errors, and no `it.skip`, `@ts-ignore` or `eslint-disable`. Agent rules are in [AGENTS.md](AGENTS.md) and the [agent guardrails guide](docs/guides/agent_guardrails_guide.md).
